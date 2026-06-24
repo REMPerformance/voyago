@@ -1,0 +1,171 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --ring: 28 91 192; /* azure */
+    /* Svetlý režim */
+    --paper: 239 241 240;
+    --paper-dim: 228 231 228;
+    --surface: 255 255 255;
+    --ink: 15 34 54;
+    --ink-soft: 82 97 111;
+    --line: 217 222 219;
+    --line-soft: 231 234 231;
+  }
+
+  .dark {
+    /* Tmavý režim */
+    --paper: 11 23 34;
+    --paper-dim: 15 30 44;
+    --surface: 19 33 47;
+    --ink: 231 236 241;
+    --ink-soft: 158 176 190;
+    --line: 36 51 63;
+    --line-soft: 27 41 55;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display tracking-[-0.01em];
+    font-optical-sizing: auto;
+  }
+
+  ::selection {
+    @apply bg-ink text-paper;
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--ring));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-[90rem] px-5 sm:px-8 lg:px-12;
+  }
+
+  .eyebrow {
+    @apply font-mono text-[0.7rem] font-medium uppercase tracking-[0.28em] text-brass;
+  }
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold
+           transition-all duration-200;
+  }
+  .btn-primary {
+    @apply btn bg-ink text-paper hover:bg-navy-soft hover:-translate-y-0.5 shadow-card;
+  }
+  .btn-accent {
+    @apply btn bg-teal text-white hover:bg-teal-dark hover:-translate-y-0.5 shadow-card;
+  }
+  .btn-ghost {
+    @apply btn border border-line bg-surface/60 text-ink hover:border-ink hover:bg-surface;
+  }
+  .btn[disabled] {
+    @apply pointer-events-none opacity-45;
+  }
+
+  /* Cards */
+  .card {
+    @apply rounded-xl2 border border-line bg-surface shadow-card;
+  }
+
+  /* Form fields */
+  .label {
+    @apply mb-1.5 flex items-baseline justify-between text-sm font-semibold text-ink;
+  }
+  .req {
+    @apply font-mono text-[0.6rem] uppercase tracking-widest text-terra;
+  }
+  .opt {
+    @apply font-mono text-[0.6rem] uppercase tracking-widest text-ink-soft/55;
+  }
+  .input {
+    @apply w-full rounded-lg border border-line bg-surface px-4 py-3 text-[0.95rem] text-ink
+           placeholder:text-ink-soft/45 transition-colors
+           focus:border-teal focus:outline-none focus:ring-4 focus:ring-teal/10;
+  }
+  .help {
+    @apply mt-1 text-xs leading-relaxed text-ink-soft/75;
+  }
+  .err {
+    @apply mt-1 text-xs font-medium text-terra;
+  }
+
+  /* Selectable tile (wizard) */
+  .tile {
+    @apply flex items-center gap-3 rounded-xl border border-line bg-surface px-5 py-4 text-left
+           text-[0.95rem] font-medium text-ink transition-all duration-150
+           hover:-translate-y-0.5 hover:border-teal hover:shadow-card;
+  }
+
+  /* Machine-readable-zone strip (passport motif) */
+  .mrz {
+    @apply font-mono text-[0.66rem] uppercase tracking-[0.32em] text-ink-soft/55;
+    word-spacing: 0.08em;
+  }
+
+  /* Jemný "guilloché" / bezpečnostný raster pre tmavé plochy */
+  .secure-bg {
+    background-color: theme("colors.navy.DEFAULT");
+    background-image:
+      repeating-linear-gradient(115deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 9px),
+      repeating-linear-gradient(65deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 9px),
+      radial-gradient(120% 120% at 80% -10%, rgba(168,119,46,0.16), transparent 55%);
+  }
+
+  /* Simulovaný čiarový kód (boarding pass) */
+  .barcode {
+    background-image: repeating-linear-gradient(
+      90deg,
+      rgb(var(--ink)) 0 2px,
+      transparent 2px 4px,
+      rgb(var(--ink)) 4px 7px,
+      transparent 7px 9px,
+      rgb(var(--ink)) 9px 10px,
+      transparent 10px 13px
+    );
+  }
+}
+
+/* Svetová mapa — animácie šípok a pulzu */
+@keyframes dash-draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes world-ping {
+  0% { transform: scale(1); opacity: 0.5; }
+  75%, 100% { transform: scale(2.6); opacity: 0; }
+}
+@layer components {
+  .world-arc {
+    stroke-dasharray: 640;
+    stroke-dashoffset: 640;
+    animation: dash-draw 2.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .world-ping {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: world-ping 2.4s ease-out infinite;
+  }
+}
