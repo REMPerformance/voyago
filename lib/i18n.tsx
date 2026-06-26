@@ -17,6 +17,7 @@ import {
   type ReactNode,
 } from "react";
 import type { Lang, Localized } from "@/config/products";
+import { UI_EXTRA } from "@/config/i18nExtra";
 
 // Slovník UI textov. Pridať text = pridať kľúč s { sk, en }.
 const UI: Record<string, Localized> = {
@@ -231,7 +232,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const saved = window.localStorage.getItem("voyago.lang");
-    if (saved === "sk" || saved === "en") setLangState(saved);
+    if (saved === "sk" || saved === "en" || saved === "cs" || saved === "hu" || saved === "uk") setLangState(saved);
   }, []);
 
   const setLang = (l: Lang) => {
@@ -244,8 +245,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     () => ({
       lang,
       setLang,
-      t: (l: Localized) => l[lang],
-      tr: (key: string) => UI[key]?.[lang] ?? key,
+      // Obsah { sk, en, cs?, hu?, uk? } – padá na angličtinu, potom slovenčinu.
+      t: (l: Localized) => l[lang] ?? l.en ?? l.sk,
+      // UI slovník: extra jazyky z UI_EXTRA, inak sk/en zo základného slovníka.
+      tr: (key: string) => UI_EXTRA[lang]?.[key] ?? UI[key]?.[lang as "sk" | "en"] ?? UI[key]?.en ?? UI[key]?.sk ?? key,
     }),
     [lang],
   );

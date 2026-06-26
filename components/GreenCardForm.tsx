@@ -108,7 +108,7 @@ export function GreenCardForm() {
   );
   const Group = ({ title, hint, children: ch }: { title: L; hint?: L; children: React.ReactNode }) => (
     <div>
-      <p className="font-mono text-[0.62rem] font-bold uppercase tracking-[0.18em] text-brass">{t(title)}</p>
+      <p className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-brass">{t(title)}</p>
       {hint && <p className="mt-1 text-xs text-ink-soft">{t(hint)}</p>}
       <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{ch}</div>
     </div>
@@ -117,7 +117,7 @@ export function GreenCardForm() {
     <label className="flex items-center gap-3 rounded-xl border border-dashed border-line bg-paper/40 px-4 py-3.5">
       <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-paper text-teal">{uploading ? <Loader2 size={16} className="animate-spin" /> : val ? <Check size={16} strokeWidth={3} /> : <Upload size={16} />}</span>
       <span className="min-w-0 flex-1 truncate text-sm text-ink-soft">{uploading ? t({ sk: "Nahrávam…", en: "Uploading…" }) : fn || t(name)}</span>
-      <input type="file" accept="image/*" onChange={(e) => onPick(e.target.files?.[0])} className="text-xs text-ink-soft file:mr-0 file:cursor-pointer file:rounded-full file:border-0 file:bg-ink file:px-3 file:py-1.5 file:text-paper" />
+      <input type="file" accept="image/*" onChange={(e) => onPick(e.target.files?.[0])} className="text-xs text-ink-soft file:mr-0 file:cursor-pointer file:rounded-lg file:border-0 file:bg-ink file:px-3 file:py-1.5 file:text-paper" />
     </label>
   );
 
@@ -156,7 +156,7 @@ export function GreenCardForm() {
 
       <div>
         <div className="flex items-center justify-between">
-          <p className="font-mono text-[0.62rem] font-bold uppercase tracking-[0.18em] text-brass">{t({ sk: "Deti do 21 rokov (slobodné)", en: "Children under 21 (unmarried)" })}</p>
+          <p className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-brass">{t({ sk: "Deti do 21 rokov (slobodné)", en: "Children under 21 (unmarried)" })}</p>
           <button type="button" onClick={addChild} className="btn-ghost !px-3 !py-1.5 text-xs"><Plus size={13} /> {t({ sk: "Pridať dieťa", en: "Add child" })}</button>
         </div>
         {children.length === 0 && <p className="mt-2 text-xs text-ink-soft">{t({ sk: "Uveďte všetky živé slobodné deti do 21 rokov (vlastné, nevlastné aj adoptované).", en: "List all living unmarried children under 21 (natural, step, adopted)." })}</p>}
@@ -164,7 +164,7 @@ export function GreenCardForm() {
           {children.map((ch, i) => (
             <div key={i} className="rounded-xl border border-line-soft bg-paper/40 p-3">
               <div className="mb-2 flex items-center justify-between">
-                <span className="font-mono text-[0.6rem] uppercase tracking-wider text-ink-soft">{t({ sk: "Dieťa", en: "Child" })} {i + 1}</span>
+                <span className="text-[0.6rem] uppercase tracking-wider text-ink-soft">{t({ sk: "Dieťa", en: "Child" })} {i + 1}</span>
                 <button type="button" onClick={() => delChild(i)} className="text-terra"><Trash2 size={14} /></button>
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
@@ -196,7 +196,7 @@ export function GreenCardForm() {
       </Group>
 
       <div>
-        <p className="font-mono text-[0.62rem] font-bold uppercase tracking-[0.18em] text-brass">{t({ sk: "Fotografia (norma DV)", en: "Photo (DV standard)" })}</p>
+        <p className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-brass">{t({ sk: "Fotografia (norma DV)", en: "Photo (DV standard)" })}</p>
         <p className="mt-1 text-xs text-ink-soft">{t({ sk: "Farebná, 600×600 px, JPEG do 240 kB, biele pozadie, nie staršia ako 6 mesiacov, bez okuliarov. Skontrolujeme ju za vás.", en: "Color, 600×600 px, JPEG ≤240 kB, white background, not older than 6 months, no glasses. We'll check it for you." })}</p>
         <div className="mt-3"><Photo name={{ sk: "Nahrajte vašu fotografiu", en: "Upload your photo" }} val={photo} fn={photoName} uploading={upPhoto} onPick={(f) => up(f, setPhoto, setPhotoName, setUpPhoto)} /></div>
       </div>

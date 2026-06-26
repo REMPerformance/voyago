@@ -41,6 +41,7 @@ export default function CheckoutPage() {
     const sid = new URLSearchParams(window.location.search).get("session_id");
     if (sid) {
       setPaid(true);
+      try { localStorage.setItem("voyago.lastOrder", JSON.stringify({ items, total: items.reduce((s, i) => s + (i.price || 0), 0) })); } catch { /* ignore */ }
       clear();
       fetch(`/api/checkout/confirm?session_id=${sid}`)
         .then((r) => r.json())
@@ -87,6 +88,7 @@ export default function CheckoutPage() {
     // Stripe nenastavený → demo režim
     if (r?.ref) setRef(r.ref);
     setPaid(true);
+    try { localStorage.setItem("voyago.lastOrder", JSON.stringify({ items, total: payable })); } catch { /* ignore */ }
     clear();
     setBusy(false);
   };
@@ -100,12 +102,15 @@ export default function CheckoutPage() {
         <p className="mx-auto mt-8 max-w-md text-lg text-ink-soft">{tr("checkout.thanks")}</p>
         {ref && (
           <div className="mx-auto mt-6 inline-block rounded-xl border border-brass/30 bg-brass/[0.06] px-6 py-4">
-            <p className="font-mono text-[0.62rem] uppercase tracking-wider text-brass">{t({ sk: "Referenčné číslo", en: "Reference number" })}</p>
+            <p className="text-[0.62rem] uppercase tracking-wider text-brass">{t({ sk: "Referenčné číslo", en: "Reference number" })}</p>
             <p className="mt-1 font-mono text-2xl font-bold tracking-wider text-ink">{ref}</p>
             <p className="mt-2 text-xs text-ink-soft">{t({ sk: "Stav sledujte na stránke", en: "Track status at" })} <Link href="/stav" className="font-semibold text-teal underline">/stav</Link></p>
           </div>
         )}
-        <div className="mt-8"><Link href="/" className="btn-primary">{tr("cta.back")}</Link></div>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <Link href={ref ? `/zhrnutie?ref=${ref}` : "/zhrnutie"} className="btn-primary">{t({ sk: "Stiahnuť zhrnutie (PDF)", en: "Download summary (PDF)" })}</Link>
+          <Link href="/" className="btn-ghost">{tr("cta.back")}</Link>
+        </div>
       </section>
     );
   }

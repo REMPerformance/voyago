@@ -26,6 +26,7 @@ export function Footer() {
       links: [
         { label: tr("nav.wizard"), href: "/wizard" },
         { label: t({ sk: "Sledovať žiadosť", en: "Track application" }), href: "/stav" },
+        { label: t({ sk: "Foto na vízum", en: "Visa photo" }), href: "/foto-poziadavky" },
         { label: t({ sk: "Kontakt a podpora", en: "Contact & support" }), href: "/kontakt" },
         { label: tr("gc.title"), href: "/green-card" },
       ],
@@ -73,7 +74,7 @@ export function Footer() {
           {/* Link columns */}
           {cols.map((col) => (
             <div key={col.title}>
-              <p className="font-mono text-[0.68rem] uppercase tracking-[0.2em] text-brass-light">{col.title}</p>
+              <p className="text-[0.68rem] uppercase tracking-[0.2em] text-brass-light">{col.title}</p>
               <ul className="mt-4 space-y-2.5">
                 {col.links.map((l) => (
                   <li key={l.label}>

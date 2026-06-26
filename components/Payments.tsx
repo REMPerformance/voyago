@@ -55,7 +55,7 @@ export function Payments() {
   const { t } = useLang();
   return (
     <div className="text-center">
-      <p className="font-mono text-[0.7rem] uppercase tracking-[0.24em] text-ink-soft/70">
+      <p className="text-[0.7rem] uppercase tracking-[0.24em] text-ink-soft/70">
         {t({ sk: "Bezpečné platby realizujete cez", en: "Secure payments via" })}
       </p>
       <div className="mt-5 flex flex-wrap items-center justify-center gap-3">

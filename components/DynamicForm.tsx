@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import {
   Plus, ShoppingBag, Upload, Check, X, Info, ChevronDown, AlertTriangle,
   User, FileText, Mail, Briefcase, Plane, ShieldCheck, FileSignature, Users,
-  ClipboardCheck, ArrowLeft, Save, Trash2,
+  ClipboardCheck, ArrowLeft, Save, Trash2, Camera,
 } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { uploadFile } from "@/lib/applications";
@@ -19,6 +19,7 @@ interface Props {
   onAdd: (data: Record<string, string>, goToCart: boolean) => void;
 }
 
+const isPhotoField = (f: Field) => /foto|photo|selfie|tv[aá]r|face|sn[ií]mka|portr/i.test(`${f.name} ${f.label?.sk || ""} ${f.label?.en || ""}`);
 const isWide = (f: Field) => f.type === "checkbox" || f.type === "file" || f.type === "select" || f.type === "toggle" || f.type === "phoneIntl";
 
 // Logické sekcie — formulár sa skladá z plochého poľa polí, tu ich zoskupíme.
@@ -266,13 +267,11 @@ export function DynamicForm({ product, travelerIndex, onAdd }: Props) {
                     data-error={errors[f.name] ? "true" : undefined}
                     onBlur={() => blurCheck(f)}
                   >
-                    <FieldControl field={f} value={values[f.name] ?? ""} onChange={(v) => set(f.name, v)} invalid={!!errors[f.name]} />
+                    <FieldControl field={f} value={values[f.name] ?? ""} onChange={(v) => set(f.name, v)} invalid={!!errors[f.name]} photoDest={product.slug} />
                     {f.help && f.type !== "checkbox" && <p className="help">{t(f.help)}</p>}
                     {f.flagYes && values[f.name] === "yes" && (
                       <div
-                        className={`mt-2 flex items-start gap-2 rounded-lg border p-3 text-xs leading-snug ${
-                          f.flagYes.level === "block" ? "border-terra/50 bg-terra/[0.06] text-terra" : "border-brass/50 bg-brass/[0.07] text-ink"
-                        }`}
+                        className={`mt-2 flex items-start gap-2 rounded-lg border p-3 text-xs leading-snug ${ f.flagYes.level === "block" ? "border-terra/50 bg-terra/[0.06] text-terra" : "border-brass/50 bg-brass/[0.07] text-ink" }`}
                       >
                         <AlertTriangle size={15} className={`mt-0.5 shrink-0 ${f.flagYes.level === "block" ? "text-terra" : "text-brass"}`} />
                         <span>{t(f.flagYes.text)}</span>
@@ -347,9 +346,9 @@ export function DynamicForm({ product, travelerIndex, onAdd }: Props) {
 }
 
 function FieldControl({
-  field, value, onChange, invalid,
+  field, value, onChange, invalid, photoDest,
 }: {
-  field: Field; value: string; onChange: (v: string) => void; invalid?: boolean;
+  field: Field; value: string; onChange: (v: string) => void; invalid?: boolean; photoDest?: string;
 }) {
   const { t, tr } = useLang();
   const [uploading, setUploading] = useState(false);
@@ -359,14 +358,10 @@ function FieldControl({
     const checked = value === "true";
     return (
       <label
-        className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-all ${
-          checked ? "border-teal bg-teal/[0.05]" : invalid ? "border-terra" : "border-line bg-surface hover:border-ink/30"
-        }`}
+        className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-all ${ checked ? "border-teal bg-teal/[0.05]" : invalid ? "border-terra" : "border-line bg-surface hover:border-ink/30" }`}
       >
         <span
-          className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md border transition-colors ${
-            checked ? "border-teal bg-teal text-white" : "border-line bg-surface"
-          }`}
+          className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-md border transition-colors ${ checked ? "border-teal bg-teal text-white" : "border-line bg-surface" }`}
         >
           {checked && <Check size={13} strokeWidth={3} />}
         </span>
@@ -409,9 +404,7 @@ function FieldControl({
 
         {/* Samotné nahrávanie súborov — čisté a samostatné */}
         <div
-          className={`flex items-center gap-3 rounded-xl border-2 border-dashed px-4 py-4 transition-colors ${
-            value ? "border-teal/50 bg-teal/[0.03]" : invalid ? "border-terra" : "border-line bg-surface hover:border-ink/30"
-          }`}
+          className={`flex items-center gap-3 rounded-xl border-2 border-dashed px-4 py-4 transition-colors ${ value ? "border-teal/50 bg-teal/[0.03]" : invalid ? "border-terra" : "border-line bg-surface hover:border-ink/30" }`}
         >
           <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-paper text-teal">
             {uploading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-teal/30 border-t-teal" /> : value ? <Check size={16} strokeWidth={3} /> : <Upload size={16} />}
@@ -436,9 +429,19 @@ function FieldControl({
                 onChange(files.map((f) => f.name).join(","));
               }
             }}
-            className="text-xs text-ink-soft file:mr-0 file:cursor-pointer file:rounded-full file:border-0 file:bg-ink file:px-3 file:py-1.5 file:text-paper"
+            className="text-xs text-ink-soft file:mr-0 file:cursor-pointer file:rounded-lg file:border-0 file:bg-ink file:px-3 file:py-1.5 file:text-paper"
           />
         </div>
+        {isPhotoField(field) && photoDest && (
+          <a
+            href={`/foto-poziadavky?dest=${photoDest}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-brass transition-colors hover:text-brass-light"
+          >
+            <Camera size={13} /> {t({ sk: "Ako má vyzerať fotka?", en: "How should the photo look?" })}
+          </a>
+        )}
         {field.maxFiles && (
           <p className="mt-1.5 text-xs text-ink-soft/70">{t({ sk: `Môžete nahrať najviac ${field.maxFiles} súbory.`, en: `You can upload up to ${field.maxFiles} files.` })}</p>
         )}
@@ -533,15 +536,7 @@ function FieldControl({
     const isNo = value === "no";
     return (
       <div
-        className={`flex w-full items-center justify-between gap-4 rounded-xl border p-4 transition-colors ${
-          isYes
-            ? "border-terra/60 bg-terra/[0.06]"
-            : isNo
-            ? "border-green-soft/60 bg-green/[0.06]"
-            : invalid
-            ? "border-terra"
-            : "border-line bg-surface"
-        }`}
+        className={`flex w-full items-center justify-between gap-4 rounded-xl border p-4 transition-colors ${ isYes ? "border-terra/60 bg-terra/[0.06]" : isNo ? "border-green-soft/60 bg-green/[0.06]" : invalid ? "border-terra" : "border-line bg-surface" }`}
       >
         <span className="text-sm font-medium text-ink">{t(field.label)}</span>
         <span className="flex shrink-0 overflow-hidden rounded-lg border border-line">

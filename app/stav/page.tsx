@@ -48,10 +48,10 @@ export default function Page() {
           {/* Hlavička */}
           <div className="flex items-center justify-between gap-3 border-b border-line-soft pb-5">
             <div className="min-w-0">
-              <p className="font-mono text-[0.6rem] uppercase tracking-wider text-ink-soft">{t({ sk: "Žiadosť", en: "Application" })} · {ref}</p>
+              <p className="text-[0.6rem] uppercase tracking-wider text-ink-soft">{t({ sk: "Žiadosť", en: "Application" })} · {ref}</p>
               <p className="truncate font-display text-lg font-bold">{product ? t(product.name) : result.product_slug}</p>
             </div>
-            <span className={`shrink-0 rounded-full px-3 py-1 font-mono text-[0.62rem] font-bold uppercase tracking-wider ${result.paid ? "bg-green/12 text-green" : "bg-brass/15 text-brass"}`}>
+            <span className={`shrink-0 text-[0.62rem] font-bold uppercase tracking-wider ${result.paid ? "text-green" : "text-brass"}`}>
               {result.paid ? t({ sk: "zaplatené", en: "paid" }) : t({ sk: "nezaplatené", en: "unpaid" })}
             </span>
           </div>
@@ -85,7 +85,7 @@ export default function Page() {
                     <div className="pt-1">
                       <div className="flex items-center gap-2">
                         <p className={`font-semibold ${current ? "text-ink" : done ? "text-ink" : "text-ink-soft/55"}`}>{t(s.label)}</p>
-                        {current && <span className="rounded-full bg-brass/15 px-2 py-0.5 font-mono text-[0.52rem] uppercase tracking-wider text-brass">{t({ sk: "aktuálne", en: "current" })}</span>}
+                        {current && <span className="text-[0.52rem] uppercase tracking-wider text-brass">{t({ sk: "aktuálne", en: "current" })}</span>}
                       </div>
                       <p className={`mt-0.5 text-sm ${current || done ? "text-ink-soft" : "text-ink-soft/45"}`}>{t(s.desc)}</p>
                     </div>

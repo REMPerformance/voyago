@@ -292,7 +292,7 @@ export function Globe() {
                 <img src={`https://flagcdn.com/w160/${sc!.code.toLowerCase()}.png`} alt="" className="h-9 w-13 rounded-md object-cover ring-1 ring-cream/25" style={{ width: 52 }} />
                 <div>
                   <p className="font-display text-xl font-bold">{t(prod.destination)}</p>
-                  <span className="mt-1 inline-block rounded-full bg-brass/20 px-2.5 py-0.5 font-mono text-[0.6rem] font-semibold uppercase tracking-wider text-brass-light">
+                  <span className="mt-1 inline-block rounded-md bg-brass/20 px-2.5 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wider text-brass-light">
                     {TYPE_LABEL[prod.type]}
                   </span>
                 </div>
@@ -322,7 +322,7 @@ export function Globe() {
                   {t({ sk: "Vyplniť žiadosť", en: "Start application" })} <ArrowRight size={14} />
                 </Link>
               ) : (
-                <span className="rounded-full border border-cream/25 px-4 py-2 text-xs font-semibold text-cream/80">
+                <span className="rounded-lg border border-cream/25 px-4 py-2 text-xs font-semibold text-cream/80">
                   {t({ sk: "Pripravujeme", en: "Coming soon" })}
                 </span>
               )}

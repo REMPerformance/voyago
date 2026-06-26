@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, Eye, EyeOff, LogOut, Megaphone, Save, X, Inbox, Download, ChevronDown, Mail, Send, Percent, Search, Ticket, Activity, Globe } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, EyeOff, LogOut, Megaphone, Save, X, Inbox, Download, ChevronDown, Mail, Send, Percent, Search, Ticket, Activity, Globe, MessageCircle } from "lucide-react";
+import { ChatAdmin } from "@/components/admin/ChatAdmin";
 import { supabase, supabaseEnabled } from "@/lib/supabase";
 import { fileSignedUrl } from "@/lib/applications";
 import { ALL_STATUSES, statusLabel } from "@/config/orderStages";
 import { renderEmail, TEMPLATES, type EmailTemplate } from "@/lib/email";
-import { PRODUCTS } from "@/config/products";
+import { PRODUCTS, getProduct } from "@/config/products";
 import { fetchStats, setProcessed, bumpProcessed } from "@/lib/stats";
 import type { Announcement, Placement, Tone } from "@/lib/announcements";
 
@@ -22,7 +23,7 @@ const projectHost = (process.env.NEXT_PUBLIC_SUPABASE_URL || "").replace(/^https
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl border border-line bg-surface p-4 shadow-card">
-      <p className="font-mono text-[0.58rem] uppercase tracking-wider text-ink-soft">{label}</p>
+      <p className="text-[0.58rem] uppercase tracking-wider text-ink-soft">{label}</p>
       <p className="mt-1 font-display text-2xl font-extrabold text-ink">{value}</p>
     </div>
   );
@@ -39,7 +40,7 @@ export default function AdminPage() {
   const [list, setList] = useState<Announcement[]>([]);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [busy, setBusy] = useState(false);
-  const [tab, setTab] = useState<"ann" | "apps" | "disc" | "promo" | "traffic" | "stats">("ann");
+  const [tab, setTab] = useState<"ann" | "apps" | "disc" | "promo" | "traffic" | "stats" | "chat">("ann");
   const [apps, setApps] = useState<any[]>([]);
   const [open, setOpen] = useState<string | null>(null);
   const [emailFor, setEmailFor] = useState<any>(null);
@@ -109,6 +110,14 @@ export default function AdminPage() {
       await bumpProcessed(prev.product_slug, 1);
       setStatMap((m) => ({ ...m, [prev.product_slug]: (m[prev.product_slug] || 0) + 1 }));
     }
+    // Automatický e-mail zákazníkovi o zmene stavu (ak má e-mail a stav sa naozaj zmenil).
+    if (prev?.email && prev.status !== status) {
+      const destination = getProduct(prev.product_slug)?.destination?.sk || prev.product_slug || "—";
+      fetch("/api/notify", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "status", email: prev.email, name: prev.name, orderId: prev.ref, destination, status: statusLabel(status, "sk") }),
+      }).catch(() => {});
+    }
     loadApps();
   };
   const openEmail = (a: any) => { setEmailFor(a); setEmailTpl("approved"); setEmailSubject(TEMPLATES.approved.subject); setEmailMsg(""); setEmailFiles([]); };
@@ -138,7 +147,7 @@ export default function AdminPage() {
     });
     setSending(false);
     if (res.ok) { alert("E-mail odoslaný ✓"); setEmailFor(null); }
-    else { const e = await res.json().catch(() => ({})); alert("Nepodarilo sa odoslať (" + (e.error || "chyba") + "). Skontroluj RESEND_API_KEY."); }
+    else { const e = await res.json().catch(() => ({})); alert("Nepodarilo sa odoslať (" + (e.error || "chyba") + "). Skontrolujte RESEND_API_KEY."); }
   };
   const loadDiscounts = async () => {
     if (!supabase) return;
@@ -267,20 +276,23 @@ export default function AdminPage() {
         <button onClick={() => setTab("promo")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "promo" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Ticket size={15} /> Promo kódy</button>
         <button onClick={() => setTab("traffic")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "traffic" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Activity size={15} /> Analytika</button>
         <button onClick={() => setTab("stats")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "stats" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Globe size={15} /> Krajiny</button>
+        <button onClick={() => setTab("chat")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "chat" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><MessageCircle size={15} /> Chat</button>
         {tab === "ann" && <button onClick={() => setDraft({ ...EMPTY })} className="btn-primary ml-auto !py-2"><Plus size={15} /> Nový oznam</button>}
         {tab === "apps" && <button onClick={loadApps} className="btn-ghost ml-auto !py-2">Obnoviť</button>}
       </div>
+
+      {tab === "chat" && <ChatAdmin />}
 
       {tab === "ann" && (
       <div className="mt-8 space-y-3">
         {list.length === 0 && <p className="text-ink-soft">Zatiaľ žiadne oznamy. Vytvor prvý cez „Nový oznam".</p>}
         {list.map((a) => (
           <div key={a.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-surface p-4 shadow-card">
-            <span className={`rounded-full px-2.5 py-0.5 font-mono text-[0.6rem] font-bold uppercase tracking-wider ${a.enabled ? "bg-green/12 text-green" : "bg-line text-ink-soft"}`}>
+            <span className={`text-[0.6rem] font-bold uppercase tracking-wider ${a.enabled ? "text-green" : "text-ink-soft"}`}>
               {a.enabled ? "Aktívny" : "Vypnutý"}
             </span>
-            <span className="rounded-full bg-paper px-2.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-ink-soft">{a.placement}</span>
-            <span className="rounded-full bg-paper px-2.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-brass">{a.tone}</span>
+            <span className="bg-paper text-[0.6rem] uppercase tracking-wider text-ink-soft">{a.placement}</span>
+            <span className="bg-paper text-[0.6rem] uppercase tracking-wider text-brass">{a.tone}</span>
             <div className="min-w-0 flex-1">
               <p className="truncate font-semibold text-ink">{a.title}</p>
               <p className="truncate text-xs text-ink-soft">{a.message}</p>
@@ -317,9 +329,9 @@ export default function AdminPage() {
           {filteredApps.map((a) => (
             <div key={a.id} className="rounded-xl border border-line bg-surface p-4 shadow-card">
               <div className="flex flex-wrap items-center gap-3">
-                <span className="font-mono text-[0.6rem] uppercase tracking-wider text-ink-soft">{new Date(a.created_at).toLocaleString("sk-SK")}</span>
+                <span className="text-[0.6rem] uppercase tracking-wider text-ink-soft">{new Date(a.created_at).toLocaleString("sk-SK")}</span>
                 {a.ref && <span className="font-mono text-[0.6rem] font-bold tracking-wider text-brass">{a.ref}</span>}
-                <span className={`rounded-full px-2.5 py-0.5 font-mono text-[0.6rem] font-bold uppercase tracking-wider ${a.paid ? "bg-green/12 text-green" : "bg-brass/15 text-brass"}`}>{a.paid ? "zaplatené" : "nezaplatené"}</span>
+                <span className={`text-[0.6rem] font-bold uppercase tracking-wider ${a.paid ? "text-green" : "text-brass"}`}>{a.paid ? "zaplatené" : "nezaplatené"}</span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold text-ink">{a.email || "—"}</p>
                   <p className="truncate text-xs text-ink-soft">{(a.travelers?.length || 0)} cestujúci · {a.product_slug} · {((a.amount_cents || 0) / 100).toFixed(0)} €</p>
@@ -334,7 +346,7 @@ export default function AdminPage() {
                 <div className="mt-4 space-y-4 border-t border-line pt-4">
                   {(a.travelers || []).map((trav: any, idx: number) => (
                     <div key={idx} className="rounded-lg bg-paper/50 p-3">
-                      <p className="mb-2 font-mono text-[0.6rem] uppercase tracking-wider text-brass">Cestujúci {idx + 1} · {trav.slug}</p>
+                      <p className="mb-2 text-[0.6rem] uppercase tracking-wider text-brass">Cestujúci {idx + 1} · {trav.slug}</p>
                       <div className="grid gap-x-4 gap-y-1 sm:grid-cols-2">
                         {Object.entries(trav.data || {}).map(([k, v]) => (
                           <p key={k} className="text-xs"><span className="text-ink-soft">{k}:</span> <span className="text-ink">{String(v)}</span></p>
@@ -348,7 +360,7 @@ export default function AdminPage() {
                   </div>
                   {(a.files || []).length > 0 && (
                     <div>
-                      <p className="mb-2 font-mono text-[0.6rem] uppercase tracking-wider text-brass">Súbory</p>
+                      <p className="mb-2 text-[0.6rem] uppercase tracking-wider text-brass">Súbory</p>
                       <div className="flex flex-wrap gap-2">
                         {(a.files || []).map((f: string) => (
                           <button key={f} onClick={() => openFile(f)} className="btn-ghost !px-3 !py-1.5 text-xs"><Download size={13} /> {f.split("/").pop()}</button>
@@ -504,7 +516,7 @@ export default function AdminPage() {
             {promoList.map((pc) => (
               <div key={pc.code} className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-surface p-3.5 shadow-card">
                 <span className="font-mono text-base font-bold text-ink">{pc.code}</span>
-                <span className="rounded-full bg-terra/12 px-2 py-0.5 font-mono text-[0.6rem] font-bold text-terra">−{pc.percent}%</span>
+                <span className="rounded-md bg-terra/12 px-2 py-0.5 font-mono text-[0.6rem] font-bold text-terra">−{pc.percent}%</span>
                 <span className="text-xs text-ink-soft">{pc.used || 0}{pc.max_uses ? ` / ${pc.max_uses}` : ""} použití{pc.expires_at ? ` · do ${new Date(pc.expires_at).toLocaleDateString("sk-SK")}` : ""}</span>
                 <div className="ml-auto flex items-center gap-2">
                   <label className="flex items-center gap-1.5 text-xs"><input type="checkbox" checked={pc.active} onChange={(e) => togglePromo(pc.code, e.target.checked)} /> {pc.active ? "Aktívny" : "Neaktívny"}</label>
@@ -548,7 +560,7 @@ export default function AdminPage() {
               {visits.slice(0, 60).map((v) => (
                 <div key={v.id} className="flex flex-wrap items-center gap-2 border-t border-line-soft py-1.5 text-xs">
                   <span className="font-mono text-ink-soft">{new Date(v.created_at).toLocaleTimeString("sk-SK")}</span>
-                  <span className={`rounded px-1.5 py-0.5 font-mono text-[0.55rem] font-bold uppercase ${v.is_bot ? "bg-terra/12 text-terra" : "bg-green/12 text-green"}`}>{v.is_bot ? "bot" : "človek"}</span>
+                  <span className={`rounded px-1.5 py-0.5 text-[0.55rem] font-bold uppercase ${v.is_bot ? "bg-terra/12 text-terra" : "bg-green/12 text-green"}`}>{v.is_bot ? "bot" : "človek"}</span>
                   {v.country && <span className="font-mono text-ink-soft">{v.country}</span>}
                   <span className="rounded bg-paper px-1.5 py-0.5 font-mono text-[0.55rem] text-ink-soft">{v.type}</span>
                   <span className="min-w-0 flex-1 truncate text-ink">{v.type === "click" ? `„${v.label}" → ${v.href || v.path}` : v.path}</span>
@@ -582,7 +594,7 @@ export default function AdminPage() {
               </label>
               <div>
                 <span className="label"><span>Prílohy (PDF, JPG…)</span></span>
-                <input type="file" multiple onChange={(e) => addFiles(e.target.files)} className="text-xs text-ink-soft file:mr-2 file:cursor-pointer file:rounded-full file:border-0 file:bg-ink file:px-3 file:py-1.5 file:text-paper" />
+                <input type="file" multiple onChange={(e) => addFiles(e.target.files)} className="text-xs text-ink-soft file:mr-2 file:cursor-pointer file:rounded-lg file:border-0 file:bg-ink file:px-3 file:py-1.5 file:text-paper" />
                 {emailFiles.length > 0 && (
                   <ul className="mt-2 space-y-1">
                     {emailFiles.map((f, idx) => (

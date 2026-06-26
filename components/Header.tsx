@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { ShoppingBag, ShieldCheck, ArrowRight, Phone } from "lucide-react";
+import { ShoppingBag, ShieldCheck, ArrowRight, Phone, Menu, X } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
 import { LanguageToggle } from "@/components/LanguageToggle";
@@ -12,11 +13,14 @@ import { site } from "@/config/site";
 export function Header() {
   const { t, tr } = useLang();
   const { count } = useCart();
+  const [open, setOpen] = useState(false);
 
   const nav = [
     { href: "/destinations", label: tr("nav.destinations") },
     { href: "/wizard", label: tr("nav.wizard") },
     { href: "/#how", label: tr("nav.how") },
+    { href: "/blog", label: "Blog" },
+    { href: "/foto-poziadavky", label: t({ sk: "Foto na vízum", en: "Visa photo" }) },
     { href: "/stav", label: t({ sk: "Sledovať stav", en: "Track status" }) },
   ];
 
@@ -44,7 +48,7 @@ export function Header() {
       {/* Main header */}
       <header className="border-b border-line bg-paper/90 backdrop-blur-md">
         <div className="container-page flex h-[4.5rem] items-center justify-between gap-4">
-          <Link href="/" aria-label={site.brand} className="text-ink">
+          <Link href="/" aria-label={site.brand} className="text-ink" onClick={() => setOpen(false)}>
             <Logo variant="full" />
           </Link>
 
@@ -60,8 +64,8 @@ export function Header() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-2.5">
-            <ThemeToggle />
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            <div className="hidden sm:block"><ThemeToggle /></div>
             <LanguageToggle />
             <Link
               href="/cart"
@@ -79,8 +83,50 @@ export function Header() {
               {tr("cta.start")}
               <ArrowRight size={15} />
             </Link>
+            {/* Hamburger – len mobil */}
+            <button
+              type="button"
+              aria-label={open ? "Zavrieť menu" : "Otvoriť menu"}
+              aria-expanded={open}
+              onClick={() => setOpen((v) => !v)}
+              className="grid h-10 w-10 place-items-center rounded-full border border-line bg-surface text-ink transition-colors hover:border-ink md:hidden"
+            >
+              {open ? <X size={18} /> : <Menu size={18} />}
+            </button>
           </div>
         </div>
+
+        {/* Mobilné menu */}
+        {open && (
+          <div className="border-t border-line bg-paper md:hidden">
+            <nav className="container-page flex flex-col py-2">
+              {nav.map((n) => (
+                <Link
+                  key={n.href}
+                  href={n.href}
+                  onClick={() => setOpen(false)}
+                  className="border-b border-line-soft py-3.5 text-[0.95rem] font-medium text-ink"
+                >
+                  {n.label}
+                </Link>
+              ))}
+              <Link
+                href="/wizard"
+                onClick={() => setOpen(false)}
+                className="btn-primary mt-3 h-11 w-full justify-center"
+              >
+                {tr("cta.start")}
+                <ArrowRight size={16} />
+              </Link>
+              <div className="mt-3 flex items-center justify-between pb-1 pt-1 text-xs text-ink-soft">
+                <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="inline-flex items-center gap-1.5">
+                  <Phone size={13} className="text-brass" /> {site.phone}
+                </a>
+                <ThemeToggle />
+              </div>
+            </nav>
+          </div>
+        )}
       </header>
     </div>
   );

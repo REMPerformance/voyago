@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Check, Plus, Clock, ShieldCheck, Plane, BadgeCheck, Layers, Users, MapPin } from "lucide-react";
 import { DynamicForm } from "@/components/DynamicForm";
+import { NotifySignup } from "@/components/NotifySignup";
 import { useLang } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
 import { money } from "@/lib/format";
@@ -36,6 +37,23 @@ export default function ApplyPage() {
         <Link href="/destinations" className="btn-primary mt-6">
           {tr("cta.browse")}
         </Link>
+      </section>
+    );
+  }
+
+  if (!product.available) {
+    return (
+      <section className="container-page py-24 text-center">
+        <p className="eyebrow">{t(product.destination)}</p>
+        <h1 className="mt-2 font-display text-3xl font-extrabold">{t(product.name)}</h1>
+        <p className="mx-auto mt-4 max-w-md text-ink-soft">{t({ sk: "Túto službu pripravujeme — čoskoro ju spustíme. Nechajte nám e-mail a ozveme sa vám hneď, ako bude dostupná.", en: "We're preparing this service — launching soon. Leave us your email and we'll notify you the moment it's available." })}</p>
+        <div className="mt-7 flex justify-center">
+          <NotifySignup topic={product.slug} />
+        </div>
+        <div className="mt-7 flex flex-wrap justify-center gap-3">
+          <Link href="/destinations" className="btn-primary">{tr("cta.browse")}</Link>
+          <Link href="/blog" className="btn-ghost">{t({ sk: "Čítať novinky", en: "Read updates" })}</Link>
+        </div>
       </section>
     );
   }
@@ -105,15 +123,15 @@ export default function ApplyPage() {
             <div className="absolute inset-y-0 left-0 w-2/3 bg-gradient-to-r from-ink via-ink/70 to-transparent" />
           </div>
           <div className="relative max-w-xl px-6 py-9 sm:px-10 sm:py-12">
-            <p className="font-mono text-[0.62rem] uppercase tracking-[0.24em] text-brass">{typeLabel} · {t(product.destination)}</p>
+            <p className="text-[0.62rem] uppercase tracking-[0.24em] text-brass">{typeLabel} · {t(product.destination)}</p>
             <h1 className="mt-1.5 font-display text-4xl font-extrabold leading-[1.05] sm:text-5xl">{t(product.name)}</h1>
             <p className="mt-4 max-w-xl text-sm leading-relaxed text-paper/80">{t(product.summary)}</p>
             {hero.cities.length > 0 && (
               <div className="mt-6">
-                <p className="font-mono text-[0.55rem] uppercase tracking-[0.2em] text-paper/45">{t({ sk: "Najväčšie mestá", en: "Major cities" })}</p>
+                <p className="text-[0.55rem] uppercase tracking-[0.2em] text-paper/45">{t({ sk: "Najväčšie mestá", en: "Major cities" })}</p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {hero.cities.map((c) => (
-                    <span key={c} className="inline-flex items-center gap-1.5 rounded-full bg-paper/[0.08] px-3 py-1 text-xs font-medium text-paper/90 ring-1 ring-paper/10">
+                    <span key={c} className="inline-flex items-center gap-1.5 rounded-lg bg-paper/[0.08] px-3 py-1 text-xs font-medium text-paper/90 ring-1 ring-paper/10">
                       <MapPin size={11} className="text-brass" /> {c}
                     </span>
                   ))}
@@ -148,14 +166,14 @@ export default function ApplyPage() {
               <div className="mb-4 flex items-center gap-2.5">
                 <span className="grid h-9 w-9 place-items-center rounded-xl bg-paper/10 text-2xl ring-1 ring-paper/15">{product.flag}</span>
                 <span className="font-display text-sm font-bold text-paper">{t(product.destination)}</span>
-                <span className="ml-auto rounded-full bg-paper/10 px-2 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-paper/70">{typeLabel}</span>
+                <span className="ml-auto text-[0.6rem] uppercase tracking-wider text-paper/70">{typeLabel}</span>
               </div>
               <div className="flex items-center justify-between">
-                <p className="font-mono text-[0.62rem] uppercase tracking-[0.18em] text-paper/55">
+                <p className="text-[0.62rem] uppercase tracking-[0.18em] text-paper/55">
                   {t({ sk: "Cena za 1 cestujúceho", en: "Price per traveler" })}
                 </p>
                 {pct > 0 && (
-                  <span className="rounded-full bg-brass px-2 py-0.5 text-[0.65rem] font-bold text-ink">−{pct}%</span>
+                  <span className="rounded-md bg-brass px-2 py-0.5 text-[0.65rem] font-bold text-ink">−{pct}%</span>
                 )}
               </div>
               <div className="mt-2 flex items-end gap-2.5">
@@ -206,7 +224,7 @@ export default function ApplyPage() {
 
             {/* Čo získate */}
             <div className="border-t border-line bg-paper/60 px-6 py-5">
-              <p className="font-mono text-[0.62rem] uppercase tracking-[0.18em] text-ink-soft/70">
+              <p className="text-[0.62rem] uppercase tracking-[0.18em] text-ink-soft/70">
                 {t({ sk: "Čo získate", en: "What you get" })}
               </p>
               <ul className="mt-3 space-y-2">
@@ -250,7 +268,7 @@ export default function ApplyPage() {
       >
         <div className="container-page flex items-center justify-between gap-3 py-2.5">
           <div>
-            <p className="font-mono text-[0.55rem] uppercase tracking-wider text-ink-soft/60">{tr("dest.from")} · {t(product.destination)}</p>
+            <p className="text-[0.55rem] uppercase tracking-wider text-ink-soft/60">{tr("dest.from")} · {t(product.destination)}</p>
             <p className="font-display text-xl font-extrabold leading-none text-ink">
               {money(total, lang)} <span className="text-[0.6rem] font-semibold text-ink-soft/55">{t({ sk: "s DPH", en: "VAT" })}</span>
             </p>

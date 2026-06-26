@@ -57,6 +57,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }),
           }}
         />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: site.brand,
+              url: site.url,
+              inLanguage: ["sk", "en"],
+            }),
+          }}
+        />
         <Providers>{children}</Providers>
         <Analytics />
       </body>

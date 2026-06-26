@@ -10,6 +10,7 @@ import { Announcements } from "@/components/Announcements";
 import { DiscountsProvider } from "@/lib/discounts";
 import { StatsProvider } from "@/lib/stats";
 import { Tracker } from "@/components/Tracker";
+import { ChatWidget } from "@/components/ChatWidget";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
@@ -25,6 +26,7 @@ export function Providers({ children }: { children: ReactNode }) {
           <Footer />
         </div>
         <CookieBar />
+        <ChatWidget />
           </StatsProvider>
               </DiscountsProvider>
       </CartProvider>

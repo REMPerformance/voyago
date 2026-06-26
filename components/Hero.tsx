@@ -41,7 +41,7 @@ export function Hero() {
           <div className="mt-9 flex flex-wrap items-center gap-4" style={reveal(0.24)}>
             <Link
               href="/wizard"
-              className="inline-flex items-center gap-2 rounded-xl bg-brass px-7 py-4 text-base font-bold text-navy shadow-[0_14px_30px_-12px_rgba(201,154,78,0.7)] transition-all hover:-translate-y-0.5 hover:bg-brass-light"
+              className="inline-flex items-center gap-2 rounded-lg bg-brass px-7 py-4 text-base font-bold text-navy shadow-[0_14px_30px_-12px_rgba(201,154,78,0.7)] transition-all hover:-translate-y-0.5 hover:bg-brass-light"
             >
               {tr("hero.cta")} <ArrowRight size={18} />
             </Link>

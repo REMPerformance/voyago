@@ -38,7 +38,7 @@ export default function CartPage() {
                 <span className="text-3xl">{product.flag}</span>
                 <div className="min-w-0 flex-1">
                   <p className="font-bold">{t(product.destination)}</p>
-                  <p className="font-mono text-xs uppercase tracking-wider text-teal">{t(product.name)}</p>
+                  <p className="text-xs uppercase tracking-wider text-teal">{t(product.name)}</p>
                   {name && <p className="mt-1 truncate text-sm text-ink-soft">{name}</p>}
                 </div>
                 <span className="font-display text-lg font-extrabold">{money(item.price, lang)}</span>
@@ -63,6 +63,9 @@ export default function CartPage() {
             <p className="mt-1 text-xs text-ink-soft/75">{tr("cart.govIncluded")}</p>
             <Link href="/checkout" className="btn-accent mt-6 w-full">
               {tr("cart.checkout")} <ArrowRight size={16} />
+            </Link>
+            <Link href="/zhrnutie" className="btn-ghost mt-2 w-full justify-center !py-2.5 text-sm">
+              {lang === "sk" ? "Stiahnuť zhrnutie (PDF)" : "Download summary (PDF)"}
             </Link>
           </div>
         </aside>

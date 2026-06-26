@@ -116,14 +116,14 @@ export function GreenCardContent() {
           <div className="inline-flex items-center gap-3">
             <span className="grid h-11 w-11 place-items-center rounded-xl bg-brass/12 text-brass"><CalendarDays size={20} /></span>
             <div>
-              <p className="font-mono text-[0.56rem] font-bold uppercase tracking-[0.18em] text-ink-soft/70">{t({ sk: "Oficiálne otvorenie", en: "Official opening" })}</p>
+              <p className="text-[0.56rem] font-bold uppercase tracking-[0.18em] text-ink-soft/70">{t({ sk: "Oficiálne otvorenie", en: "Official opening" })}</p>
               <p className="font-display text-base font-extrabold text-ink">{t({ sk: "Október 2026", en: "October 2026" })}</p>
             </div>
           </div>
           <h1 className="mt-4 font-display text-5xl font-extrabold leading-[1.02]">{t({ sk: "Americká zelená karta", en: "U.S. Green Card" })}</h1>
           <p className="mt-5 text-lg leading-relaxed text-ink-soft">{t({ sk: "Šanca na trvalý pobyt v USA cez oficiálnu lotériu Diversity Visa. Prihlášku od vás prijmeme kedykoľvek — skontrolujeme fotografiu, vyplníme údaje a podáme ju za vás v októbrovom okne.", en: "A shot at U.S. permanent residency via the official Diversity Visa lottery. We accept your entry anytime — we check your photo, complete the data and file it for you in the October window." })}</p>
           <div className="mt-6 flex flex-wrap items-end gap-2">
-            <span className="font-mono text-[0.62rem] uppercase tracking-wider text-ink-soft/70">{t({ sk: "od", en: "from" })}</span>
+            <span className="text-[0.62rem] uppercase tracking-wider text-ink-soft/70">{t({ sk: "od", en: "from" })}</span>
             <span className="font-display text-4xl font-extrabold leading-none text-ink">49 €</span>
             <span className="pb-0.5 text-sm font-semibold text-ink-soft">{t({ sk: "s DPH", en: "incl. VAT" })}</span>
           </div>
@@ -166,7 +166,7 @@ export function GreenCardContent() {
                     [t({ sk: "Dostupných víz (DV-2026)", en: "Visas available (DV-2026)" }), "≈ 51 850"],
                   ].map(([l, val]) => (
                     <div key={l} className="rounded-xl border border-line bg-paper/40 p-4">
-                      <p className="font-mono text-[0.56rem] uppercase tracking-wider text-ink-soft/70">{l}</p>
+                      <p className="text-[0.56rem] uppercase tracking-wider text-ink-soft/70">{l}</p>
                       <p className="mt-1 font-display text-xl font-extrabold text-ink">{val}</p>
                     </div>
                   ))}
@@ -174,13 +174,13 @@ export function GreenCardContent() {
                 <p className="mt-6 mb-2 text-sm font-semibold text-ink">{t({ sk: "Koľko vybrali vlani (vybraní + rodina), Európa:", en: "Selected last year (selectees + family), Europe:" })}</p>
                 <div className="overflow-hidden rounded-xl border border-line">
                   <table className="w-full text-sm">
-                    <thead><tr className="bg-paper text-left"><th className="px-4 py-2 font-mono text-[0.6rem] uppercase tracking-wider text-ink-soft">{t({ sk: "Krajina", en: "Country" })}</th><th className="px-4 py-2 text-right font-mono text-[0.6rem] uppercase tracking-wider text-ink-soft">{t({ sk: "Vybraní", en: "Selected" })}</th></tr></thead>
+                    <thead><tr className="bg-paper text-left"><th className="px-4 py-2 text-[0.6rem] uppercase tracking-wider text-ink-soft">{t({ sk: "Krajina", en: "Country" })}</th><th className="px-4 py-2 text-right text-[0.6rem] uppercase tracking-wider text-ink-soft">{t({ sk: "Vybraní", en: "Selected" })}</th></tr></thead>
                     <tbody>
                       {EU_STATS.map(([sk, en, n]) => {
                         const me = sk === "Slovensko";
                         return (
                           <tr key={en} className={`border-t border-line-soft ${me ? "bg-brass/[0.07]" : ""}`}>
-                            <td className={`px-4 py-2 ${me ? "font-bold text-ink" : "text-ink-soft"}`}>{t({ sk, en })}{me && <span className="ml-2 rounded-full bg-brass/20 px-2 py-0.5 font-mono text-[0.5rem] uppercase text-brass">{t({ sk: "vy", en: "you" })}</span>}</td>
+                            <td className={`px-4 py-2 ${me ? "font-bold text-ink" : "text-ink-soft"}`}>{t({ sk, en })}{me && <span className="ml-2 rounded-md bg-brass/20 px-2 py-0.5 text-[0.5rem] uppercase text-brass">{t({ sk: "vy", en: "you" })}</span>}</td>
                             <td className={`px-4 py-2 text-right font-mono ${me ? "font-bold text-brass" : "text-ink"}`}>{n.toLocaleString("sk-SK")}</td>
                           </tr>
                         );

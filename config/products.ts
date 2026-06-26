@@ -6,8 +6,8 @@
 // PRIDAŤ NOVÚ KRAJINU = pridať jeden objekt do poľa PRODUCTS nižšie.
 // ─────────────────────────────────────────────────────────────────────────────
 
-export type Lang = "sk" | "en";
-export type Localized = { sk: string; en: string };
+export type Lang = "sk" | "en" | "cs" | "hu" | "uk";
+export type Localized = { sk: string; en: string; cs?: string; hu?: string; uk?: string };
 
 export type FieldType =
   | "text"

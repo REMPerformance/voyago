@@ -10,6 +10,7 @@ import { WhyUs } from "@/components/WhyUs";
 import { About } from "@/components/About";
 import { WorldReach } from "@/components/WorldReach";
 import { Testimonials } from "@/components/Testimonials";
+import { Guarantee } from "@/components/Guarantee";
 import { Payments } from "@/components/Payments";
 import { Faq } from "@/components/Faq";
 import { ProductCard } from "@/components/ProductCard";
@@ -59,6 +60,7 @@ export default function HomePage() {
       <WhyUs />
       <About />
       <Testimonials />
+      <Guarantee />
 
       <section className="container-page py-12">
         <Payments />

@@ -32,7 +32,7 @@ export default function ContactPage() {
         {items.map((it) => (
           <div key={it.label} className="card p-5">
             <span className="grid h-10 w-10 place-items-center rounded-xl bg-paper text-brass">{it.icon}</span>
-            <p className="mt-3 font-mono text-[0.6rem] uppercase tracking-wider text-ink-soft/60">{it.label}</p>
+            <p className="mt-3 text-[0.6rem] uppercase tracking-wider text-ink-soft/60">{it.label}</p>
             {it.href ? (
               <a href={it.href} className="mt-0.5 block font-semibold text-ink hover:text-brass">{it.value}</a>
             ) : (
