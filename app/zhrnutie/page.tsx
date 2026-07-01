@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { Printer, ArrowLeft, ShieldCheck, Globe, Zap, Phone, BadgeCheck, Check } from "lucide-react";
 import { useLang } from "@/lib/i18n";
@@ -27,7 +27,7 @@ function valueOf(field: Field, raw: string, t: (l: any) => string): string {
   return raw;
 }
 
-export default function SummaryPage() {
+function SummaryContent() {
   const { t, lang } = useLang();
   const cart = useCart();
   const params = useSearchParams();
@@ -181,5 +181,13 @@ function Info({ icon, label, value }: { icon: React.ReactNode; label: string; va
         <p className="break-all text-sm font-medium text-ink">{value}</p>
       </div>
     </div>
+  );
+}
+
+export default function SummaryPage() {
+  return (
+    <Suspense fallback={<section className="container-page py-16" />}>
+      <SummaryContent />
+    </Suspense>
   );
 }
