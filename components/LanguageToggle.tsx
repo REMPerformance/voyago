@@ -24,7 +24,7 @@ export function LanguageToggle() {
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex items-center gap-1.5 rounded-lg border border-line bg-surface px-2.5 py-2 text-xs font-semibold uppercase tracking-wider text-ink-soft transition-colors hover:border-ink/30 hover:text-ink"
+        className="flex h-10 items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-xs font-semibold uppercase tracking-wider text-ink-soft transition-colors hover:border-ink hover:text-ink"
       >
         <span className="text-sm leading-none">{current.flag}</span>
         <span>{lang}</span>

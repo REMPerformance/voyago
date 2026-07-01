@@ -51,21 +51,10 @@ export function GlobalSearch() {
 
   return (
     <>
-      {/* Desktop: vyhľadávacie pole */}
       <button
         onClick={() => setOpen(true)}
         aria-label={t({ sk: "Hľadať", en: "Search" })}
-        className="hidden w-56 items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink-soft transition-colors hover:border-ink/30 hover:text-ink lg:flex"
-      >
-        <Search size={16} className="shrink-0" />
-        <span className="flex-1 text-left">{t({ sk: "Hľadať krajinu…", en: "Search a country…" })}</span>
-        <kbd className="rounded border border-line px-1.5 py-0.5 text-[0.6rem] font-semibold text-ink-soft/55">⌘K</kbd>
-      </button>
-      {/* Mobil / tablet: ikona */}
-      <button
-        onClick={() => setOpen(true)}
-        aria-label={t({ sk: "Hľadať", en: "Search" })}
-        className="grid h-10 w-10 place-items-center rounded-full border border-line bg-surface text-ink transition-colors hover:border-ink lg:hidden"
+        className="grid h-10 w-10 place-items-center rounded-full border border-line bg-surface text-ink transition-colors hover:border-ink"
       >
         <Search size={18} />
       </button>
