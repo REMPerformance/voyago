@@ -1201,7 +1201,7 @@ export const PRODUCTS: Product[] = [
       en: "Upcoming authorization for non-EU travellers (launch Q4 2026).",
     },
     govFee: 20,
-    serviceFee: 59,
+    serviceFee: 55,
     processingDays: { sk: "väčšinou do 30 minút · garancia do 72 h", en: "usually within 30 min · guaranteed within 72 h" },
     validity: { sk: "3 roky", en: "3 years" },
     stay: { sk: "max 90 dní", en: "up to 90 days" },
@@ -1235,3 +1235,21 @@ export const getProduct = (slug: string): Product | undefined =>
   PRODUCTS.find((p) => p.slug === slug);
 
 export const productPrice = (p: Product): number => p.govFee + p.serviceFee;
+
+// Expresné spracovanie — platený upsell (prednostné vybavenie z našej strany).
+// Doplnkové služby (platené upselly). Účtujú sa za každú žiadosť (jedného cestujúceho).
+export const EXPRESS_PCT = 0.5; // expresné spracovanie = +50 % zo sumy
+export const PROTECTION_FEE = 10; // ochrana kupujúceho = 10 € s DPH, nevratné
+
+export const expressAmount = (price: number): number => Math.round(price * EXPRESS_PCT);
+
+export const EXPRESS: { pct: number; label: Localized; desc: Localized } = {
+  pct: EXPRESS_PCT,
+  label: { sk: "Expresné spracovanie", en: "Express processing" },
+  desc: { sk: "Prednostné vybavenie a podanie do 24 hodín. Príplatok je 50 % zo sumy a je nevratný.", en: "Priority handling and submission within 24 hours. A 50% surcharge applies and is non-refundable." },
+};
+export const PROTECTION: { fee: number; label: Localized; desc: Localized } = {
+  fee: PROTECTION_FEE,
+  label: { sk: "Ochrana kupujúceho", en: "Buyer protection" },
+  desc: { sk: "Ak žiadosť zamietnu, vrátime vám plnú pôvodnú sumu za vízum. Poplatok 10 € je nevratný.", en: "If your application is refused, we refund the full original visa fee. The €10 fee is non-refundable." },
+};

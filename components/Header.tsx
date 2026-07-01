@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ShoppingBag, ShieldCheck, ArrowRight, Phone, Menu, X } from "lucide-react";
+import { ShoppingBag, ShieldCheck, Timer, Phone, Menu, X } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import { GlobalSearch } from "@/components/GlobalSearch";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { site } from "@/config/site";
@@ -34,7 +35,7 @@ export function Header() {
             {tr("trust.handling")}
           </span>
           <div className="hidden items-center gap-4 text-cream/65 sm:flex">
-            <a href="#" className="hover:text-cream">
+            <a href="/obchodne-podmienky" className="hover:text-cream">
               {t({ sk: "Obchodné podmienky", en: "Terms & conditions" })}
             </a>
             <span className="text-cream/25">·</span>
@@ -52,7 +53,7 @@ export function Header() {
             <Logo variant="full" />
           </Link>
 
-          <nav className="hidden items-center gap-8 md:flex">
+          <nav className="hidden items-center gap-6 md:flex">
             {nav.map((n) => (
               <Link
                 key={n.href}
@@ -65,6 +66,7 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-2 sm:gap-2.5">
+            <GlobalSearch />
             <div className="hidden sm:block"><ThemeToggle /></div>
             <LanguageToggle />
             <Link
@@ -79,9 +81,12 @@ export function Header() {
                 </span>
               )}
             </Link>
-            <Link href="/wizard" className="btn-primary hidden h-10 !px-5 !py-0 sm:inline-flex">
+            <Link
+              href="/wizard"
+              className="btn-accent hidden h-10 items-center gap-2 !px-5 !py-0 shadow-[0_3px_14px_rgba(201,154,78,0.40)] transition-shadow hover:shadow-[0_4px_18px_rgba(201,154,78,0.55)] sm:inline-flex"
+            >
+              <Timer size={15} />
               {tr("cta.start")}
-              <ArrowRight size={15} />
             </Link>
             {/* Hamburger – len mobil */}
             <button
@@ -113,10 +118,10 @@ export function Header() {
               <Link
                 href="/wizard"
                 onClick={() => setOpen(false)}
-                className="btn-primary mt-3 h-11 w-full justify-center"
+                className="btn-accent mt-3 h-11 w-full justify-center gap-2"
               >
+                <Timer size={16} />
                 {tr("cta.start")}
-                <ArrowRight size={16} />
               </Link>
               <div className="mt-3 flex items-center justify-between pb-1 pt-1 text-xs text-ink-soft">
                 <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="inline-flex items-center gap-1.5">

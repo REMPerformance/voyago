@@ -6,10 +6,11 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, Check, Plus, Clock, ShieldCheck, Plane, BadgeCheck, Layers, Users, MapPin } from "lucide-react";
 import { DynamicForm } from "@/components/DynamicForm";
 import { NotifySignup } from "@/components/NotifySignup";
+import { EtiasDetail } from "@/components/EtiasDetail";
 import { useLang } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
 import { money } from "@/lib/format";
-import { getProduct, productPrice } from "@/config/products";
+import { getProduct, productPrice, EXPRESS, PROTECTION, expressAmount } from "@/config/products";
 import { useFinalPrice, useDiscountPercent } from "@/lib/discounts";
 import { useProcessed } from "@/lib/stats";
 import { CountryHero } from "@/components/CountryHero";
@@ -29,6 +30,8 @@ export default function ApplyPage() {
   const product = getProduct(params.productId);
   const processed = useProcessed(product?.slug ?? "");
   const [added, setAdded] = useState<string[]>([]); // mená pridaných cestujúcich
+  const [express, setExpress] = useState(false);
+  const [protection, setProtection] = useState(false);
 
   if (!product) {
     return (
@@ -42,6 +45,7 @@ export default function ApplyPage() {
   }
 
   if (!product.available) {
+    if (product.slug === "eu-etias") return <EtiasDetail />;
     return (
       <section className="container-page py-24 text-center">
         <p className="eyebrow">{t(product.destination)}</p>
@@ -59,7 +63,7 @@ export default function ApplyPage() {
   }
 
   const handleAdd = (data: Record<string, string>, goToCart: boolean) => {
-    add(product.slug, data);
+    add(product.slug, data, express, protection);
     const name = [data.givenNames, data.surname].filter(Boolean).join(" ") || `#${added.length + 1}`;
     setAdded((a) => [...a, name]);
     if (goToCart) router.push("/cart");
@@ -68,6 +72,7 @@ export default function ApplyPage() {
   const pct = discountPercent(product.slug);
   const base = productPrice(product);
   const total = finalPrice(product);
+  const displayTotal = total + (express ? expressAmount(total) : 0) + (protection ? PROTECTION.fee : 0);
   const typeLabel = TYPE_LABEL[product.type] ?? product.type.toUpperCase();
   const hero = HERO[product.country] ?? { cities: [] as string[], motifs: ["🌍", "✈️", "🧳"] };
   const nameParts = t(product.name).split("–").map((s) => s.trim());
@@ -153,6 +158,42 @@ export default function ApplyPage() {
         {/* Formulár */}
         <div className="card order-2 p-6 sm:p-8 lg:order-1">
           <ServiceNotice className="mb-6" />
+          <div className="mb-6 space-y-3">
+            <button
+              type="button"
+              onClick={() => setExpress((v) => !v)}
+              aria-pressed={express}
+              className={`flex w-full items-start gap-3 rounded-xl border p-4 text-left transition-colors ${express ? "border-brass bg-brass/[0.06]" : "border-line bg-paper/40 hover:border-brass/40"}`}
+            >
+              <span className={`mt-0.5 flex h-5 w-9 shrink-0 items-center rounded-full p-0.5 transition-colors ${express ? "bg-brass" : "bg-line"}`}>
+                <span className={`block h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${express ? "translate-x-4" : ""}`} />
+              </span>
+              <span className="flex-1">
+                <span className="flex items-center justify-between gap-2">
+                  <span className="font-semibold text-ink">{t(EXPRESS.label)} <span className="text-[0.7rem] font-semibold text-brass/70">(+50 %)</span></span>
+                  <span className="font-display text-sm font-bold text-brass">+{money(expressAmount(total), lang)}</span>
+                </span>
+                <span className="mt-0.5 block text-sm text-ink-soft">{t(EXPRESS.desc)}</span>
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setProtection((v) => !v)}
+              aria-pressed={protection}
+              className={`flex w-full items-start gap-3 rounded-xl border p-4 text-left transition-colors ${protection ? "border-brass bg-brass/[0.06]" : "border-line bg-paper/40 hover:border-brass/40"}`}
+            >
+              <span className={`mt-0.5 flex h-5 w-9 shrink-0 items-center rounded-full p-0.5 transition-colors ${protection ? "bg-brass" : "bg-line"}`}>
+                <span className={`block h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${protection ? "translate-x-4" : ""}`} />
+              </span>
+              <span className="flex-1">
+                <span className="flex items-center justify-between gap-2">
+                  <span className="font-semibold text-ink">{t(PROTECTION.label)}</span>
+                  <span className="font-display text-sm font-bold text-brass">+{money(PROTECTION.fee, lang)}</span>
+                </span>
+                <span className="mt-0.5 block text-sm text-ink-soft">{t(PROTECTION.desc)}</span>
+              </span>
+            </button>
+          </div>
           <div className="mt-1">
             <DynamicForm product={product} travelerIndex={added.length + 1} onAdd={handleAdd} />
           </div>
@@ -193,6 +234,18 @@ export default function ApplyPage() {
                 <span className="text-ink-soft">{t({ sk: "Naša asistencia", en: "Our assistance" })}</span>
                 <span className="font-semibold text-ink">{money(product.serviceFee, lang)}</span>
               </div>
+              {express && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-brass">{t(EXPRESS.label)} (+50 %)</span>
+                  <span className="font-semibold text-brass">+{money(expressAmount(total), lang)}</span>
+                </div>
+              )}
+              {protection && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-brass">{t(PROTECTION.label)}</span>
+                  <span className="font-semibold text-brass">+{money(PROTECTION.fee, lang)}</span>
+                </div>
+              )}
               {pct > 0 && (
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-green">{t({ sk: "Zľava", en: "Discount" })}</span>
@@ -201,7 +254,7 @@ export default function ApplyPage() {
               )}
               <div className="mt-1 flex items-center justify-between border-t border-line pt-2.5">
                 <span className="text-sm font-bold text-ink">{t({ sk: "Spolu", en: "Total" })}</span>
-                <span className="font-display text-lg font-extrabold text-ink">{money(total, lang)}</span>
+                <span className="font-display text-lg font-extrabold text-ink">{money(displayTotal, lang)}</span>
               </div>
             </div>
 
@@ -270,7 +323,7 @@ export default function ApplyPage() {
           <div>
             <p className="text-[0.55rem] uppercase tracking-wider text-ink-soft/60">{tr("dest.from")} · {t(product.destination)}</p>
             <p className="font-display text-xl font-extrabold leading-none text-ink">
-              {money(total, lang)} <span className="text-[0.6rem] font-semibold text-ink-soft/55">{t({ sk: "s DPH", en: "VAT" })}</span>
+              {money(displayTotal, lang)} <span className="text-[0.6rem] font-semibold text-ink-soft/55">{t({ sk: "s DPH", en: "VAT" })}</span>
             </p>
           </div>
           <a href="#objednavka" className="btn-primary h-11 !px-6">

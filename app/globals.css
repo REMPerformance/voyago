@@ -176,3 +176,9 @@
   outline-offset: 2px;
   border-radius: 3px;
 }
+
+/* Právne stránky: zoznamy, odkazy, zvýraznenie */
+.legal ul { list-style: disc; padding-left: 1.25rem; }
+.legal li { margin-top: 0.35rem; }
+.legal a { color: #C99A4E; text-decoration: underline; text-underline-offset: 2px; }
+.legal strong { color: #0A1622; }

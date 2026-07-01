@@ -6,7 +6,6 @@ import { Hero } from "@/components/Hero";
 import { Specializations } from "@/components/Specializations";
 import { HowItWorks } from "@/components/HowItWorks";
 import { GreenCardBand } from "@/components/GreenCardBand";
-import { WhyUs } from "@/components/WhyUs";
 import { About } from "@/components/About";
 import { WorldReach } from "@/components/WorldReach";
 import { Testimonials } from "@/components/Testimonials";
@@ -57,7 +56,6 @@ export default function HomePage() {
       <WorldReach />
       <Specializations />
       <HowItWorks />
-      <WhyUs />
       <About />
       <Testimonials />
       <Guarantee />

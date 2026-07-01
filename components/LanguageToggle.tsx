@@ -1,21 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Globe, Check } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import type { Lang } from "@/config/products";
 
-const LANGS: { code: Lang; label: string }[] = [
-  { code: "sk", label: "Slovenčina" },
-  { code: "cs", label: "Čeština" },
-  { code: "en", label: "English" },
-  { code: "hu", label: "Magyar" },
-  { code: "uk", label: "Українська" },
+const LANGS: { code: Lang; label: string; flag: string }[] = [
+  { code: "sk", label: "Slovenčina", flag: "🇸🇰" },
+  { code: "cs", label: "Čeština", flag: "🇨🇿" },
+  { code: "en", label: "English", flag: "🇬🇧" },
+  { code: "hu", label: "Magyar", flag: "🇭🇺" },
+  { code: "uk", label: "Українська", flag: "🇺🇦" },
 ];
 
 export function LanguageToggle() {
   const { lang, setLang } = useLang();
   const [open, setOpen] = useState(false);
+  const current = LANGS.find((l) => l.code === lang) ?? LANGS[0];
 
   return (
     <div className="relative">
@@ -23,31 +24,38 @@ export function LanguageToggle() {
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs uppercase tracking-wider text-ink-soft transition-colors hover:bg-paper hover:text-ink"
+        className="flex items-center gap-1.5 rounded-lg border border-line bg-surface px-2.5 py-2 text-xs font-semibold uppercase tracking-wider text-ink-soft transition-colors hover:border-ink/30 hover:text-ink"
       >
-        <Globe size={14} /> {lang}
+        <span className="text-sm leading-none">{current.flag}</span>
+        <span>{lang}</span>
+        <ChevronDown size={13} className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
 
-      {open && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <ul role="listbox" className="absolute right-0 z-50 mt-2 w-44 overflow-hidden rounded-xl border border-line bg-surface py-1 shadow-lift">
-            {LANGS.map((l) => (
-              <li key={l.code}>
-                <button
-                  onClick={() => { setLang(l.code); setOpen(false); }}
-                  role="option"
-                  aria-selected={lang === l.code}
-                  className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors hover:bg-paper/70 ${lang === l.code ? "text-ink" : "text-ink-soft"}`}
-                >
-                  <span><span className="text-[0.65rem] uppercase tracking-wider text-brass">{l.code}</span> · {l.label}</span>
-                  {lang === l.code && <Check size={14} className="text-brass" />}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
+      {/* neviditeľný overlay na zatvorenie */}
+      <div className={`fixed inset-0 z-40 ${open ? "" : "pointer-events-none"}`} onClick={() => setOpen(false)} />
+
+      {/* dropdown — vždy v DOM kvôli plynulému prechodu */}
+      <ul
+        role="listbox"
+        className={`absolute right-0 z-50 mt-2 w-48 origin-top-right overflow-hidden rounded-xl border border-line bg-surface py-1 shadow-lift transition-all duration-200 ${
+          open ? "translate-y-0 scale-100 opacity-100" : "pointer-events-none -translate-y-1 scale-95 opacity-0"
+        }`}
+      >
+        {LANGS.map((l) => (
+          <li key={l.code}>
+            <button
+              onClick={() => { setLang(l.code); setOpen(false); }}
+              role="option"
+              aria-selected={lang === l.code}
+              className={`flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm transition-colors hover:bg-paper/70 ${lang === l.code ? "text-ink" : "text-ink-soft"}`}
+            >
+              <span className="text-base leading-none">{l.flag}</span>
+              <span className="flex-1">{l.label}</span>
+              {lang === l.code && <Check size={14} className="text-brass" />}
+            </button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

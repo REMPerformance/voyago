@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { Trash2, ArrowRight } from "lucide-react";
 import { useLang } from "@/lib/i18n";
-import { useCart } from "@/lib/cart";
+import { useCart, itemTotal } from "@/lib/cart";
 import { money } from "@/lib/format";
-import { getProduct } from "@/config/products";
+import { getProduct, EXPRESS, PROTECTION, expressAmount } from "@/config/products";
 
 export default function CartPage() {
   const { t, tr, lang } = useLang();
-  const { items, remove, total } = useCart();
+  const { items, remove, setExpress, setProtection, total } = useCart();
 
   if (items.length === 0) {
     return (
@@ -34,21 +34,49 @@ export default function CartPage() {
             if (!product) return null;
             const name = [item.data.givenNames, item.data.surname].filter(Boolean).join(" ");
             return (
-              <li key={item.id} className="card flex items-center gap-4 p-5">
-                <span className="text-3xl">{product.flag}</span>
-                <div className="min-w-0 flex-1">
-                  <p className="font-bold">{t(product.destination)}</p>
-                  <p className="text-xs uppercase tracking-wider text-teal">{t(product.name)}</p>
-                  {name && <p className="mt-1 truncate text-sm text-ink-soft">{name}</p>}
+              <li key={item.id} className="card p-5">
+                <div className="flex items-center gap-4">
+                  <span className="text-3xl">{product.flag}</span>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-bold">{t(product.destination)}</p>
+                    <p className="text-xs uppercase tracking-wider text-teal">{t(product.name)}</p>
+                    {name && <p className="mt-1 truncate text-sm text-ink-soft">{name}</p>}
+                  </div>
+                  <span className="font-display text-lg font-extrabold">{money(itemTotal(item), lang)}</span>
+                  <button
+                    onClick={() => remove(item.id)}
+                    aria-label={tr("cart.remove")}
+                    className="grid h-9 w-9 place-items-center rounded-full text-ink-soft transition-colors hover:bg-terra/10 hover:text-terra"
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
-                <span className="font-display text-lg font-extrabold">{money(item.price, lang)}</span>
-                <button
-                  onClick={() => remove(item.id)}
-                  aria-label={tr("cart.remove")}
-                  className="grid h-9 w-9 place-items-center rounded-full text-ink-soft transition-colors hover:bg-terra/10 hover:text-terra"
-                >
-                  <Trash2 size={16} />
-                </button>
+                <div className="mt-3 space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => setExpress(item.id, !item.express)}
+                    aria-pressed={!!item.express}
+                    className={`flex w-full items-center gap-2.5 rounded-lg border p-2.5 text-left text-sm transition-colors ${item.express ? "border-brass bg-brass/[0.06]" : "border-line bg-paper/40 hover:border-brass/40"}`}
+                  >
+                    <span className={`flex h-4 w-7 shrink-0 items-center rounded-full p-0.5 transition-colors ${item.express ? "bg-brass" : "bg-line"}`}>
+                      <span className={`block h-3 w-3 rounded-full bg-white shadow-sm transition-transform ${item.express ? "translate-x-3" : ""}`} />
+                    </span>
+                    <span className="flex-1 font-medium text-ink">{t(EXPRESS.label)} <span className="text-[0.68rem] text-brass/70">(+50 %)</span></span>
+                    <span className="font-semibold text-brass">+{money(expressAmount(item.price), lang)}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setProtection(item.id, !item.protection)}
+                    aria-pressed={!!item.protection}
+                    className={`flex w-full items-center gap-2.5 rounded-lg border p-2.5 text-left text-sm transition-colors ${item.protection ? "border-brass bg-brass/[0.06]" : "border-line bg-paper/40 hover:border-brass/40"}`}
+                  >
+                    <span className={`flex h-4 w-7 shrink-0 items-center rounded-full p-0.5 transition-colors ${item.protection ? "bg-brass" : "bg-line"}`}>
+                      <span className={`block h-3 w-3 rounded-full bg-white shadow-sm transition-transform ${item.protection ? "translate-x-3" : ""}`} />
+                    </span>
+                    <span className="flex-1 font-medium text-ink">{t(PROTECTION.label)}</span>
+                    <span className="font-semibold text-brass">+{money(PROTECTION.fee, lang)}</span>
+                  </button>
+                </div>
               </li>
             );
           })}

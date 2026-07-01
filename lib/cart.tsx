@@ -2,7 +2,7 @@
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Košík. Každá položka = jedna žiadosť pre jedného cestujúceho.
-// "Pridať ďalšieho cestujúceho" = ďalšia položka pre ten istý produkt.
+// Doplnky (expresné spracovanie +50 %, ochrana kupujúceho €10) sa účtujú per položka.
 // Stav sa drží v localStorage, takže prežije obnovenie stránky.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -14,19 +14,32 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { getProduct } from "@/config/products";
+import { getProduct, EXPRESS_PCT, PROTECTION_FEE } from "@/config/products";
 import { finalPriceCached } from "@/lib/discounts";
 
 export interface CartItem {
   id: string; // unikátne id položky
   slug: string; // produkt
-  price: number; // cena v čase pridania
-  data: Record<string, string>; // vyplnené údaje cestujúceho (mená, e-mail, súbory ako názvy)
+  price: number; // základná cena v čase pridania
+  data: Record<string, string>; // vyplnené údaje cestujúceho
+  express?: boolean; // expresné spracovanie (+50 %)
+  protection?: boolean; // ochrana kupujúceho (€10, nevratné)
+}
+
+/** Cena doplnkov pre položku (expres + ochrana). */
+export function addonsTotal(i: CartItem): number {
+  return (i.express ? Math.round(i.price * EXPRESS_PCT) : 0) + (i.protection ? PROTECTION_FEE : 0);
+}
+/** Celková cena položky vrátane doplnkov. */
+export function itemTotal(i: CartItem): number {
+  return i.price + addonsTotal(i);
 }
 
 interface Ctx {
   items: CartItem[];
-  add: (slug: string, data: Record<string, string>) => void;
+  add: (slug: string, data: Record<string, string>, express?: boolean, protection?: boolean) => void;
+  setExpress: (id: string, express: boolean) => void;
+  setProtection: (id: string, protection: boolean) => void;
   remove: (id: string) => void;
   clear: () => void;
   count: number;
@@ -54,7 +67,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (ready) window.localStorage.setItem(KEY, JSON.stringify(items));
   }, [items, ready]);
 
-  const add = (slug: string, data: Record<string, string>) => {
+  const add = (slug: string, data: Record<string, string>, express = false, protection = false) => {
     const product = getProduct(slug);
     if (!product) return;
     setItems((prev) => [
@@ -64,9 +77,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
         slug,
         price: finalPriceCached(product),
         data,
+        express,
+        protection,
       },
     ]);
   };
+
+  const setExpress = (id: string, express: boolean) =>
+    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, express } : i)));
+  const setProtection = (id: string, protection: boolean) =>
+    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, protection } : i)));
 
   const remove = (id: string) => setItems((prev) => prev.filter((i) => i.id !== id));
   const clear = () => setItems([]);
@@ -75,10 +95,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     () => ({
       items,
       add,
+      setExpress,
+      setProtection,
       remove,
       clear,
       count: items.length,
-      total: items.reduce((sum, i) => sum + i.price, 0),
+      total: items.reduce((sum, i) => sum + itemTotal(i), 0),
     }),
     [items],
   );

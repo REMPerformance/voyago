@@ -20,16 +20,19 @@ export function Faq() {
   ];
 
   return (
-    <section className="container-page py-12">
-      <Reveal className="mx-auto max-w-xl text-center">
-        <p className="eyebrow">FAQ</p>
-        <h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">{t({ sk: "Časté otázky", en: "Frequently asked" })}</h2>
+    <section className="container-page py-16">
+      <Reveal className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="eyebrow">FAQ</p>
+          <h2 className="mt-2 font-display text-3xl font-bold sm:text-4xl">{t({ sk: "Časté otázky", en: "Frequently asked" })}</h2>
+        </div>
+        <p className="max-w-sm text-sm text-ink-soft">{t({ sk: "Všetko podstatné na jednom mieste. Nenašli ste odpoveď? Napíšte nám v chate.", en: "Everything essential in one place. Didn't find your answer? Message us in the chat." })}</p>
       </Reveal>
 
-      <div className="mx-auto mt-8 grid max-w-5xl gap-3 md:grid-cols-2">
+      <div className="mt-9 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
         {items.map((item, i) => (
           <details key={i} className="group rounded-xl border border-line bg-surface transition-colors hover:border-brass/40">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-3.5 text-sm font-semibold text-ink">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 text-sm font-semibold text-ink">
               {item.q}
               <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border border-line text-ink-soft transition-all group-open:rotate-45 group-open:border-brass group-open:text-brass">
                 <Plus size={13} />

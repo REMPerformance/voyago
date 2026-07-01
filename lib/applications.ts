@@ -22,7 +22,7 @@ export async function fileSignedUrl(path: string): Promise<string | null> {
   return data?.signedUrl ?? null;
 }
 
-export interface SubmitItem { slug: string; price: number; data: Record<string, string>; }
+export interface SubmitItem { slug: string; price: number; data: Record<string, string>; express?: boolean; protection?: boolean; }
 
 /** Odošle žiadosť cez server (IP + súhlas + referencia + anti-spam). Vráti {id, ref} alebo null. */
 export interface SubmitOptions { consent?: boolean; honeypot?: string; turnstileToken?: string; promoCode?: string; }
@@ -43,7 +43,7 @@ export async function submitApplication(
       body: JSON.stringify({
         product_slug: items[0]?.slug ?? "",
         email,
-        travelers: items.map((i) => ({ slug: i.slug, price: i.price, data: i.data })),
+        travelers: items.map((i) => ({ slug: i.slug, price: i.price, data: i.data, express: !!i.express, protection: !!i.protection })),
         files,
         amount_cents: Math.round(totalEur * 100),
         consent_vop: !!opts.consent,

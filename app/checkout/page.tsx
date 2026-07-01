@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Lock, Check, Tag, X } from "lucide-react";
 import { useLang } from "@/lib/i18n";
-import { useCart } from "@/lib/cart";
+import { useCart, itemTotal } from "@/lib/cart";
 import { money } from "@/lib/format";
 import { Stamp } from "@/components/Stamp";
-import { getProduct } from "@/config/products";
+import { getProduct, EXPRESS, PROTECTION } from "@/config/products";
 import { submitApplication } from "@/lib/applications";
 
 const TURNSTILE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
@@ -41,7 +41,7 @@ export default function CheckoutPage() {
     const sid = new URLSearchParams(window.location.search).get("session_id");
     if (sid) {
       setPaid(true);
-      try { localStorage.setItem("voyago.lastOrder", JSON.stringify({ items, total: items.reduce((s, i) => s + (i.price || 0), 0) })); } catch { /* ignore */ }
+      try { localStorage.setItem("voyago.lastOrder", JSON.stringify({ items, total: items.reduce((s, i) => s + itemTotal(i), 0) })); } catch { /* ignore */ }
       clear();
       fetch(`/api/checkout/confirm?session_id=${sid}`)
         .then((r) => r.json())
@@ -78,7 +78,7 @@ export default function CheckoutPage() {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ appId: r?.id, slugs: items.map((i) => i.slug), origin: window.location.origin, promo: appliedPromo }),
+        body: JSON.stringify({ appId: r?.id, items: items.map((i) => ({ slug: i.slug, express: !!i.express, protection: !!i.protection })), origin: window.location.origin, promo: appliedPromo }),
       });
       if (res.ok) {
         const { url } = await res.json();
@@ -142,8 +142,10 @@ export default function CheckoutPage() {
                   <div className="flex-1">
                     <p className="text-sm font-semibold">{t(product.name)}</p>
                     {name && <p className="text-xs text-ink-soft">{name}</p>}
+                    {item.express && <p className="text-[0.65rem] font-semibold text-brass">+ {t(EXPRESS.label)} (50 %)</p>}
+                    {item.protection && <p className="text-[0.65rem] font-semibold text-brass">+ {t(PROTECTION.label)}</p>}
                   </div>
-                  <span className="font-mono text-sm">{money(item.price, lang)}</span>
+                  <span className="font-mono text-sm">{money(itemTotal(item), lang)}</span>
                 </li>
               );
             })}
