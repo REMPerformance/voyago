@@ -342,7 +342,6 @@ export function Globe() {
             </p>
             <p className="mt-5 inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-wider text-cream/55">
               <MousePointerClick size={14} className="text-brass-light" />
-              {t({ sk: "Ťahaj pre otáčanie · koliesko = priblíženie", en: "Drag to rotate · scroll to zoom" })}
             </p>
           </div>
         )}

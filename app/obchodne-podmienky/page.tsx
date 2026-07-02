@@ -33,9 +33,7 @@ export default function Page() {
       <H>3. Povaha služby — poskytovateľ nie je štátny orgán</H>
       <p>
         Poskytovateľ je <strong>súkromný sprostredkovateľ</strong>. <strong>Nie je</strong> štátnym orgánom, vládnou inštitúciou,
-        ambasádou ani s nimi nie je personálne, majetkovo ani inak prepojený a nekoná v ich mene. Zákazník berie na vedomie,
-        že rovnaké podanie si môže vo väčšine prípadov vybaviť aj sám priamo na oficiálnom portáli cieľovej krajiny a uhradiť
-        len štátny poplatok. Cena poskytovateľa zahŕňa štátny poplatok aj poplatok za sprostredkovanie (kontrola, podanie, podpora).
+        ambasádou ani s nimi nie je personálne, majetkovo ani inak prepojený a nekoná v ich mene. Cena poskytovateľa zahŕňa štátny poplatok aj poplatok za sprostredkovanie (kontrola, podanie, podpora).
       </p>
 
       <H>4. Predmet a rozsah služby</H>

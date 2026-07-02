@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ArrowRight, Clock } from "lucide-react";
 import { useLang } from "@/lib/i18n";
-import { POSTS } from "@/config/blog";
+import { POSTS, estimateReadMins } from "@/config/blog";
 
 export function BlogList() {
   const { t, lang } = useLang();
@@ -31,7 +31,7 @@ export function BlogList() {
             <p className="mt-3 text-ink-soft">{t(featured.excerpt)}</p>
             <div className="mt-5 flex items-center gap-4 text-xs text-ink-soft/70">
               <span>{fmt(featured.date)}</span>
-              <span className="inline-flex items-center gap-1.5"><Clock size={12} /> {featured.readMins} min</span>
+              <span className="inline-flex items-center gap-1.5"><Clock size={12} /> {estimateReadMins(featured)} min</span>
             </div>
             <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-ink group-hover:gap-2.5">{t({ sk: "Čítať článok", en: "Read article" })} <ArrowRight size={15} /></span>
           </div>
@@ -52,7 +52,7 @@ export function BlogList() {
               <p className="mt-2 flex-1 text-sm leading-relaxed text-ink-soft line-clamp-3">{t(p.excerpt)}</p>
               <div className="mt-4 flex items-center justify-between border-t border-line-soft pt-3 text-xs text-ink-soft/70">
                 <span>{fmt(p.date)}</span>
-                <span className="inline-flex items-center gap-1.5"><Clock size={12} /> {p.readMins} min</span>
+                <span className="inline-flex items-center gap-1.5"><Clock size={12} /> {estimateReadMins(p)} min</span>
               </div>
             </div>
           </Link>

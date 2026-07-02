@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ArrowLeft, Clock, Check, HelpCircle } from "lucide-react";
 import { useLang } from "@/lib/i18n";
-import { getPost, POSTS } from "@/config/blog";
+import { getPost, POSTS, estimateReadMins } from "@/config/blog";
 
 export function BlogArticle({ slug }: { slug: string }) {
   const { t, lang } = useLang();
@@ -34,7 +34,7 @@ export function BlogArticle({ slug }: { slug: string }) {
             <h1 className="mt-3 font-display text-3xl font-extrabold leading-tight sm:text-4xl md:text-5xl">{t(post.title)}</h1>
             <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-paper/75">
               <span>{fmt(post.date)}</span>
-              <span className="inline-flex items-center gap-1.5"><Clock size={13} /> {post.readMins} min</span>
+              <span className="inline-flex items-center gap-1.5"><Clock size={13} /> {estimateReadMins(post)} min</span>
               {post.updated && <span>{t({ sk: "Aktualizované", en: "Updated" })}: {fmt(post.updated)}</span>}
             </div>
           </div>

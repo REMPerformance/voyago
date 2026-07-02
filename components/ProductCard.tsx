@@ -68,8 +68,14 @@ export function ProductCard({ product }: { product: Product }) {
             {pct > 0 && <span className="rounded bg-terra/10 px-1.5 py-0.5 text-[0.58rem] font-bold text-terra">−{pct}%</span>}
           </div>
           <div className="mt-0.5 flex items-baseline gap-1.5">
-            <span className="font-display text-[1.35rem] font-extrabold leading-none text-ink">{money(price, lang)}</span>
-            {pct > 0 && <span className="text-xs text-ink-soft/55 line-through">{money(base, lang)}</span>}
+            {soon ? (
+              <span className="font-display text-[1.05rem] font-extrabold leading-none text-ink-soft">{product.slug === "eu-etias" ? "Coming soon" : t({ sk: "Pripravujeme", en: "Coming soon" })}</span>
+            ) : (
+              <>
+                <span className="font-display text-[1.35rem] font-extrabold leading-none text-ink">{money(price, lang)}</span>
+                {pct > 0 && <span className="text-xs text-ink-soft/55 line-through">{money(base, lang)}</span>}
+              </>
+            )}
             <span className="text-[0.58rem] font-semibold text-ink-soft/55">{t({ sk: "s DPH", en: "VAT" })}</span>
           </div>
         </div>

@@ -73,7 +73,7 @@ export function CountryHero({ cc, flagCc, titleMain, titleAccent, subtitle, icon
 
       {/* Obrovské biele siluety krajiny – jemné, v štýle vlajky (vľavo/stred) */}
       {iconNames && iconNames.length > 0 && (
-        <div aria-hidden className="pointer-events-none absolute inset-0 z-[1] overflow-hidden text-paper">
+        <div aria-hidden className="pointer-events-none absolute inset-0 z-[1] overflow-hidden text-cream">
           {iconNames.slice(0, 3).map((n, i) => (
             <span key={n} className="absolute block" style={ICON_POS[i]}>
               <HeroIcon name={n} className="h-full w-auto" />
@@ -114,7 +114,7 @@ export function CountryHero({ cc, flagCc, titleMain, titleAccent, subtitle, icon
 
       {/* Titul vľavo hore */}
       <div className="pointer-events-none relative z-[4] max-w-[560px] px-8 pt-12 sm:px-14 sm:pt-16" style={{ textShadow: "0 2px 26px rgba(7,13,24,.75), 0 1px 4px rgba(7,13,24,.55)" }}>
-        <h1 className="font-display font-extrabold uppercase leading-[0.9] tracking-tight text-paper" style={{ fontSize: "clamp(3rem,8vw,5.6rem)" }}>
+        <h1 className="font-display font-extrabold uppercase leading-[0.9] tracking-tight text-cream" style={{ fontSize: "clamp(3rem,8vw,5.6rem)" }}>
           <span className="block">{titleMain}</span>
           <span className="block text-brass">{titleAccent}</span>
         </h1>

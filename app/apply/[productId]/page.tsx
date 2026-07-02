@@ -16,7 +16,6 @@ import { useProcessed } from "@/lib/stats";
 import { CountryHero } from "@/components/CountryHero";
 import { HERO_ATLAS } from "@/config/heroAtlas";
 import { HERO_ICON_SETS } from "@/components/heroIcons";
-import { ServiceNotice } from "@/components/ServiceNotice";
 import { site } from "@/config/site";
 
 export default function ApplyPage() {
@@ -117,20 +116,20 @@ export default function ApplyPage() {
           iconNames={HERO_ICON_SETS[product.country]}
         />
       ) : (
-        <div className="relative mt-5 min-h-[260px] overflow-hidden rounded-3xl bg-ink text-paper shadow-card sm:min-h-[300px]">
+        <div className="relative mt-5 min-h-[260px] overflow-hidden rounded-3xl bg-navy text-cream shadow-card sm:min-h-[300px]">
           <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-            <GlobeMotif className="absolute -bottom-28 -left-24 h-[30rem] w-[30rem] text-paper/[0.07] sm:h-[34rem] sm:w-[34rem]" />
+            <GlobeMotif className="absolute -bottom-28 -left-24 h-[30rem] w-[30rem] text-cream/[0.07] sm:h-[34rem] sm:w-[34rem]" />
             {hero.motifs.map((m, i) => (
-              <span key={i} className="absolute select-none leading-none text-paper opacity-[0.08] grayscale" style={{ fontSize: `${MOTIF_POS[i]?.size ?? 6}rem`, top: MOTIF_POS[i]?.top, left: MOTIF_POS[i]?.left, right: MOTIF_POS[i]?.right }}>{m}</span>
+              <span key={i} className="absolute select-none leading-none text-cream opacity-[0.08] grayscale" style={{ fontSize: `${MOTIF_POS[i]?.size ?? 6}rem`, top: MOTIF_POS[i]?.top, left: MOTIF_POS[i]?.left, right: MOTIF_POS[i]?.right }}>{m}</span>
             ))}
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`https://flagcdn.com/${product.country.toLowerCase()}.svg`} alt="" className="absolute right-6 top-1/2 w-[30%] max-w-[330px] -translate-y-1/2 rotate-[-7deg] rounded-md opacity-95 shadow-2xl ring-1 ring-paper/15 sm:right-10" />
-            <div className="absolute inset-y-0 left-0 w-2/3 bg-gradient-to-r from-ink via-ink/70 to-transparent" />
+            <img src={`https://flagcdn.com/${product.country.toLowerCase()}.svg`} alt="" className="absolute right-6 top-1/2 w-[30%] max-w-[330px] -translate-y-1/2 rotate-[-7deg] rounded-md opacity-95 shadow-2xl ring-1 ring-cream/15 sm:right-10" />
+            <div className="absolute inset-y-0 left-0 w-2/3 bg-gradient-to-r from-navy via-navy/70 to-transparent" />
           </div>
           <div className="relative max-w-xl px-6 py-9 sm:px-10 sm:py-12">
             <p className="text-[0.62rem] uppercase tracking-[0.24em] text-brass">{typeLabel} · {t(product.destination)}</p>
             <h1 className="mt-1.5 font-display text-4xl font-extrabold leading-[1.05] sm:text-5xl">{t(product.name)}</h1>
-            <p className="mt-4 max-w-xl text-sm leading-relaxed text-paper/80">{t(product.summary)}</p>
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-cream/80">{t(product.summary)}</p>
             {hero.cities.length > 0 && (
               <div className="mt-6">
                 <p className="text-[0.55rem] uppercase tracking-[0.2em] text-paper/45">{t({ sk: "Najväčšie mestá", en: "Major cities" })}</p>
@@ -157,7 +156,6 @@ export default function ApplyPage() {
       <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">
         {/* Formulár */}
         <div className="card order-2 p-6 sm:p-8 lg:order-1">
-          <ServiceNotice className="mb-6" />
           <div className="mb-6 space-y-3">
             <button
               type="button"
@@ -205,7 +203,7 @@ export default function ApplyPage() {
             {/* Cena – tmavá hlavička pre kontrast a čitateľnosť */}
             <div className="bg-ink px-6 py-6 text-paper">
               <div className="mb-4 flex items-center gap-2.5">
-                <span className="grid h-9 w-9 place-items-center rounded-xl bg-paper/10 text-2xl ring-1 ring-paper/15">{product.flag}</span>
+                <span className="grid h-9 w-9 place-items-center rounded-xl bg-paper/10 text-2xl ring-1 ring-cream/15">{product.flag}</span>
                 <span className="font-display text-sm font-bold text-paper">{t(product.destination)}</span>
                 <span className="ml-auto text-[0.6rem] uppercase tracking-wider text-paper/70">{typeLabel}</span>
               </div>
@@ -226,14 +224,7 @@ export default function ApplyPage() {
 
             {/* Rozpis ceny */}
             <div className="space-y-2 border-b border-line px-6 py-4">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-ink-soft">{t({ sk: "Štátny poplatok", en: "Government fee" })}</span>
-                <span className="font-semibold text-ink">{money(product.govFee, lang)}</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-ink-soft">{t({ sk: "Naša asistencia", en: "Our assistance" })}</span>
-                <span className="font-semibold text-ink">{money(product.serviceFee, lang)}</span>
-              </div>
+              <p className="text-xs text-ink-soft/75">{t({ sk: "Cena zahŕňa štátny poplatok.", en: "Price includes the government fee." })}</p>
               {express && (
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-brass">{t(EXPRESS.label)} (+50 %)</span>

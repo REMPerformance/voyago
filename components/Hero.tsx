@@ -53,20 +53,6 @@ export function Hero() {
             </Link>
           </div>
 
-          <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3 text-sm text-ink-soft" style={reveal(0.32)}>
-            <span className="inline-flex items-center gap-2">
-              <span className="grid h-6 w-6 place-items-center rounded-full bg-brass/15 text-brass">
-                <ShieldCheck size={13} />
-              </span>
-              {tr("hero.chip.official")}
-            </span>
-            <span className="inline-flex items-center gap-2">
-              <span className="grid h-6 w-6 place-items-center rounded-full bg-brass/15 text-brass">
-                <Clock size={13} />
-              </span>
-              {tr("hero.chip.checked")}
-            </span>
-          </div>
         </div>
 
         {/* RIGHT: boarding pass */}
