@@ -33,6 +33,11 @@
   html {
     scroll-behavior: smooth;
   }
+  /* Jemné doladenie mierky: na notebookoch pôsobil web priveľký.
+     rem-based Tailwind = zmena base font-size preškáluje všetko proporčne. */
+  @media (min-width: 1024px) and (max-width: 1919px) {
+    html { font-size: 15px; }
+  }
 
   body {
     @apply bg-paper text-ink font-sans antialiased;

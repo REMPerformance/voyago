@@ -20,6 +20,8 @@ const TONES: Tone[] = ["info", "warning", "success", "promo"];
 const PLACEMENTS: Placement[] = ["bar", "popup"];
 const projectHost = (process.env.NEXT_PUBLIC_SUPABASE_URL || "").replace(/^https?:\/\//, "").replace(/\/.*$/, "") || "nenastavené";
 
+const flagOf = (cc?: string) => cc && cc.length === 2 ? String.fromCodePoint(...[...cc.toUpperCase()].map((c) => 127397 + c.charCodeAt(0))) : "";
+
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl border border-line bg-surface p-4 shadow-card">
@@ -528,49 +530,62 @@ export default function AdminPage() {
         </div>
       )}
 
-      {tab === "traffic" && (
-        <div className="mt-8">
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Stat label="Zobrazenia (ľudia)" value={String(humanViews.length)} />
-            <Stat label="Návštevníci" value={String(humanSids.size)} />
-            <Stat label="Kliknutia" value={String(clicks)} />
-            <Stat label="Boti (udalosti)" value={String(botEvents)} />
-          </div>
-          <div className="mt-4 grid gap-4 md:grid-cols-2">
-            <div className="rounded-xl border border-line bg-surface p-4 shadow-card">
-              <p className="mb-1 font-semibold text-ink">Najnavštevovanejšie stránky</p>
-              {topPages.length === 0 ? <p className="text-sm text-ink-soft">—</p> : topPages.map(([k, n]) => (
-                <div key={k} className="flex justify-between gap-3 border-t border-line-soft py-1.5 text-sm"><span className="truncate text-ink-soft">{k}</span><span className="font-mono text-ink">{n}</span></div>
-              ))}
+      {tab === "traffic" && (() => {
+        const pv = humanViews; // len ľudia + pageview
+        const days: Record<string, typeof pv> = {};
+        pv.slice(0, 200).forEach((v) => {
+          const d = new Date(v.created_at).toLocaleDateString("sk-SK", { weekday: "long", day: "numeric", month: "long" });
+          (days[d] ||= [] as any).push(v);
+        });
+        const countries = new Set(pv.map((v) => v.country).filter(Boolean));
+        return (
+          <div className="mt-8">
+            <div className="grid grid-cols-3 gap-3">
+              <Stat label="Zobrazenia" value={String(pv.length)} />
+              <Stat label="Návštevníci" value={String(humanSids.size)} />
+              <Stat label="Krajiny" value={String(countries.size)} />
             </div>
-            <div className="rounded-xl border border-line bg-surface p-4 shadow-card">
-              <p className="mb-1 font-semibold text-ink">Zdroje návštev</p>
-              {topRefs.length === 0 ? <p className="text-sm text-ink-soft">Priame návštevy</p> : topRefs.map(([k, n]) => (
-                <div key={k} className="flex justify-between gap-3 border-t border-line-soft py-1.5 text-sm"><span className="truncate text-ink-soft">{k}</span><span className="font-mono text-ink">{n}</span></div>
-              ))}
+
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <div className="rounded-xl border border-line bg-surface p-4 shadow-card">
+                <p className="mb-1 font-semibold text-ink">Najnavštevovanejšie stránky</p>
+                {topPages.length === 0 ? <p className="text-sm text-ink-soft">—</p> : topPages.map(([k, n]) => (
+                  <div key={k} className="flex justify-between gap-3 border-t border-line-soft py-1.5 text-sm"><span className="truncate text-ink-soft">{k}</span><span className="font-mono text-ink">{n}</span></div>
+                ))}
+              </div>
+              <div className="rounded-xl border border-line bg-surface p-4 shadow-card">
+                <p className="mb-1 font-semibold text-ink">Zdroje návštev</p>
+                {topRefs.length === 0 ? <p className="text-sm text-ink-soft">Priame návštevy</p> : topRefs.map(([k, n]) => (
+                  <div key={k} className="flex justify-between gap-3 border-t border-line-soft py-1.5 text-sm"><span className="truncate text-ink-soft">{k.replace(/^https?:\/\//, "")}</span><span className="font-mono text-ink">{n}</span></div>
+                ))}
+              </div>
             </div>
-          </div>
-          <div className="mt-4 rounded-xl border border-line bg-surface p-4 shadow-card">
-            <div className="mb-1 flex items-center justify-between">
-              <p className="font-semibold text-ink">Posledná aktivita</p>
-              <button onClick={loadVisits} className="btn-ghost !py-1.5 text-xs">Obnoviť</button>
-            </div>
-            <div>
-              {visits.length === 0 && <p className="py-2 text-sm text-ink-soft">Zatiaľ žiadne dáta — naplní sa reálnymi návštevami (najlepšie po nasadení).</p>}
-              {visits.slice(0, 60).map((v) => (
-                <div key={v.id} className="flex flex-wrap items-center gap-2 border-t border-line-soft py-1.5 text-xs">
-                  <span className="font-mono text-ink-soft">{new Date(v.created_at).toLocaleTimeString("sk-SK")}</span>
-                  <span className={`rounded px-1.5 py-0.5 text-[0.55rem] font-bold uppercase ${v.is_bot ? "bg-terra/12 text-terra" : "bg-green/12 text-green"}`}>{v.is_bot ? "bot" : "človek"}</span>
-                  {v.country && <span className="font-mono text-ink-soft">{v.country}</span>}
-                  <span className="rounded bg-paper px-1.5 py-0.5 font-mono text-[0.55rem] text-ink-soft">{v.type}</span>
-                  <span className="min-w-0 flex-1 truncate text-ink">{v.type === "click" ? `„${v.label}" → ${v.href || v.path}` : v.path}</span>
-                  <span className="font-mono text-[0.55rem] text-ink-soft/60">{(v.sid || "").slice(0, 6)}</span>
+
+            <div className="mt-4 rounded-xl border border-line bg-surface shadow-card">
+              <div className="flex items-center justify-between border-b border-line px-4 py-3">
+                <p className="font-semibold text-ink">Návštevy — kto, odkiaľ a kam prišiel</p>
+                <button onClick={loadVisits} className="btn-ghost !py-1.5 text-xs">Obnoviť</button>
+              </div>
+              {pv.length === 0 && <p className="px-4 py-4 text-sm text-ink-soft">Zatiaľ žiadne dáta — naplní sa reálnymi návštevami po nasadení.</p>}
+              {Object.entries(days).map(([day, rows]) => (
+                <div key={day}>
+                  <p className="border-b border-line-soft bg-paper/60 px-4 py-1.5 text-[0.62rem] font-bold uppercase tracking-wider text-ink-soft">{day}</p>
+                  {(rows as any[]).map((v) => (
+                    <div key={v.id} className="grid grid-cols-[54px_minmax(120px,1fr)_2fr] items-center gap-3 border-b border-line-soft px-4 py-2 text-sm last:border-b-0">
+                      <span className="font-mono text-xs text-ink-soft">{new Date(v.created_at).toLocaleTimeString("sk-SK", { hour: "2-digit", minute: "2-digit" })}</span>
+                      <span className="truncate text-ink">
+                        <span className="mr-1.5">{flagOf(v.country) || "🌐"}</span>
+                        {v.city || v.country || "Neznáme"}{v.region && v.country === "SK" ? ` · ${v.region}` : ""}
+                      </span>
+                      <span className="truncate font-mono text-xs text-ink-soft">{v.path}</span>
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {emailFor && (
         <div className="fixed inset-0 z-[140] grid place-items-center bg-navy/55 p-4 backdrop-blur-sm" onClick={() => setEmailFor(null)}>

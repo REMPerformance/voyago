@@ -21,7 +21,7 @@ export function Hero() {
   });
 
   return (
-    <section className="relative overflow-hidden border-b border-line">
+    <section className="relative overflow-hidden">
       <div className="container-page grid items-center gap-10 py-16 sm:py-20 lg:grid-cols-[0.92fr_1.08fr] lg:gap-16 lg:py-24">
         {/* LEFT COPY */}
         <div>

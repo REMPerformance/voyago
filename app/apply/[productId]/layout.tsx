@@ -9,14 +9,14 @@ export function generateMetadata({ params }: { params: { productId: string } }):
   // ETIAS je pre prichádzajúcich do EÚ — metadáta po anglicky.
   if (p.slug === "eu-etias") {
     const url = `${site.url}/apply/${p.slug}`;
-    const title = "ETIAS — EU Travel Authorisation (launching 2026)";
-    const description = "Everything about ETIAS: who needs it, the €20 fee, 3-year validity and how to apply. Registrations aren't open yet — get notified the moment they do.";
+    const title = "ETIAS for US Citizens & Non-EU Travellers — Application, Fee, Requirements (2026)";
+    const description = "ETIAS guide for travellers from the USA, UK, Canada & Australia: who needs it, cost, 3-year validity, 30 covered countries and how to apply when registrations open in late 2026.";
     return {
       title,
       description,
-      keywords: ["ETIAS", "EU travel authorisation", "Schengen", "ETIAS 2026", "ETIAS fee", "ETIAS application"],
+      keywords: ["ETIAS", "ETIAS application", "ETIAS for US citizens", "ETIAS USA", "ETIAS UK", "ETIAS Canada", "Europe travel authorization", "Schengen ETIAS", "ETIAS requirements", "ETIAS 2026", "ETIAS cost", "ETIAS visa waiver"],
       alternates: { canonical: url },
-      openGraph: { title: `${title} | ${site.brand}`, description, url, type: "website", locale: "en" },
+      openGraph: { title: `${title} | ${site.brand}`, description, url, type: "website", locale: "en_US" },
       twitter: { card: "summary_large_image", title: `${title} | ${site.brand}`, description },
     };
   }
