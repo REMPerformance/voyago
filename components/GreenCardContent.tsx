@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, CalendarDays, BookOpen, Users2, Ban, ListChecks, Camera, UsersRound, Trophy, Wallet, ShieldAlert, BarChart3 } from "lucide-react";
+import { ArrowRight, CalendarDays, BookOpen, Users2, Ban, ListChecks, Camera, UsersRound, Trophy, Wallet, ShieldAlert, BarChart3, Check, FileCheck, Send } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { GreenCardSpecimen } from "@/components/GreenCardSpecimen";
 
@@ -102,113 +102,192 @@ export function GreenCardContent() {
   const topic = TOPICS.find((x) => x.id === active)!;
 
   return (
-    <section className="container-page py-16">
-      <Link href="/" className="inline-flex items-center gap-1.5 text-sm font-medium text-ink-soft hover:text-ink">
-        {t({ sk: "← Späť", en: "← Back" })}
-      </Link>
+    <section className="pb-16">
+      {/* HERO — full-bleed navy s kartou a štatistikami */}
+      <div className="relative isolate overflow-hidden bg-navy text-cream">
+        <svg aria-hidden className="pointer-events-none absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1200 620">
+          <polygon points="1200,0 1200,470 700,0" fill="#11202e" />
+          <polygon points="0,620 400,620 0,320" fill="#0e1b27" />
+          <polygon points="960,0 1200,0 1200,300" fill="none" stroke="#C99A4E" strokeOpacity="0.18" strokeWidth="1.5" />
+        </svg>
 
-      {/* HERO */}
-      <div className="mt-8 grid items-center gap-12 lg:grid-cols-[1fr_1fr]">
-        <div className="flex justify-center lg:justify-start">
-          <GreenCardSpecimen />
-        </div>
-        <div>
-          <div className="inline-flex items-center gap-3">
-            <span className="grid h-11 w-11 place-items-center rounded-xl bg-brass/12 text-brass"><CalendarDays size={20} /></span>
-            <div>
-              <p className="text-[0.56rem] font-bold uppercase tracking-[0.18em] text-ink-soft/70">{t({ sk: "Oficiálne otvorenie", en: "Official opening" })}</p>
-              <p className="font-display text-base font-extrabold text-ink">{t({ sk: "Október 2026", en: "October 2026" })}</p>
+        <div className="container-page relative grid items-center gap-12 py-16 lg:grid-cols-[1fr_1.1fr] lg:py-20">
+          <div>
+            <div className="inline-flex items-center gap-3 rounded-lg border border-cream/15 bg-cream/[0.05] px-3.5 py-2">
+              <CalendarDays size={16} className="text-brass-light" />
+              <span className="text-xs font-semibold text-cream/80">{t({ sk: "Oficiálne okno: október 2026 · prihlášky prijímame už teraz", en: "Official window: October 2026 · we accept entries now" })}</span>
+            </div>
+            <h1 className="mt-5 font-display text-5xl font-extrabold leading-[1.02] sm:text-6xl">
+              {t({ sk: "Americká", en: "U.S." })} <span className="text-brass-light">{t({ sk: "zelená karta", en: "Green Card" })}</span>
+            </h1>
+            <p className="mt-2 text-base font-medium text-cream/60">Diversity Visa Lottery (DV-2028)</p>
+            <p className="mt-5 max-w-xl text-lg leading-relaxed text-cream/80">
+              {t({ sk: "Šanca na trvalý pobyt v USA cez oficiálnu lotériu vlády USA. My skontrolujeme fotografiu podľa noriem, vyplníme údaje bez chýb a prihlášku podáme v októbrovom okne za vás.", en: "A shot at U.S. permanent residency via the official U.S. government lottery. We check your photo against the standards, complete the data error-free and file your entry in the October window for you." })}
+            </p>
+
+            <div className="mt-7 flex flex-wrap items-end gap-2">
+              <span className="text-[0.62rem] uppercase tracking-wider text-cream/50">{t({ sk: "od", en: "from" })}</span>
+              <span className="font-display text-5xl font-extrabold leading-none text-cream">49 €</span>
+              <span className="pb-1 text-sm font-semibold text-cream/60">{t({ sk: "s DPH", en: "incl. VAT" })}</span>
+            </div>
+
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link href="/green-card/prihlaska" className="btn-accent !py-3.5 text-base sm:!px-8">
+                {t({ sk: "Vyplniť prihlášku", en: "Start my entry" })} <ArrowRight size={16} />
+              </Link>
+              <a href="#info" className="inline-flex items-center gap-2 rounded-lg border border-cream/20 px-6 py-3.5 text-base font-semibold text-cream transition-colors hover:border-cream/50">
+                {t({ sk: "Všetko o lotérii", en: "About the lottery" })}
+              </a>
             </div>
           </div>
-          <h1 className="mt-4 font-display text-5xl font-extrabold leading-[1.02]">{t({ sk: "Americká zelená karta", en: "U.S. Green Card" })}</h1>
-          <p className="mt-5 text-lg leading-relaxed text-ink-soft">{t({ sk: "Šanca na trvalý pobyt v USA cez oficiálnu lotériu Diversity Visa. Prihlášku od vás prijmeme kedykoľvek — skontrolujeme fotografiu, vyplníme údaje a podáme ju za vás v októbrovom okne.", en: "A shot at U.S. permanent residency via the official Diversity Visa lottery. We accept your entry anytime — we check your photo, complete the data and file it for you in the October window." })}</p>
-          <div className="mt-6 flex flex-wrap items-end gap-2">
-            <span className="text-[0.62rem] uppercase tracking-wider text-ink-soft/70">{t({ sk: "od", en: "from" })}</span>
-            <span className="font-display text-4xl font-extrabold leading-none text-ink">49 €</span>
-            <span className="pb-0.5 text-sm font-semibold text-ink-soft">{t({ sk: "s DPH", en: "incl. VAT" })}</span>
+
+          <div className="flex justify-center lg:justify-end lg:pr-0">
+            <div className="w-full max-w-md rotate-[3deg] transition-transform duration-300 hover:rotate-0 lg:max-w-none lg:origin-right lg:scale-[1.22] xl:scale-[1.32]">
+              <GreenCardSpecimen />
+            </div>
           </div>
-          <Link href="/green-card/prihlaska" className="btn-accent mt-7 w-full !py-3.5 text-base sm:w-auto sm:!px-8">
-            {t({ sk: "Vyplniť údaje", en: "Fill in details" })} <ArrowRight size={16} />
-          </Link>
+        </div>
+
+        {/* štatistický pás */}
+        <div className="relative border-t border-cream/10 bg-cream/[0.03]">
+          <div className="container-page grid grid-cols-2 gap-6 py-6 sm:grid-cols-4">
+            {[
+              ["20,8 mil.", t({ sk: "prihlášok v DV-2026", en: "entries in DV-2026" })],
+              ["≈ 51 850", t({ sk: "dostupných zelených kariet", en: "green cards available" })],
+              ["26", t({ sk: "vybraných zo Slovenska", en: "selected from Slovakia" })],
+              ["1×", t({ sk: "ročne — jediné okno", en: "a year — a single window" })],
+            ].map(([v, l]) => (
+              <div key={l as string}>
+                <p className="font-display text-2xl font-extrabold text-brass-light sm:text-3xl">{v}</p>
+                <p className="mt-0.5 text-xs text-cream/60">{l}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* INFO with left menu */}
-      <div className="mt-20">
-        <h2 className="font-display text-3xl font-extrabold">{t({ sk: "Všetko o zelenej karte", en: "Everything about the Green Card" })}</h2>
-        <p className="mt-2 max-w-2xl text-ink-soft">{t({ sk: "Vyberte si tému vľavo a dozviete sa detaily — oprávnenosť, fotografia, rodina, výber, poplatky aj štatistiky.", en: "Pick a topic on the left to read the details — eligibility, photo, family, selection, fees and statistics." })}</p>
+      <div className="container-page">
+        {/* PRIEBEH ROČNÍKA — časová os */}
+        <div className="mt-16">
+          <p className="eyebrow">{t({ sk: "Priebeh ročníka", en: "How the cycle works" })}</p>
+          <h2 className="mt-2 font-display text-3xl font-extrabold">{t({ sk: "Od prihlášky po zelenú kartu", en: "From entry to Green Card" })}</h2>
+          <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              { icon: <FileCheck size={18} />, tt: t({ sk: "Kedykoľvek: prihláška u nás", en: "Anytime: your entry with us" }), d: t({ sk: "Vyplníte údaje a nahráte fotografiu. My všetko skontrolujeme podľa oficiálnych noriem — chybná fotka je dôvod diskvalifikácie č. 1.", en: "You fill in your details and upload a photo. We check everything against the official standards — a bad photo is the No. 1 disqualification reason." }) },
+              { icon: <Send size={18} />, tt: t({ sk: "Október: oficiálne okno", en: "October: the official window" }), d: t({ sk: "Registrácia je otvorená len niekoľko týždňov. Vašu prihlášku podáme na oficiálnom portáli a pošleme vám potvrdzovacie číslo.", en: "Registration opens for just a few weeks. We file your entry on the official portal and send you the confirmation number." }) },
+              { icon: <Trophy size={18} />, tt: t({ sk: "Máj: výsledky žrebovania", en: "May: draw results" }), d: t({ sk: "Vláda USA zverejní vybraných. Výsledok vám overíme a oznámime — a ak ste vybraní, poradíme s ďalšími krokmi.", en: "The U.S. government publishes selectees. We check and share your result — and if selected, we guide you on next steps." }) },
+              { icon: <Check size={18} />, tt: t({ sk: "Potom: vízum a pohovor", en: "Then: visa and interview" }), d: t({ sk: "Vybraní pokračujú formulárom DS-260, pohovorom na ambasáde a lekárskou prehliadkou k trvalému pobytu.", en: "Selectees continue via the DS-260 form, an embassy interview and a medical exam towards permanent residency." }) },
+            ].map((sItem, i) => (
+              <li key={i} className="relative rounded-2xl border border-line bg-surface p-5 shadow-card">
+                <span className="absolute right-4 top-4 font-display text-3xl font-extrabold text-ink/[0.06]">{i + 1}</span>
+                <span className="grid h-10 w-10 place-items-center rounded-xl bg-brass/12 text-brass">{sItem.icon}</span>
+                <p className="mt-3 font-display text-base font-bold text-ink">{sItem.tt}</p>
+                <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">{sItem.d}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[260px_1fr]">
-          {/* menu */}
-          <nav className="flex gap-2 overflow-x-auto pb-2 lg:flex-col lg:gap-1 lg:overflow-visible lg:pb-0">
-            {TOPICS.map((tp) => {
-              const Icon = tp.icon;
-              const on = tp.id === active;
-              return (
-                <button key={tp.id} onClick={() => setActive(tp.id)}
-                  className={`flex shrink-0 items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-left text-sm font-semibold transition-colors lg:w-full ${on ? "bg-ink text-paper" : "text-ink-soft hover:bg-paper hover:text-ink"}`}>
-                  <Icon size={16} className={on ? "text-brass-light" : ""} /> <span className="whitespace-nowrap">{t(tp.label)}</span>
-                </button>
-              );
-            })}
-          </nav>
+        {/* PREČO CEZ NÁS */}
+        <div className="mt-14 grid gap-4 sm:grid-cols-3">
+          {[
+            { icon: <Camera size={18} />, tt: t({ sk: "Fotografia podľa noriem", en: "Photo to standard" }), d: t({ sk: "Najčastejší dôvod vyradenia. Fotku skontrolujeme podľa oficiálnych parametrov a keď nevyhovuje, vypýtame si novú.", en: "The most common rejection reason. We verify your photo against the official parameters and request a new one if it fails." }) },
+            { icon: <ListChecks size={18} />, tt: t({ sk: "Údaje bez chýb", en: "Error-free data" }), d: t({ sk: "Duplicitná či chybná prihláška znamená diskvalifikáciu. Všetko prejde ľudskou kontrolou pred podaním.", en: "A duplicate or faulty entry means disqualification. Everything passes a human check before filing." }) },
+            { icon: <ShieldAlert size={18} />, tt: t({ sk: "Podané načas a bezpečne", en: "Filed on time, safely" }), d: t({ sk: "Žiadne zmeškané okno ani podvodné stránky. Podávame na oficiálnom portáli a potvrdenie máte v e-maile.", en: "No missed window, no scam sites. We file on the official portal and the confirmation lands in your inbox." }) },
+          ].map((c) => (
+            <div key={c.tt} className="rounded-2xl border border-line bg-surface p-6 shadow-card">
+              <span className="grid h-10 w-10 place-items-center rounded-xl bg-brass/12 text-brass">{c.icon}</span>
+              <p className="mt-3 font-display text-base font-bold text-ink">{c.tt}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">{c.d}</p>
+            </div>
+          ))}
+        </div>
 
-          {/* content */}
-          <div className="rounded-2xl border border-line bg-surface p-6 shadow-card sm:p-8">
-            <h3 className="font-display text-2xl font-bold">{t(topic.label)}</h3>
+        {/* INFO s ľavým menu */}
+        <div id="info" className="mt-20 scroll-mt-24">
+          <h2 className="font-display text-3xl font-extrabold">{t({ sk: "Všetko o zelenej karte", en: "Everything about the Green Card" })}</h2>
+          <p className="mt-2 max-w-2xl text-ink-soft">{t({ sk: "Vyberte si tému a dozviete sa detaily — oprávnenosť, fotografia, rodina, výber, poplatky aj štatistiky.", en: "Pick a topic to read the details — eligibility, photo, family, selection, fees and statistics." })}</p>
 
-            {topic.id === "stats" ? (
-              <div className="mt-5">
-                <div className="grid gap-3 sm:grid-cols-3">
-                  {[
-                    [t({ sk: "Prihlášok celkovo", en: "Total entries" }), "20 822 624"],
-                    [t({ sk: "Zaregistrovaných (s rodinami)", en: "Registered (with families)" }), "129 516"],
-                    [t({ sk: "Dostupných víz (DV-2026)", en: "Visas available (DV-2026)" }), "≈ 51 850"],
-                  ].map(([l, val]) => (
-                    <div key={l} className="rounded-xl border border-line bg-paper/40 p-4">
-                      <p className="text-[0.56rem] uppercase tracking-wider text-ink-soft/70">{l}</p>
-                      <p className="mt-1 font-display text-xl font-extrabold text-ink">{val}</p>
+          <div className="mt-8 grid gap-8 lg:grid-cols-[260px_1fr]">
+            <nav className="flex gap-2 overflow-x-auto pb-2 lg:sticky lg:top-24 lg:h-fit lg:flex-col lg:gap-1 lg:overflow-visible lg:pb-0">
+              {TOPICS.map((tp) => {
+                const Icon = tp.icon;
+                const on = tp.id === active;
+                return (
+                  <button key={tp.id} onClick={() => setActive(tp.id)}
+                    className={`flex shrink-0 items-center gap-2.5 rounded-xl border px-3.5 py-2.5 text-left text-sm font-semibold transition-colors lg:w-full ${on ? "border-brass/40 bg-brass/[0.08] text-ink" : "border-transparent text-ink-soft hover:bg-paper hover:text-ink"}`}>
+                    <Icon size={16} className={on ? "text-brass" : ""} /> <span className="whitespace-nowrap">{t(tp.label)}</span>
+                  </button>
+                );
+              })}
+            </nav>
+
+            <div className="rounded-2xl border border-line bg-surface p-6 shadow-card sm:p-8">
+              <h3 className="font-display text-2xl font-bold">{t(topic.label)}</h3>
+
+              {topic.id === "stats" ? (
+                <div className="mt-5">
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    {[
+                      [t({ sk: "Prihlášok celkovo", en: "Total entries" }), "20 822 624"],
+                      [t({ sk: "Zaregistrovaných (s rodinami)", en: "Registered (with families)" }), "129 516"],
+                      [t({ sk: "Dostupných víz (DV-2026)", en: "Visas available (DV-2026)" }), "≈ 51 850"],
+                    ].map(([l, val]) => (
+                      <div key={l} className="rounded-xl border border-line bg-paper/40 p-4">
+                        <p className="text-[0.56rem] uppercase tracking-wider text-ink-soft/70">{l}</p>
+                        <p className="mt-1 font-display text-xl font-extrabold text-ink">{val}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="mt-6 mb-2 text-sm font-semibold text-ink">{t({ sk: "Koľko vybrali vlani (vybraní + rodina), Európa:", en: "Selected last year (selectees + family), Europe:" })}</p>
+                  <div className="overflow-hidden rounded-xl border border-line">
+                    <table className="w-full text-sm">
+                      <thead><tr className="bg-paper text-left"><th className="px-4 py-2 text-[0.6rem] uppercase tracking-wider text-ink-soft">{t({ sk: "Krajina", en: "Country" })}</th><th className="px-4 py-2 text-right text-[0.6rem] uppercase tracking-wider text-ink-soft">{t({ sk: "Vybraní", en: "Selected" })}</th></tr></thead>
+                      <tbody>
+                        {EU_STATS.map(([sk, en, n]) => {
+                          const me = sk === "Slovensko";
+                          return (
+                            <tr key={en} className={`border-t border-line-soft ${me ? "bg-brass/[0.07]" : ""}`}>
+                              <td className={`px-4 py-2 ${me ? "font-bold text-ink" : "text-ink-soft"}`}>{t({ sk, en })}{me && <span className="ml-2 rounded-md bg-brass/20 px-2 py-0.5 text-[0.5rem] uppercase text-brass">{t({ sk: "vy", en: "you" })}</span>}</td>
+                              <td className={`px-4 py-2 text-right font-mono ${me ? "font-bold text-brass" : "text-ink"}`}>{n.toLocaleString("sk-SK")}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                  <p className="mt-3 text-xs text-ink-soft/70">{t({ sk: "Zdroj: U.S. Department of State, DV-2026 Selected Entrants. Čísla zahŕňajú vybraných aj ich rodinných príslušníkov.", en: "Source: U.S. Department of State, DV-2026 Selected Entrants. Figures include selectees and their family members." })}</p>
+                </div>
+              ) : (
+                <div className="mt-4 space-y-4">
+                  {topic.blocks.map((b, i) => (
+                    <div key={i}>
+                      {b.h && <p className="font-display text-base font-bold text-ink">{t(b.h)}</p>}
+                      {b.p && <p className="mt-1 text-sm leading-relaxed text-ink-soft">{t(b.p)}</p>}
+                      {b.ul && (
+                        <ul className="mt-1 space-y-1.5">
+                          {(t({ sk: b.ul.sk.join("|||"), en: b.ul.en.join("|||") })).split("|||").map((li, j) => (
+                            <li key={j} className="flex items-start gap-2 text-sm text-ink-soft"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-brass" /> {li}</li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
                   ))}
                 </div>
-                <p className="mt-6 mb-2 text-sm font-semibold text-ink">{t({ sk: "Koľko vybrali vlani (vybraní + rodina), Európa:", en: "Selected last year (selectees + family), Europe:" })}</p>
-                <div className="overflow-hidden rounded-xl border border-line">
-                  <table className="w-full text-sm">
-                    <thead><tr className="bg-paper text-left"><th className="px-4 py-2 text-[0.6rem] uppercase tracking-wider text-ink-soft">{t({ sk: "Krajina", en: "Country" })}</th><th className="px-4 py-2 text-right text-[0.6rem] uppercase tracking-wider text-ink-soft">{t({ sk: "Vybraní", en: "Selected" })}</th></tr></thead>
-                    <tbody>
-                      {EU_STATS.map(([sk, en, n]) => {
-                        const me = sk === "Slovensko";
-                        return (
-                          <tr key={en} className={`border-t border-line-soft ${me ? "bg-brass/[0.07]" : ""}`}>
-                            <td className={`px-4 py-2 ${me ? "font-bold text-ink" : "text-ink-soft"}`}>{t({ sk, en })}{me && <span className="ml-2 rounded-md bg-brass/20 px-2 py-0.5 text-[0.5rem] uppercase text-brass">{t({ sk: "vy", en: "you" })}</span>}</td>
-                            <td className={`px-4 py-2 text-right font-mono ${me ? "font-bold text-brass" : "text-ink"}`}>{n.toLocaleString("sk-SK")}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-                <p className="mt-3 text-xs text-ink-soft/70">{t({ sk: "Zdroj: U.S. Department of State, DV-2026 Selected Entrants. Čísla zahŕňajú vybraných aj ich rodinných príslušníkov.", en: "Source: U.S. Department of State, DV-2026 Selected Entrants. Figures include selectees and their family members." })}</p>
-              </div>
-            ) : (
-              <div className="mt-4 space-y-4">
-                {topic.blocks.map((b, i) => (
-                  <div key={i}>
-                    {b.h && <p className="font-display text-base font-bold text-ink">{t(b.h)}</p>}
-                    {b.p && <p className="mt-1 text-sm leading-relaxed text-ink-soft">{t(b.p)}</p>}
-                    {b.ul && (
-                      <ul className="mt-1 space-y-1.5">
-                        {(t({ sk: b.ul.sk.join("|||"), en: b.ul.en.join("|||") })).split("|||").map((li, j) => (
-                          <li key={j} className="flex items-start gap-2 text-sm text-ink-soft"><span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-brass" /> {li}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-
+              )}
+            </div>
           </div>
+        </div>
+
+        {/* CTA pás */}
+        <div className="mt-16 flex flex-col items-start gap-4 rounded-2xl bg-navy p-8 text-cream sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h3 className="font-display text-xl font-bold">{t({ sk: "Prihláška zaberie ~15 minút. My dotiahneme zvyšok.", en: "The entry takes ~15 minutes. We handle the rest." })}</h3>
+            <p className="mt-1 text-cream/70">{t({ sk: "Kontrola fotografie, údajov aj podanie v oficiálnom okne — od 49 € s DPH.", en: "Photo check, data review and filing in the official window — from €49 incl. VAT." })}</p>
+          </div>
+          <Link href="/green-card/prihlaska" className="btn-accent shrink-0 !py-3.5 sm:!px-8">
+            {t({ sk: "Vyplniť prihlášku", en: "Start my entry" })} <ArrowRight size={16} />
+          </Link>
         </div>
       </div>
     </section>

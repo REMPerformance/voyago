@@ -191,3 +191,32 @@
 .legal li { margin-top: 0.35rem; }
 .legal a { color: #C99A4E; text-decoration: underline; text-underline-offset: 2px; }
 .legal strong { color: #0A1622; }
+
+/* ── Mobil: krotenie mierky ─────────────────────────────────────────
+   Na telefónoch pôsobil web obrovsky: veľké display nadpisy a vysoké
+   sekcie. Riešime globálne — menší základ písma, strop pre najväčšie
+   text utility a tesnejší vertikálny rytmus. Desktop nedotknutý. */
+@media (max-width: 640px) {
+  html { font-size: 15px; }
+
+  /* stropy najväčších textov (display nadpisy, veľké čísla) */
+  .text-7xl { font-size: 2.85rem !important; line-height: 1.04 !important; }
+  .text-6xl { font-size: 2.6rem !important; line-height: 1.05 !important; }
+  .text-5xl { font-size: 2.3rem !important; line-height: 1.08 !important; }
+  .text-4xl { font-size: 1.95rem !important; line-height: 1.12 !important; }
+  .text-3xl { font-size: 1.6rem !important; line-height: 1.16 !important; }
+
+  /* tesnejšie sekcie a odstupy */
+  .py-24 { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
+  .py-20 { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+  .py-16 { padding-top: 2.6rem !important; padding-bottom: 2.6rem !important; }
+  .py-14 { padding-top: 2.4rem !important; padding-bottom: 2.4rem !important; }
+  .mt-20 { margin-top: 3.25rem !important; }
+  .mt-16 { margin-top: 2.75rem !important; }
+  .mt-14 { margin-top: 2.5rem !important; }
+  .mt-12 { margin-top: 2.25rem !important; }
+
+  /* karty a mriežky nech dýchajú menej */
+  .gap-12 { gap: 2rem !important; }
+  .gap-10 { gap: 1.75rem !important; }
+}

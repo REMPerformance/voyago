@@ -3,7 +3,7 @@ import { Seal } from "@/components/Seal";
 /** Zväčšený „specimen" americkej zelenej karty (server-safe). */
 export function GreenCardSpecimen() {
   return (
-    <div className="relative w-full max-w-md">
+    <div className="relative w-full max-w-md lg:max-w-lg">
       <div className="secure-bg relative aspect-[1.586/1] overflow-hidden rounded-2xl border border-cream/25 bg-gradient-to-br from-green-soft to-green p-6 text-cream shadow-pass">
         <div className="pointer-events-none absolute inset-0 opacity-50" style={{ backgroundImage: "repeating-linear-gradient(125deg, rgba(255,255,255,0.06) 0 1px, transparent 1px 9px)" }} />
         <span className="pointer-events-none absolute inset-0 grid -rotate-[14deg] place-items-center font-display text-5xl font-extrabold uppercase tracking-[0.25em] text-cream/10">

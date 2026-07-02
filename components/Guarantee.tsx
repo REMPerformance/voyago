@@ -59,7 +59,7 @@ export function Guarantee() {
                   <span className="rounded-md bg-brass px-2 py-0.5 text-xs font-bold text-ink">+{PROTECTION.fee} €</span>
                 </div>
                 <p className="mt-1.5 max-w-lg text-paper/75">
-                  {t({ sk: "Ak vízum zamietnu, vrátime vám plnú pôvodnú sumu. Doplníte ju k žiadosti za 10 € — pre úplný pokoj.", en: "If your visa is refused, we refund the full original amount. Add it to any application for €10 — for complete peace of mind." })}
+                  {t({ sk: "Ak úrad žiadosť zamietne napriek správne poskytnutým údajom, vrátime vám celú pôvodnú sumu. Doplnok k žiadosti za 22 € na osobu.", en: "If the authority refuses your application despite correctly provided details, we refund the full original amount. Add it to any application for €22 per traveller." })}
                 </p>
               </div>
             </div>

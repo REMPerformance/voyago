@@ -1236,7 +1236,7 @@ export const productPrice = (p: Product): number => p.govFee + p.serviceFee;
 // Expresné spracovanie — platený upsell (prednostné vybavenie z našej strany).
 // Doplnkové služby (platené upselly). Účtujú sa za každú žiadosť (jedného cestujúceho).
 export const EXPRESS_PCT = 0.5; // expresné spracovanie = +50 % zo sumy
-export const PROTECTION_FEE = 10; // ochrana kupujúceho = 10 € s DPH, nevratné
+export const PROTECTION_FEE = 22; // ochrana kupujúceho = 22 € s DPH za osobu, nevratné
 
 export const expressAmount = (price: number): number => Math.round(price * EXPRESS_PCT);
 
@@ -1248,5 +1248,5 @@ export const EXPRESS: { pct: number; label: Localized; desc: Localized } = {
 export const PROTECTION: { fee: number; label: Localized; desc: Localized } = {
   fee: PROTECTION_FEE,
   label: { sk: "Ochrana kupujúceho", en: "Buyer protection" },
-  desc: { sk: "Ak žiadosť zamietnu, vrátime vám plnú pôvodnú sumu za vízum. Poplatok 10 € je nevratný.", en: "If your application is refused, we refund the full original visa fee. The €10 fee is non-refundable." },
+  desc: { sk: "Ak úrad žiadosť zamietne napriek správne a pravdivo poskytnutým údajom, vrátime vám celú pôvodnú sumu. Poplatok 22 € je nevratný a nekryje zamietnutie pre chybné či zatajené údaje.", en: "If the authority refuses your application despite correctly and truthfully provided details, we refund the full original amount. The €22 fee is non-refundable and does not cover refusals caused by incorrect or concealed information." },
 };

@@ -74,8 +74,10 @@ export default function Page() {
       <H>8. Doplnková služba — Ochrana kupujúceho</H>
       <p>
         Ochrana kupujúceho je nepovinná platená služba za poplatok <strong>{PROTECTION_FEE} € s DPH za každú jednu žiadosť</strong>
-        (jedného cestujúceho). Ak je žiadosť, ku ktorej bola ochrana zakúpená, <strong>zamietnutá príslušným úradom cieľovej krajiny</strong>,
-        poskytovateľ vráti zákazníkovi <strong>Pôvodnú sumu</strong> (štátny poplatok + poplatok za sprostredkovanie).
+        (jedného cestujúceho). Ak je žiadosť, ku ktorej bola ochrana zakúpená, <strong>zamietnutá príslušným úradom cieľovej krajiny
+        napriek tomu, že zákazník poskytol pravdivé, správne a úplné údaje a podklady a poskytol potrebnú súčinnosť</strong>,
+        poskytovateľ vráti zákazníkovi <strong>Pôvodnú sumu</strong> (štátny poplatok + poplatok za sprostredkovanie). Ochrana kupujúceho
+        teda kryje výlučne zamietnutie z dôvodov, ktoré nie sú pripísateľné zákazníkovi (napr. voľná úvaha úradu pri riadne podanej žiadosti).
       </p>
       <p>
         Poplatok za ochranu kupujúceho ({PROTECTION_FEE} €) je <strong>nevratný</strong> a do vrátenej sumy sa nezapočítava. Rovnako sa
@@ -83,6 +85,7 @@ export default function Page() {
       </p>
       <p><strong>Ochrana kupujúceho sa nevzťahuje na prípady, keď:</strong></p>
       <ul>
+        <li>zamietnutie je čo i len sčasti pripísateľné údajom, podkladom, opomenutiam alebo konaniu zákazníka; splnenie podmienok posúdi poskytovateľ na základe odôvodnenia úradu a údajov zo žiadosti;</li>
         <li>žiadosť bola zamietnutá pre nepravdivé, nesprávne, neúplné alebo zastarané údaje či podklady poskytnuté zákazníkom;</li>
         <li>zákazník zatajil podstatné skutočnosti (napr. predchádzajúce zamietnutie, zákaz vstupu, trestnú činnosť, predchádzajúce prekročenie povoleného pobytu);</li>
         <li>zákazník sa nedostavil na pohovor, biometriu alebo nedoručil vyžiadané podklady v stanovenom čase;</li>
