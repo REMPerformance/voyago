@@ -22,26 +22,26 @@ export function Hero() {
 
   return (
     <section className="relative overflow-hidden">
-      <div className="container-page grid items-center gap-10 py-16 sm:py-20 lg:grid-cols-[0.92fr_1.08fr] lg:gap-16 lg:py-24">
+      <div className="container-page grid items-center gap-8 py-10 sm:gap-10 sm:py-20 lg:grid-cols-[0.92fr_1.08fr] lg:gap-16 lg:py-24">
         {/* LEFT COPY */}
         <div>
           <p className="eyebrow" style={reveal(0)}>
             {tr("hero.eyebrow")}
           </p>
           <h1
-            className="mt-5 font-display text-[2.6rem] font-bold leading-[1.03] tracking-tight sm:text-6xl lg:text-[4rem]"
+            className="mt-4 font-display text-[2.05rem] font-bold leading-[1.06] tracking-tight sm:mt-5 sm:text-6xl sm:leading-[1.03] lg:text-[4rem]"
             style={reveal(0.08)}
           >
             {tr("hero.title")}
           </h1>
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft" style={reveal(0.16)}>
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-ink-soft sm:mt-6 sm:text-lg" style={reveal(0.16)}>
             {tr("hero.sub")}
           </p>
 
-          <div className="mt-9 flex flex-wrap items-center gap-4" style={reveal(0.24)}>
+          <div className="mt-6 flex flex-wrap items-center gap-3.5 sm:mt-9 sm:gap-4" style={reveal(0.24)}>
             <Link
               href="/wizard"
-              className="inline-flex items-center gap-2 rounded-lg bg-brass px-7 py-4 text-base font-bold text-navy shadow-[0_14px_30px_-12px_rgba(201,154,78,0.7)] transition-all hover:-translate-y-0.5 hover:bg-brass-light"
+              className="inline-flex items-center gap-2 rounded-lg bg-brass px-5 py-3 text-[0.95rem] font-bold sm:px-7 sm:py-4 sm:text-base text-navy shadow-[0_14px_30px_-12px_rgba(201,154,78,0.7)] transition-all hover:-translate-y-0.5 hover:bg-brass-light"
             >
               {tr("hero.cta")} <ArrowRight size={18} />
             </Link>

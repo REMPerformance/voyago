@@ -48,8 +48,8 @@ export function Header() {
 
       {/* Main header */}
       <header className="border-b border-line bg-surface/95 backdrop-blur-md">
-        <div className="container-page flex h-[4.5rem] items-center justify-between gap-4">
-          <Link href="/" aria-label={site.brand} className="shrink-0 text-ink" onClick={() => setOpen(false)}>
+        <div className="container-page flex h-16 items-center justify-between gap-2.5 sm:h-[4.5rem] sm:gap-4">
+          <Link href="/" aria-label={site.brand} className="shrink-0 origin-left scale-[0.88] text-ink sm:scale-100" onClick={() => setOpen(false)}>
             <Logo variant="full" />
           </Link>
 
@@ -61,7 +61,7 @@ export function Header() {
             ))}
           </nav>
 
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <GlobalSearch />
             <div className="hidden sm:block"><ThemeToggle /></div>
             <LanguageToggle />

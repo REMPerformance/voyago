@@ -218,5 +218,22 @@
 
   /* karty a mriežky nech dýchajú menej */
   .gap-12 { gap: 2rem !important; }
-  .gap-10 { gap: 1.75rem !important; }
+  .gap-10 { gap: 1.5rem !important; }
+  .gap-8 { gap: 1.35rem !important; }
+  .gap-6 { gap: 1.1rem !important; }
+  .gap-5 { gap: 0.95rem !important; }
+
+  /* menšie vnútro kariet a stredné texty */
+  .text-2xl { font-size: 1.32rem !important; line-height: 1.2 !important; }
+  .p-8 { padding: 1.35rem !important; }
+  .p-7 { padding: 1.25rem !important; }
+  .p-6 { padding: 1.1rem !important; }
+  .mt-10 { margin-top: 1.9rem !important; }
+  .mt-8 { margin-top: 1.6rem !important; }
+  .py-12 { padding-top: 2.1rem !important; padding-bottom: 2.1rem !important; }
+  .py-10 { padding-top: 1.9rem !important; padding-bottom: 1.9rem !important; }
 }
+
+/* skryť scrollbar pri mobilných karuseloch */
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }

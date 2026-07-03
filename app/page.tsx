@@ -38,9 +38,9 @@ export default function HomePage() {
             {tr("cta.browse")} <ArrowRight size={15} />
           </Link>
         </Reveal>
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="no-scrollbar -mx-5 mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 sm:mx-0 sm:grid sm:snap-none sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
           {featured.map((p, i) => (
-            <Reveal key={p.slug} delay={(i % 3) * 80}>
+            <Reveal key={p.slug} delay={(i % 3) * 80} className="min-w-[84%] snap-center sm:min-w-0">
               <ProductCard product={p} />
             </Reveal>
           ))}

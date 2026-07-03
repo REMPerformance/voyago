@@ -23,9 +23,9 @@ export function HowItWorks() {
       </div>
 
       {/* Kroky — horizontálny tok */}
-      <ol className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+      <ol className="no-scrollbar -mx-5 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-2 sm:mx-0 sm:grid sm:snap-none sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-5">
         {easy.map((s) => (
-          <li key={s.n} className="group relative overflow-hidden rounded-2xl border border-line bg-surface p-6 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-brass/45">
+          <li key={s.n} className="group relative min-w-[78%] snap-center overflow-hidden rounded-2xl border border-line bg-surface p-6 shadow-card sm:min-w-0 transition-all duration-200 hover:-translate-y-0.5 hover:border-brass/45">
             <span aria-hidden className="pointer-events-none absolute -right-3 -top-4 font-display text-[5rem] font-extrabold leading-none text-ink/[0.04] transition-colors group-hover:text-brass/10">{s.n}</span>
             <span className="relative grid h-10 w-10 place-items-center rounded-xl bg-ink font-display text-sm font-bold text-paper">{s.n}</span>
             <h3 className="relative mt-4 font-display text-base font-bold text-ink">{s.t}</h3>
