@@ -30,6 +30,7 @@ export async function POST(req: Request) {
     user_agent: ua.slice(0, 300),
     ip,
     country,
+    query: String(body.query || "").slice(0, 300),
     region: region.slice(0, 10),
     city: city.slice(0, 80),
     is_bot: isBot,

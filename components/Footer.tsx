@@ -29,6 +29,8 @@ export function Footer() {
         { label: t({ sk: "Foto na vízum", en: "Visa photo" }), href: "/foto-poziadavky" },
         { label: t({ sk: "Kontakt a podpora", en: "Contact & support" }), href: "/kontakt" },
         { label: tr("gc.title"), href: "/green-card" },
+        { label: t({ sk: "Pre firmy", en: "For business" }), href: "/pre-firmy" },
+        { label: t({ sk: "Partnerský program", en: "Affiliate program" }), href: "/partnersky-program" },
       ],
     },
     {

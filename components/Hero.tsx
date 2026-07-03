@@ -57,6 +57,7 @@ export function Hero() {
 
         {/* RIGHT: boarding pass */}
         <div
+          className="lg:scale-[1.06] xl:scale-[1.1]"
           style={{
             opacity: shown ? 1 : 0,
             transform: shown ? "translateY(0)" : "translateY(40px)",
@@ -72,7 +73,7 @@ export function Hero() {
 
 function BoardingPass() {
   return (
-    <div className="relative" style={{ transform: "rotate(-1deg)" }}>
+    <div className="relative" style={{ transform: "rotate(-4deg)" }}>
       {/* torn notches on the seam (desktop) */}
       <span className="absolute z-20 hidden h-4 w-4 -translate-y-1/2 rounded-full bg-paper sm:block" style={{ right: "9.5rem", top: 0 }} />
       <span className="absolute z-20 hidden h-4 w-4 translate-y-1/2 rounded-full bg-paper sm:block" style={{ right: "9.5rem", bottom: 0 }} />

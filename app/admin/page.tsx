@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, Eye, EyeOff, LogOut, Megaphone, Save, X, Inbox, Download, ChevronDown, Mail, Send, Percent, Search, Ticket, Activity, Globe, MessageCircle } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, EyeOff, LogOut, Megaphone, Save, X, Inbox, Download, ChevronDown, Mail, Send, Percent, Search, Ticket, Activity, Globe, MessageCircle, BookOpen } from "lucide-react";
 import { ChatAdmin } from "@/components/admin/ChatAdmin";
 import { supabase, supabaseEnabled } from "@/lib/supabase";
 import { fileSignedUrl } from "@/lib/applications";
 import { ALL_STATUSES, statusLabel } from "@/config/orderStages";
 import { renderEmail, TEMPLATES, type EmailTemplate } from "@/lib/email";
 import { PRODUCTS, getProduct } from "@/config/products";
+import { POSTS } from "@/config/blog";
 import { fetchStats, setProcessed, bumpProcessed } from "@/lib/stats";
 import type { Announcement, Placement, Tone } from "@/lib/announcements";
 
@@ -19,6 +20,51 @@ const EMPTY: Draft = {
 const TONES: Tone[] = ["info", "warning", "success", "promo"];
 const PLACEMENTS: Placement[] = ["bar", "popup"];
 const projectHost = (process.env.NEXT_PUBLIC_SUPABASE_URL || "").replace(/^https?:\/\//, "").replace(/\/.*$/, "") || "nenastavené";
+
+const PAGE_NAMES: Record<string, string> = {
+  "/": "Domov", "/destinations": "Destinácie", "/wizard": "Sprievodca výberom", "/cart": "Košík",
+  "/checkout": "Pokladňa", "/zhrnutie": "Zhrnutie objednávky", "/stav": "Sledovanie stavu",
+  "/blog": "Blog", "/green-card": "Zelená karta", "/green-card/prihlaska": "Zelená karta — prihláška",
+  "/foto-poziadavky": "Foto na vízum", "/ochrana-kupujuceho": "Ochrana kupujúceho",
+  "/pre-firmy": "Pre firmy", "/partnersky-program": "Partnerský program",
+  "/obchodne-podmienky": "Obchodné podmienky", "/ochrana-osobnych-udajov": "Ochrana osobných údajov",
+  "/reklamacie": "Reklamácie", "/kontakt": "Kontakt", "/admin": "Admin",
+};
+function pageName(path: string): string {
+  const clean = (path || "/").split("?")[0].replace(/\/$/, "") || "/";
+  if (PAGE_NAMES[clean]) return PAGE_NAMES[clean];
+  if (clean.startsWith("/apply/")) {
+    const p = PRODUCTS.find((x) => x.slug === clean.slice(7));
+    return p ? `Žiadosť — ${p.destination.sk} (${p.type.toUpperCase()})` : "Žiadosť";
+  }
+  if (clean.startsWith("/blog/")) {
+    const b = POSTS.find((x) => x.slug === clean.slice(6));
+    return b ? `Blog — ${b.title.sk}` : `Blog — ${clean.slice(6).replace(/-/g, " ")}`;
+  }
+  return clean;
+}
+function sourceLabel(v: any): string {
+  const q = new URLSearchParams(v.query || "");
+  const src = (q.get("utm_source") || "").toLowerCase();
+  const med = (q.get("utm_medium") || "").toLowerCase();
+  if (q.get("gclid") || (src.includes("google") && /cpc|ppc|paid/.test(med))) return "Google Ads (reklama)";
+  if (q.get("fbclid") || (src.includes("facebook") && /cpc|paid|ad/.test(med))) return "Facebook reklama";
+  if (q.get("ref")) return `Partner: ${q.get("ref")}`;
+  if (src) return `Kampaň: ${src}${med ? ` (${med})` : ""}`;
+  const r = v.referrer || "";
+  if (!r) return "Priamo (napísal adresu / záložka)";
+  try {
+    const h = new URL(r).hostname.replace(/^www\./, "");
+    if (h.includes("voyago")) return "Presun v rámci webu";
+    if (h.includes("google")) return "Google vyhľadávanie";
+    if (h.includes("bing")) return "Bing vyhľadávanie";
+    if (h.includes("seznam")) return "Seznam vyhľadávanie";
+    if (h.includes("facebook") || h === "fb.com" || h === "l.facebook.com") return "Facebook";
+    if (h.includes("instagram")) return "Instagram";
+    if (h.includes("linkedin")) return "LinkedIn";
+    return `Odkaz z: ${h}`;
+  } catch { return "Odkaz z inej stránky"; }
+}
 
 const flagOf = (cc?: string) => cc && cc.length === 2 ? String.fromCodePoint(...[...cc.toUpperCase()].map((c) => 127397 + c.charCodeAt(0))) : "";
 
@@ -35,6 +81,28 @@ const fromLocal = (v: string) => (v ? new Date(v).toISOString() : null);
 
 export default function AdminPage() {
   const [session, setSession] = useState<any>(null);
+
+  // ── Blog ──
+  const [bPosts, setBPosts] = useState<any[]>([]);
+  const [bTitle, setBTitle] = useState(""); const [bTag, setBTag] = useState("Rady");
+  const [bExcerpt, setBExcerpt] = useState(""); const [bImage, setBImage] = useState("");
+  const [bContent, setBContent] = useState(""); const [bMsg, setBMsg] = useState("");
+  const loadBlog = async () => {
+    const r = await fetch("/api/admin/blog", { headers: { Authorization: `Bearer ${session.access_token}` } });
+    const d = await r.json(); if (d.posts) setBPosts(d.posts);
+  };
+  const createBlog = async () => {
+    setBMsg("Ukladám…");
+    const r = await fetch("/api/admin/blog", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` }, body: JSON.stringify({ title: bTitle, tag: bTag, excerpt: bExcerpt, image: bImage, content: bContent }) });
+    const d = await r.json();
+    if (d.ok) { setBMsg(`Uverejnené ✓ — /blog/${d.slug} (zobrazí sa do ~5 min)`); setBTitle(""); setBExcerpt(""); setBImage(""); setBContent(""); loadBlog(); }
+    else setBMsg(d.error || "Chyba");
+  };
+  const deleteBlog = async (id: string) => {
+    if (!confirm("Zmazať článok?")) return;
+    await fetch(`/api/admin/blog?id=${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${session.access_token}` } });
+    loadBlog();
+  };
   const [ready, setReady] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,7 +110,7 @@ export default function AdminPage() {
   const [list, setList] = useState<Announcement[]>([]);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [busy, setBusy] = useState(false);
-  const [tab, setTab] = useState<"ann" | "apps" | "disc" | "promo" | "traffic" | "stats" | "chat">("ann");
+  const [tab, setTab] = useState<"ann" | "apps" | "disc" | "promo" | "traffic" | "stats" | "chat" | "blog">("ann");
   const [apps, setApps] = useState<any[]>([]);
   const [open, setOpen] = useState<string | null>(null);
   const [emailFor, setEmailFor] = useState<any>(null);
@@ -203,6 +271,7 @@ export default function AdminPage() {
   };
   useEffect(() => { if (session && tab === "traffic") loadVisits(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
   const loadStats = async () => { setStatMap(await fetchStats()); };
+  useEffect(() => { if (session && tab === "blog") loadBlog(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
   useEffect(() => { if (session && tab === "stats") loadStats(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
   const saveStat = async (slug: string) => { await setProcessed(slug, statMap[slug] || 0); alert("Počet uložený ✓"); };
   const humanViews = visits.filter((v) => v.type === "pageview" && !v.is_bot);
@@ -274,6 +343,7 @@ export default function AdminPage() {
       <div className="mt-6 flex items-center gap-2 border-b border-line">
         <button onClick={() => setTab("ann")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "ann" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Megaphone size={15} /> Oznamy</button>
         <button onClick={() => setTab("apps")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "apps" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Inbox size={15} /> Žiadosti</button>
+        <button onClick={() => setTab("blog")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "blog" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><BookOpen size={15} /> Blog</button>
         <button onClick={() => setTab("disc")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "disc" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Percent size={15} /> Zľavy</button>
         <button onClick={() => setTab("promo")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "promo" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Ticket size={15} /> Promo kódy</button>
         <button onClick={() => setTab("traffic")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "traffic" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Activity size={15} /> Analytika</button>
@@ -531,55 +601,97 @@ export default function AdminPage() {
       )}
 
       {tab === "traffic" && (() => {
-        const pv = humanViews; // len ľudia + pageview
-        const days: Record<string, typeof pv> = {};
-        pv.slice(0, 200).forEach((v) => {
-          const d = new Date(v.created_at).toLocaleDateString("sk-SK", { weekday: "long", day: "numeric", month: "long" });
-          (days[d] ||= [] as any).push(v);
+        const pvAll = visits.filter((v: any) => v.type === "pageview");
+        const hb = (rows: any[]) => {
+          const h = rows.filter((v) => !v.is_bot).length;
+          return { h, b: rows.length - h };
+        };
+        const HB = ({ h, b }: { h: number; b: number }) => (
+          <span className="whitespace-nowrap font-mono"><span className="font-bold text-green">{h}</span><span className="text-ink-soft/60"> / {b}</span></span>
+        );
+        const cntHB = (keyOf: (v: any) => string) => {
+          const m: Record<string, { h: number; b: number }> = {};
+          pvAll.forEach((v: any) => {
+            const k = keyOf(v); if (!k) return;
+            (m[k] ||= { h: 0, b: 0 })[v.is_bot ? "b" : "h"]++;
+          });
+          return Object.entries(m).sort((a, z) => (z[1].h * 1000 + z[1].b) - (a[1].h * 1000 + a[1].b)).slice(0, 8);
+        };
+        const topP = cntHB((v) => pageName(v.path));
+        const topC = cntHB((v) => (v.country ? `${flagOf(v.country)} ${v.country}` : ""));
+        const topM = cntHB((v) => (v.city ? `${v.city}${v.country ? ` (${v.country})` : ""}` : ""));
+
+        // Príchody: prvá stránka každej návštevy (session), rozklikávateľné na celý priebeh
+        const bySid: Record<string, any[]> = {};
+        pvAll.forEach((v: any) => { (bySid[v.sid || v.id] ||= []).push(v); });
+        const sessions = Object.values(bySid)
+          .map((rows) => rows.sort((a, z) => a.created_at.localeCompare(z.created_at)))
+          .sort((a, z) => z[0].created_at.localeCompare(a[0].created_at))
+          .slice(0, 80);
+        const days: Record<string, any[][]> = {};
+        sessions.forEach((rows) => {
+          const d = new Date(rows[0].created_at).toLocaleDateString("sk-SK", { weekday: "long", day: "numeric", month: "long" });
+          (days[d] ||= []).push(rows);
         });
-        const countries = new Set(pv.map((v) => v.country).filter(Boolean));
+        const tot = hb(pvAll);
+        const sidsH = new Set(pvAll.filter((v: any) => !v.is_bot).map((v: any) => v.sid));
+        const sidsB = new Set(pvAll.filter((v: any) => v.is_bot).map((v: any) => v.sid));
+
         return (
           <div className="mt-8">
-            <div className="grid grid-cols-3 gap-3">
-              <Stat label="Zobrazenia" value={String(pv.length)} />
-              <Stat label="Návštevníci" value={String(humanSids.size)} />
-              <Stat label="Krajiny" value={String(countries.size)} />
+            <p className="mb-2 text-xs text-ink-soft">Formát čísel: <span className="font-bold text-green">ľudia</span> <span className="text-ink-soft/60">/ boti</span></p>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              <div className="rounded-xl border border-line bg-surface p-4 shadow-card"><p className="text-xs text-ink-soft">Zobrazenia stránok</p><p className="mt-1 font-display text-2xl"><HB h={tot.h} b={tot.b} /></p></div>
+              <div className="rounded-xl border border-line bg-surface p-4 shadow-card"><p className="text-xs text-ink-soft">Návštevníci</p><p className="mt-1 font-display text-2xl"><HB h={sidsH.size} b={sidsB.size} /></p></div>
+              <div className="rounded-xl border border-line bg-surface p-4 shadow-card"><p className="text-xs text-ink-soft">Krajiny</p><p className="mt-1 font-display text-2xl font-bold text-ink">{topC.length}</p></div>
             </div>
 
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <div className="rounded-xl border border-line bg-surface p-4 shadow-card">
-                <p className="mb-1 font-semibold text-ink">Najnavštevovanejšie stránky</p>
-                {topPages.length === 0 ? <p className="text-sm text-ink-soft">—</p> : topPages.map(([k, n]) => (
-                  <div key={k} className="flex justify-between gap-3 border-t border-line-soft py-1.5 text-sm"><span className="truncate text-ink-soft">{k}</span><span className="font-mono text-ink">{n}</span></div>
-                ))}
-              </div>
-              <div className="rounded-xl border border-line bg-surface p-4 shadow-card">
-                <p className="mb-1 font-semibold text-ink">Zdroje návštev</p>
-                {topRefs.length === 0 ? <p className="text-sm text-ink-soft">Priame návštevy</p> : topRefs.map(([k, n]) => (
-                  <div key={k} className="flex justify-between gap-3 border-t border-line-soft py-1.5 text-sm"><span className="truncate text-ink-soft">{k.replace(/^https?:\/\//, "")}</span><span className="font-mono text-ink">{n}</span></div>
-                ))}
-              </div>
+            <div className="mt-4 grid gap-4 lg:grid-cols-3">
+              {([["Najnavštevovanejšie stránky", topP], ["Krajiny", topC], ["Mestá", topM]] as [string, [string, { h: number; b: number }][]][]).map(([title, rows]) => (
+                <div key={title} className="rounded-xl border border-line bg-surface p-4 shadow-card">
+                  <p className="mb-1 font-semibold text-ink">{title}</p>
+                  {rows.length === 0 ? <p className="text-sm text-ink-soft">Zatiaľ žiadne dáta.</p> : rows.map(([k, c]) => (
+                    <div key={k} className="flex items-center justify-between gap-3 border-t border-line-soft py-1.5 text-sm">
+                      <span className="truncate text-ink-soft">{k}</span><HB h={c.h} b={c.b} />
+                    </div>
+                  ))}
+                </div>
+              ))}
             </div>
 
             <div className="mt-4 rounded-xl border border-line bg-surface shadow-card">
               <div className="flex items-center justify-between border-b border-line px-4 py-3">
-                <p className="font-semibold text-ink">Návštevy — kto, odkiaľ a kam prišiel</p>
+                <p className="font-semibold text-ink">Posledná aktivita — ako sa ľudia dostali na web</p>
                 <button onClick={loadVisits} className="btn-ghost !py-1.5 text-xs">Obnoviť</button>
               </div>
-              {pv.length === 0 && <p className="px-4 py-4 text-sm text-ink-soft">Zatiaľ žiadne dáta — naplní sa reálnymi návštevami po nasadení.</p>}
-              {Object.entries(days).map(([day, rows]) => (
+              {sessions.length === 0 && <p className="px-4 py-4 text-sm text-ink-soft">Zatiaľ žiadne dáta.</p>}
+              {Object.entries(days).map(([day, ses]) => (
                 <div key={day}>
                   <p className="border-b border-line-soft bg-paper/60 px-4 py-1.5 text-[0.62rem] font-bold uppercase tracking-wider text-ink-soft">{day}</p>
-                  {(rows as any[]).map((v) => (
-                    <div key={v.id} className="grid grid-cols-[54px_minmax(120px,1fr)_2fr] items-center gap-3 border-b border-line-soft px-4 py-2 text-sm last:border-b-0">
-                      <span className="font-mono text-xs text-ink-soft">{new Date(v.created_at).toLocaleTimeString("sk-SK", { hour: "2-digit", minute: "2-digit" })}</span>
-                      <span className="truncate text-ink">
-                        <span className="mr-1.5">{flagOf(v.country) || "🌐"}</span>
-                        {v.city || v.country || "Neznáme"}{v.region && v.country === "SK" ? ` · ${v.region}` : ""}
-                      </span>
-                      <span className="truncate font-mono text-xs text-ink-soft">{v.path}</span>
-                    </div>
-                  ))}
+                  {ses.map((rows) => {
+                    const a = rows[0];
+                    return (
+                      <details key={a.id} className="group border-b border-line-soft last:border-b-0">
+                        <summary className="grid cursor-pointer list-none grid-cols-[50px_minmax(100px,0.8fr)_1.3fr_auto] items-center gap-3 px-4 py-2.5 text-sm hover:bg-paper/40">
+                          <span className="font-mono text-xs text-ink-soft">{new Date(a.created_at).toLocaleTimeString("sk-SK", { hour: "2-digit", minute: "2-digit" })}</span>
+                          <span className="truncate text-ink"><span className="mr-1.5">{flagOf(a.country) || "🌐"}</span>{a.city || a.country || "Neznáme"}</span>
+                          <span className="truncate font-medium text-ink">{sourceLabel(a)}</span>
+                          <span className="flex items-center gap-2">
+                            <span className={`rounded-md px-1.5 py-0.5 text-[0.58rem] font-bold uppercase ${a.is_bot ? "bg-line-soft text-ink-soft" : "bg-green/15 text-green"}`}>{a.is_bot ? "bot" : "človek"}</span>
+                            <span className="text-[0.62rem] text-ink-soft/70">{rows.length} str. <span className="inline-block transition-transform group-open:rotate-90">›</span></span>
+                          </span>
+                        </summary>
+                        <div className="bg-paper/30 px-4 pb-2.5 pt-1">
+                          {rows.map((v: any) => (
+                            <div key={v.id} className="flex items-center gap-3 py-1 text-xs text-ink-soft">
+                              <span className="w-[50px] shrink-0 font-mono">{new Date(v.created_at).toLocaleTimeString("sk-SK", { hour: "2-digit", minute: "2-digit" })}</span>
+                              <span className="truncate">{pageName(v.path)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </details>
+                    );
+                  })}
                 </div>
               ))}
             </div>

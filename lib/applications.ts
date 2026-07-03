@@ -22,6 +22,17 @@ export async function fileSignedUrl(path: string): Promise<string | null> {
   return data?.signedUrl ?? null;
 }
 
+/** Affiliate kód z localStorage (platí 30 dní od kliknutia na ?ref= odkaz). */
+function getAffiliateRef(): string | null {
+  try {
+    const raw = window.localStorage.getItem("voyago.ref");
+    if (!raw) return null;
+    const { c, t } = JSON.parse(raw);
+    if (!c || Date.now() - t > 30 * 24 * 3600 * 1000) return null;
+    return String(c).slice(0, 40);
+  } catch { return null; }
+}
+
 export interface SubmitItem { slug: string; price: number; data: Record<string, string>; express?: boolean; protection?: boolean; }
 
 /** Odošle žiadosť cez server (IP + súhlas + referencia + anti-spam). Vráti {id, ref} alebo null. */
@@ -44,6 +55,7 @@ export async function submitApplication(
         product_slug: items[0]?.slug ?? "",
         email,
         travelers: items.map((i) => ({ slug: i.slug, price: i.price, data: i.data, express: !!i.express, protection: !!i.protection })),
+        ref: getAffiliateRef(),
         files,
         amount_cents: Math.round(totalEur * 100),
         consent_vop: !!opts.consent,

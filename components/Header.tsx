@@ -22,6 +22,7 @@ export function Header() {
     { href: "/blog", label: "Blog" },
     { href: "/foto-poziadavky", label: t({ sk: "Foto na vízum", en: "Visa photo" }) },
     { href: "/stav", label: t({ sk: "Sledovať stav", en: "Track status" }) },
+    { href: "/pre-firmy", label: t({ sk: "Pre firmy", en: "For business" }) },
   ];
 
   return (
