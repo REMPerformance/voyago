@@ -66,7 +66,7 @@ function sourceLabel(v: any): string {
   } catch { return "Odkaz z inej stránky"; }
 }
 
-const flagOf = (cc?: string) => cc && cc.length === 2 ? String.fromCodePoint(...[...cc.toUpperCase()].map((c) => 127397 + c.charCodeAt(0))) : "";
+const flagOf = (cc?: string) => cc && cc.length === 2 ? String.fromCodePoint(...cc.toUpperCase().split('').map((c) => 127397 + c.charCodeAt(0))) : "";
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
