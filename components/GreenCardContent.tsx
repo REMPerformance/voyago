@@ -111,7 +111,7 @@ export function GreenCardContent() {
           <polygon points="960,0 1200,0 1200,300" fill="none" stroke="#C99A4E" strokeOpacity="0.18" strokeWidth="1.5" />
         </svg>
 
-        <div className="container-page relative grid items-center gap-12 py-16 lg:grid-cols-[1fr_1.1fr] lg:py-20">
+        <div className="container-page relative grid items-center gap-12 py-16 lg:grid-cols-[1.15fr_1fr] lg:py-20">
           <div>
             <div className="inline-flex items-center gap-3 rounded-lg border border-cream/15 bg-cream/[0.05] px-3.5 py-2">
               <CalendarDays size={16} className="text-brass-light" />
@@ -141,8 +141,32 @@ export function GreenCardContent() {
             </div>
           </div>
 
-          <div className="flex justify-center lg:justify-end lg:pr-0">
-            <div className="w-full max-w-md rotate-[3deg] transition-transform duration-300 hover:rotate-0 lg:max-w-none lg:origin-right lg:scale-[1.22] xl:scale-[1.32]">
+          <div className="relative flex justify-center lg:justify-end">
+            {/* Jemná americká vlajka v pozadí */}
+            <svg aria-hidden viewBox="0 0 420 300" className="pointer-events-none absolute -right-6 -top-10 hidden w-[26rem] rotate-[-7deg] lg:block">
+              {/* pruhy */}
+              <g>
+                <rect x="90" y="30" width="330" height="22" rx="11" fill="#b34a4a" opacity="0.13" />
+                <rect x="60" y="66" width="360" height="22" rx="11" fill="#EFF1F0" opacity="0.07" />
+                <rect x="90" y="102" width="330" height="22" rx="11" fill="#b34a4a" opacity="0.11" />
+                <rect x="30" y="138" width="390" height="22" rx="11" fill="#EFF1F0" opacity="0.06" />
+                <rect x="70" y="174" width="350" height="22" rx="11" fill="#b34a4a" opacity="0.09" />
+                <rect x="110" y="210" width="310" height="22" rx="11" fill="#EFF1F0" opacity="0.05" />
+              </g>
+              {/* kanton s hviezdami */}
+              <g fill="#EFF1F0" opacity="0.28">
+                {Array.from({ length: 4 }).map((_, r) =>
+                  Array.from({ length: 6 }).map((_, c) => (
+                    <circle key={`${r}-${c}`} cx={18 + c * 20} cy={40 + r * 20} r="2.3" />
+                  ))
+                )}
+              </g>
+              <g fill="#C99A4E" opacity="0.5">
+                <circle cx="138" cy="60" r="2.6" />
+              </g>
+            </svg>
+
+            <div className="relative w-full max-w-[19rem] rotate-[3deg] transition-transform duration-300 hover:rotate-0 sm:max-w-sm lg:mr-[-0.5rem] lg:translate-y-2">
               <GreenCardSpecimen />
             </div>
           </div>
