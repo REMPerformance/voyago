@@ -98,6 +98,18 @@ export default function AdminPage() {
     if (d.ok) { setBMsg(`Uverejnené ✓ — /blog/${d.slug} (zobrazí sa do ~5 min)`); setBTitle(""); setBExcerpt(""); setBImage(""); setBContent(""); loadBlog(); }
     else setBMsg(d.error || "Chyba");
   };
+  // ── Správy (kontakt / firmy / partneri) ──
+  const [inbox, setInbox] = useState<{ contact_messages: any[]; b2b_leads: any[]; affiliate_signups: any[] }>({ contact_messages: [], b2b_leads: [], affiliate_signups: [] });
+  const loadInbox = async () => {
+    const r = await fetch("/api/admin/inbox", { headers: { Authorization: `Bearer ${session.access_token}` } });
+    const d = await r.json(); if (d.contact_messages) setInbox(d);
+  };
+  const deleteInbox = async (table: string, id: string) => {
+    if (!confirm("Označiť ako vybavené a zmazať?")) return;
+    await fetch(`/api/admin/inbox?table=${table}&id=${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${session.access_token}` } });
+    loadInbox();
+  };
+
   const deleteBlog = async (id: string) => {
     if (!confirm("Zmazať článok?")) return;
     await fetch(`/api/admin/blog?id=${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${session.access_token}` } });
@@ -110,7 +122,7 @@ export default function AdminPage() {
   const [list, setList] = useState<Announcement[]>([]);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [busy, setBusy] = useState(false);
-  const [tab, setTab] = useState<"ann" | "apps" | "disc" | "promo" | "traffic" | "stats" | "chat" | "blog">("ann");
+  const [tab, setTab] = useState<"ann" | "apps" | "disc" | "promo" | "traffic" | "stats" | "chat" | "blog" | "inbox">("ann");
   const [apps, setApps] = useState<any[]>([]);
   const [open, setOpen] = useState<string | null>(null);
   const [emailFor, setEmailFor] = useState<any>(null);
@@ -271,6 +283,7 @@ export default function AdminPage() {
   };
   useEffect(() => { if (session && tab === "traffic") loadVisits(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
   const loadStats = async () => { setStatMap(await fetchStats()); };
+  useEffect(() => { if (session && tab === "inbox") loadInbox(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
   useEffect(() => { if (session && tab === "blog") loadBlog(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
   useEffect(() => { if (session && tab === "stats") loadStats(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
   const saveStat = async (slug: string) => { await setProcessed(slug, statMap[slug] || 0); alert("Počet uložený ✓"); };
@@ -344,6 +357,7 @@ export default function AdminPage() {
         <button onClick={() => setTab("ann")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "ann" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Megaphone size={15} /> Oznamy</button>
         <button onClick={() => setTab("apps")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "apps" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Inbox size={15} /> Žiadosti</button>
         <button onClick={() => setTab("blog")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "blog" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><BookOpen size={15} /> Blog</button>
+        <button onClick={() => setTab("inbox")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "inbox" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Inbox size={15} /> Správy{(inbox.contact_messages.length + inbox.b2b_leads.length + inbox.affiliate_signups.length) > 0 && <span className="rounded-md bg-brass/15 px-1.5 text-[0.62rem] font-bold text-brass">{inbox.contact_messages.length + inbox.b2b_leads.length + inbox.affiliate_signups.length}</span>}</button>
         <button onClick={() => setTab("disc")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "disc" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Percent size={15} /> Zľavy</button>
         <button onClick={() => setTab("promo")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "promo" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Ticket size={15} /> Promo kódy</button>
         <button onClick={() => setTab("traffic")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "traffic" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Activity size={15} /> Analytika</button>
@@ -698,6 +712,49 @@ export default function AdminPage() {
           </div>
         );
       })()}
+
+      {tab === "inbox" && (
+        <div className="mt-8 space-y-6">
+          {([
+            ["contact_messages", "Kontaktné správy", (m: any) => ({ head: `${m.name} · ${m.email}`, sub: m.subject || "—", body: m.message })],
+            ["b2b_leads", "Firmy — dopyty na spoluprácu", (m: any) => ({ head: `${m.company}${m.ico ? ` (IČO ${m.ico})` : ""}`, sub: `${m.email}${m.phone ? ` · ${m.phone}` : ""}${m.volume ? ` · ${m.volume}` : ""}`, body: m.message })],
+            ["affiliate_signups", "Partneri — prihlášky do programu", (m: any) => ({ head: `${m.name} · ${m.email}`, sub: `${m.channel || "bez kanála"}${m.audience ? ` · publikum ${m.audience}` : ""}`, body: m.note })],
+          ] as [string, string, (m: any) => { head: string; sub: string; body: string }][]).map(([table, title, fmt]) => {
+            const rows = (inbox as any)[table] as any[];
+            return (
+              <div key={table} className="rounded-xl border border-line bg-surface shadow-card">
+                <div className="flex items-center justify-between border-b border-line px-4 py-3">
+                  <p className="font-semibold text-ink">{title} <span className="text-ink-soft">({rows.length})</span></p>
+                  <button onClick={loadInbox} className="btn-ghost !py-1.5 text-xs">Obnoviť</button>
+                </div>
+                {rows.length === 0 && <p className="px-4 py-3 text-sm text-ink-soft">Nič nové.</p>}
+                {rows.map((m) => {
+                  const it = fmt(m);
+                  return (
+                    <details key={m.id} className="group border-b border-line-soft last:border-b-0">
+                      <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-2.5 hover:bg-paper/40">
+                        <span className="w-[92px] shrink-0 font-mono text-xs text-ink-soft">{new Date(m.created_at).toLocaleDateString("sk-SK")} {new Date(m.created_at).toLocaleTimeString("sk-SK", { hour: "2-digit", minute: "2-digit" })}</span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm font-semibold text-ink">{it.head}</span>
+                          <span className="block truncate text-xs text-ink-soft">{it.sub}</span>
+                        </span>
+                        <span className="text-ink-soft transition-transform group-open:rotate-90">›</span>
+                      </summary>
+                      <div className="bg-paper/30 px-4 pb-3 pt-1">
+                        <p className="whitespace-pre-wrap text-sm text-ink-soft">{it.body || "—"}</p>
+                        <div className="mt-2 flex gap-2">
+                          <a href={`mailto:${m.email}`} className="btn-ghost !py-1.5 text-xs">Odpovedať e-mailom</a>
+                          <button onClick={() => deleteInbox(table, m.id)} className="rounded-md px-2.5 py-1.5 text-xs font-semibold text-terra hover:bg-terra/10">Vybavené — zmazať</button>
+                        </div>
+                      </div>
+                    </details>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {emailFor && (
         <div className="fixed inset-0 z-[140] grid place-items-center bg-navy/55 p-4 backdrop-blur-sm" onClick={() => setEmailFor(null)}>

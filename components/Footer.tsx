@@ -93,19 +93,11 @@ export function Footer() {
           <p className="text-xs leading-relaxed text-cream/65">{t(disclaimer)}</p>
         </div>
 
-        {/* Firemné údaje */}
-        <div className="mt-8 grid gap-x-8 gap-y-1 border-t border-cream/10 pt-6 text-xs text-cream/55 sm:grid-cols-2 lg:grid-cols-3">
-          <p className="font-semibold text-cream/75">{c.legalName}</p>
-          <p>{c.address}</p>
-          <p>IČO: {c.ico} · DIČ: {c.dic}{c.icDph ? ` · IČ DPH: ${c.icDph}` : ""}</p>
-          {c.register && <p className="sm:col-span-2 lg:col-span-3">{c.register}</p>}
-        </div>
-
-        <div className="mt-6 border-t border-cream/10 pt-6">
+        <div className="mt-8 border-t border-cream/10 pt-6">
           <p className="mrz !text-cream/30">
             P&lt;{site.brand.toUpperCase()}&lt;&lt;{lang === "sk" ? "SPROSTREDKOVATEL" : "INTERMEDIARY"}&lt;&lt;&lt;&lt;&lt;{year}
           </p>
-          <p className="mt-3 text-xs text-cream/45">© {year} {c.legalName}. {tr("footer.rights")}</p>
+          <p className="mt-3 text-xs text-cream/45">© {year} Voyago. {tr("footer.rights")}</p>
           <p className="mt-2 text-[0.7rem] text-cream/35">
             {t({ sk: "Ikony:", en: "Icons:" })} game-icons.net (CC BY 3.0) · {t({ sk: "Vlajky:", en: "Flags:" })} flagcdn.com
           </p>

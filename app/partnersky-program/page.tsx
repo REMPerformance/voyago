@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Link2, MousePointerClick, Wallet, BarChart3, Ban, Check, Percent, CalendarClock, Landmark } from "lucide-react";
 import { LeadForm } from "@/components/LeadForm";
+import { Reveal } from "@/components/Reveal";
 import { site } from "@/config/site";
 
 export const metadata: Metadata = {
   title: "Partnerský program — zarábajte na odporúčaniach | Voyago",
-  description: "Affiliate program Voyago: 20 % provízia zo servisného poplatku z každej zaplatenej objednávky, 30-dňové cookie, mesačné výplaty od 50 €. Pre blogy, cestovateľské weby a tvorcov.",
+  description: "Affiliate program Voyago: 12 % provízia zo servisného poplatku z každej zaplatenej objednávky, 30-dňové cookie, mesačné výplaty od 50 €. Pre blogy, cestovateľské weby a tvorcov.",
   alternates: { canonical: `${site.url}/partnersky-program` },
 };
 
@@ -28,7 +29,7 @@ const RULES_NO = [
 ];
 
 const FAQ = [
-  { q: "Koľko reálne zarobím?", a: "20 % zo servisného poplatku každej zaplatenej objednávky. Pri typickej objednávke je to 8–15 € — cestovateľský článok s 50 objednávkami mesačne tak zarobí 400–750 €." },
+  { q: "Koľko reálne zarobím?", a: "12 % zo servisného poplatku každej zaplatenej objednávky. Pri typickej objednávke je to 5–8 € — cestovateľský článok s 50 objednávkami mesačne tak zarobí 250–400 €." },
   { q: "Kedy sa provízia započíta?", a: "Po zaplatení objednávky. Ak zákazník využije Ochranu kupujúceho a objednávka sa refunduje, provízia sa v danom mesiaci odpočíta." },
   { q: "Ako dostanem peniaze?", a: "Bankovým prevodom na IBAN raz mesačne, vždy do 15. dňa za predchádzajúci mesiac, pri zostatku aspoň 50 €." },
   { q: "Dostanem podklady?", a: "Áno — bannery, textové odkazy a hotové popisy destinácií. Na požiadanie pripravíme aj vlastný zľavový kód pre vaše publikum." },
@@ -39,44 +40,48 @@ export default function Page() {
   return (
     <section className="container-page py-14">
       {/* Hero */}
-      <div className="max-w-3xl">
+      <Reveal className="max-w-3xl border-b border-line pb-10">
         <p className="eyebrow">Partnerský program</p>
         <h1 className="mt-3 font-display text-4xl font-extrabold leading-tight sm:text-5xl">Odporúčajte Voyago a zarábajte z každej objednávky</h1>
         <p className="mt-4 text-lg leading-relaxed text-ink-soft">
           Píšete o cestovaní, točíte videá alebo máte publikum, ktoré lieta do USA, Anglicka či Ázie?
-          Pridajte svoj odkaz a získajte podiel z každej vybavenej žiadosti.
+          Pridajte svoj odkaz a získajte podiel z každej vybavenej žiadosti. Transparentné podmienky, mesačné
+          vyúčtovanie a podpora partnera od prvého dňa.
         </p>
-      </div>
+      </Reveal>
 
       {/* Kľúčové čísla */}
-      <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <Reveal className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-3">
         {[
-          { icon: <Percent size={20} />, v: "20 %", l: "provízia zo servisného poplatku každej zaplatenej objednávky" },
-          { icon: <CalendarClock size={20} />, v: "30 dní", l: "platnosť vášho odporúčania od kliknutia na odkaz" },
-          { icon: <Landmark size={20} />, v: "od 50 €", l: "mesačné výplaty na účet, zostatok sa prenáša" },
-        ].map((s) => (
-          <div key={s.v} className="rounded-2xl border border-line bg-surface p-6 shadow-card">
-            <span className="grid h-10 w-10 place-items-center rounded-lg bg-brass/12 text-brass">{s.icon}</span>
-            <p className="mt-3 font-display text-3xl font-extrabold text-ink">{s.v}</p>
-            <p className="mt-1 text-sm text-ink-soft">{s.l}</p>
+          { v: "12 %", l: "Provízia zo servisného poplatku každej zaplatenej objednávky" },
+          { v: "30 dní", l: "Platnosť vášho odporúčania od kliknutia na odkaz" },
+          { v: "od 50 €", l: "Mesačné výplaty na účet — nevyplatený zostatok sa prenáša" },
+        ].map((it) => (
+          <div key={it.v} className="border-t-2 border-ink pt-4">
+            <p className="font-display text-4xl font-extrabold text-ink">{it.v}</p>
+            <p className="mt-2 text-sm leading-relaxed text-ink-soft">{it.l}</p>
           </div>
         ))}
-      </div>
+      </Reveal>
 
       {/* Ako to funguje */}
-      <h2 className="mt-14 font-display text-2xl font-bold">Ako to funguje</h2>
-      <ol className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {STEPS.map((s) => (
-          <li key={s.t} className="rounded-2xl border border-line bg-surface p-5 shadow-card">
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-brass/12 text-brass">{s.icon}</span>
-            <p className="mt-3 font-display text-[0.95rem] font-bold text-ink">{s.t}</p>
-            <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">{s.d}</p>
-          </li>
+      <Reveal className="mt-16">
+        <h2 className="font-display text-3xl font-bold">Ako program funguje</h2>
+      </Reveal>
+      <ol className="mt-7 grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+        {STEPS.map((st, i) => (
+          <Reveal key={st.t} delay={i * 90}>
+            <li className="border-t border-line pt-4">
+              <span className="font-mono text-xs font-semibold tracking-[0.18em] text-brass">{String(i + 1).padStart(2, "0")}</span>
+              <p className="mt-2 font-display text-lg font-bold text-ink">{st.t.replace(/^\d+ · /, "")}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">{st.d}</p>
+            </li>
+          </Reveal>
         ))}
       </ol>
 
       {/* Pravidlá */}
-      <div className="mt-14 grid gap-4 lg:grid-cols-2">
+      <Reveal className="mt-16 grid gap-4 lg:grid-cols-2">
         <div className="rounded-2xl border border-green/30 bg-green/[0.05] p-6 sm:p-7">
           <p className="font-display text-lg font-bold text-ink">Čo vítame</p>
           <ul className="mt-4 space-y-2.5">
@@ -89,10 +94,10 @@ export default function Page() {
             {RULES_NO.map((r, i) => <li key={i} className="flex items-start gap-2.5 text-sm text-ink-soft"><Ban size={16} className="mt-0.5 shrink-0 text-terra" /> {r}</li>)}
           </ul>
         </div>
-      </div>
+      </Reveal>
 
       {/* FAQ + prihláška */}
-      <div className="mt-14 grid items-start gap-10 lg:grid-cols-[1.2fr_1fr]">
+      <Reveal className="mt-16 grid items-start gap-10 lg:grid-cols-[1.2fr_1fr]">
         <div>
           <h2 className="font-display text-2xl font-bold">Časté otázky partnerov</h2>
           <div className="mt-5 space-y-3">
@@ -115,6 +120,7 @@ export default function Page() {
         <div className="rounded-2xl border border-line bg-surface p-6 shadow-card lg:sticky lg:top-24">
           <h2 className="font-display text-xl font-bold">Prihláška do programu</h2>
           <p className="mb-4 mt-1 text-sm text-ink-soft">Schvaľujeme do 48 hodín. Kód a odkaz dostanete e-mailom.</p>
+          <a href="/voyago-media-kit.pdf" download className="mb-4 inline-flex items-center gap-2 rounded-lg border border-line bg-paper/50 px-3.5 py-2 text-sm font-semibold text-ink transition-colors hover:border-brass/50">📄 Stiahnuť media kit (PDF)</a>
           <LeadForm
             endpoint="/api/affiliate"
             cta="Odoslať prihlášku"
@@ -128,7 +134,7 @@ export default function Page() {
             ]}
           />
         </div>
-      </div>
+      </Reveal>
     </section>
   );
 }

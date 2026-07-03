@@ -40,11 +40,6 @@ export default function Page() {
             ))}
           </div>
 
-          <div className="mt-8 rounded-2xl border border-line bg-paper/50 p-6 text-sm leading-relaxed text-ink-soft">
-            <strong className="text-ink">Ako spolupráca prebieha:</strong> pošlete nám dopyt cez formulár → do 24 hodín sa ozveme
-            a prejdeme vaše destinácie a objemy → pripravíme cenovú ponuku na mieru → od prvej cesty máte vyhradený kontakt
-            a prioritné vybavovanie. Bez viazanosti a mesačných paušálov — platíte za vybavené povolenia.
-          </div>
         </div>
 
         <div className="rounded-2xl border border-line bg-surface p-6 shadow-card lg:sticky lg:top-24">

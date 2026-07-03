@@ -110,7 +110,7 @@ export function Globe() {
       links.push({ a: CITIES[a], b: CITIES[b], born: now, dur: 2200 + Math.random() * 1600 });
     };
 
-    const scaleBase = () => (Math.min(width, height) / 2 - 10) * zoom;
+    const scaleBase = () => Math.min(width, height) * 0.415 * zoom; // 0.415 = žiara (R×1,17) sa zmestí do canvasu
     const center = (): [number, number] => [-rotation[0], -rotation[1]];
     const visible = (ll: [number, number]) => d3.geoDistance(ll, center()) < Math.PI / 2 - 0.015;
 
