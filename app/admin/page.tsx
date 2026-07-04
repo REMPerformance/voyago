@@ -717,6 +717,57 @@ export default function AdminPage() {
         );
       })()}
 
+      {tab === "blog" && (
+        <div className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+          <div className="rounded-xl border border-line bg-surface p-5 shadow-card">
+            <p className="font-semibold text-ink">Nový článok</p>
+            <p className="mt-1 text-xs text-ink-soft">Formátovanie: prázdny riadok = nový odsek · <code className="rounded bg-paper px-1">## Nadpis</code> = medzinadpis · <code className="rounded bg-paper px-1">- text</code> = odrážka. Slug a čas čítania sa vytvoria automaticky.</p>
+            <input value={bTitle} onChange={(e) => setBTitle(e.target.value)} placeholder="Titulok článku" className="input mt-4 w-full" />
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              <input value={bTag} onChange={(e) => setBTag(e.target.value)} placeholder="Kategória (napr. Rady)" className="input w-full" />
+              <input value={bImage} onChange={(e) => setBImage(e.target.value)} placeholder="URL obrázka (voliteľné)" className="input w-full" />
+            </div>
+            <input value={bExcerpt} onChange={(e) => setBExcerpt(e.target.value)} placeholder="Krátky perex (1–2 vety)" className="input mt-2 w-full" />
+            <textarea value={bContent} onChange={(e) => setBContent(e.target.value)} rows={14} placeholder={"## Prvý nadpis\n\nText odseku…\n\n- prvá odrážka\n- druhá odrážka"} className="input mt-2 w-full font-mono text-sm" />
+            <div className="mt-3 flex items-center gap-3">
+              <button onClick={createBlog} className="btn-primary !py-2.5">Uverejniť článok</button>
+              {bMsg && <span className="text-sm text-ink-soft">{bMsg}</span>}
+            </div>
+          </div>
+          <div className="rounded-xl border border-line bg-surface p-5 shadow-card">
+            <div className="flex items-center justify-between">
+              <p className="font-semibold text-ink">Uverejnené z admina ({bPosts.length})</p>
+              <button onClick={loadBlog} className="btn-ghost !py-1.5 text-xs">Obnoviť</button>
+            </div>
+            {bPosts.length === 0 && <p className="mt-3 text-sm text-ink-soft">Z admin panelu zatiaľ nič — nový článok vytvoríte formulárom vľavo.</p>}
+            <ul className="mt-2 divide-y divide-line-soft">
+              {bPosts.map((p) => (
+                <li key={p.id} className="flex items-center gap-3 py-2.5">
+                  <div className="min-w-0 flex-1">
+                    <a href={`/blog/${p.slug}`} target="_blank" className="block truncate text-sm font-semibold text-ink hover:text-brass">{p.title}</a>
+                    <p className="text-xs text-ink-soft">{p.tag} · {new Date(p.created_at).toLocaleDateString("sk-SK")}</p>
+                  </div>
+                  <button onClick={() => deleteBlog(p.id)} className="shrink-0 rounded-md px-2 py-1 text-xs font-semibold text-terra hover:bg-terra/10">Zmazať</button>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-5 border-t border-line pt-3 font-semibold text-ink">Statické články ({POSTS.length})</p>
+            <p className="mt-1 text-xs text-ink-soft">Sú súčasťou kódu webu — na blogu sú vždy; upraviť ich viem ja úpravou kódu.</p>
+            <ul className="mt-1 divide-y divide-line-soft">
+              {POSTS.map((p) => (
+                <li key={p.slug} className="flex items-center gap-3 py-2">
+                  <div className="min-w-0 flex-1">
+                    <a href={`/blog/${p.slug}`} target="_blank" className="block truncate text-sm font-medium text-ink hover:text-brass">{p.title.sk}</a>
+                    <p className="text-xs text-ink-soft">{p.tag.sk} · {p.date}</p>
+                  </div>
+                  <span className="shrink-0 rounded-md bg-line-soft px-2 py-0.5 text-[0.58rem] font-bold uppercase text-ink-soft">v kóde</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+
       {tab === "inbox" && (
         <div className="mt-8 space-y-6">
           {([

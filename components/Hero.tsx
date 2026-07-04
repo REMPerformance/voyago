@@ -57,7 +57,7 @@ export function Hero() {
 
         {/* RIGHT: boarding pass */}
         <div
-          className="mx-auto w-[88%] sm:w-auto lg:scale-[1.06] xl:scale-[1.1]"
+          className="mx-auto w-[78%] sm:w-auto lg:scale-[1.06] xl:scale-[1.1]"
           style={{
             opacity: shown ? 1 : 0,
             transform: shown ? "translateY(0)" : "translateY(40px)",

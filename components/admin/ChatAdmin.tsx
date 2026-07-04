@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Send, MessageCircle, Mail, RefreshCw } from "lucide-react";
+import { Send, MessageCircle, Mail, RefreshCw, Archive, Trash2, ArchiveRestore } from "lucide-react";
 import { supabase, supabaseEnabled } from "@/lib/supabase";
 
 type Thread = { id: string; visitor_id: string; email: string | null; name: string | null; last_at: string };
@@ -13,6 +13,7 @@ export function ChatAdmin() {
   const [active, setActive] = useState<string | null>(null);
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [reply, setReply] = useState("");
+  const [showArchived, setShowArchived] = useState(false);
   const bodyRef = useRef<HTMLDivElement>(null);
 
   const loadThreads = useCallback(async () => {
@@ -62,6 +63,21 @@ export function ChatAdmin() {
     await supabase.from("chat_threads").update({ last_at: new Date().toISOString() }).eq("id", active);
   };
 
+  const archiveThread = async (id: string, archived: boolean) => {
+    if (!supabase) return;
+    await supabase.from("chat_threads").update({ archived }).eq("id", id);
+    if (active === id) setActive(null);
+    loadThreads();
+  };
+  const deleteThread = async (id: string) => {
+    if (!supabase || !confirm("Natrvalo zmazať celú konverzáciu?")) return;
+    await supabase.from("chat_messages").delete().eq("thread_id", id);
+    await supabase.from("chat_threads").delete().eq("id", id);
+    if (active === id) setActive(null);
+    loadThreads();
+  };
+
+  const visibleThreads = threads.filter((t: any) => showArchived ? t.archived : !t.archived);
   const activeThread = threads.find((t) => t.id === active);
   const fmt = (d: string) => new Date(d).toLocaleString("sk-SK", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
 
@@ -72,12 +88,15 @@ export function ChatAdmin() {
       {/* Zoznam vlákien */}
       <div className="rounded-xl border border-line bg-surface">
         <div className="flex items-center justify-between border-b border-line px-4 py-3">
-          <p className="font-semibold text-ink">Konverzácie</p>
-          <button onClick={loadThreads} className="text-ink-soft hover:text-ink"><RefreshCw size={15} /></button>
+          <p className="font-semibold text-ink">{showArchived ? "Archív" : "Konverzácie"}</p>
+          <span className="flex items-center gap-2">
+            <button onClick={() => setShowArchived((v) => !v)} title={showArchived ? "Späť na aktívne" : "Zobraziť archív"} className="text-ink-soft hover:text-ink">{showArchived ? <ArchiveRestore size={15} /> : <Archive size={15} />}</button>
+            <button onClick={loadThreads} className="text-ink-soft hover:text-ink"><RefreshCw size={15} /></button>
+          </span>
         </div>
         <div className="max-h-[28rem] overflow-y-auto">
-          {threads.length === 0 && <p className="px-4 py-6 text-sm text-ink-soft">Zatiaľ žiadne správy.</p>}
-          {threads.map((th) => (
+          {visibleThreads.length === 0 && <p className="px-4 py-6 text-sm text-ink-soft">Zatiaľ žiadne správy.</p>}
+          {visibleThreads.map((th) => (
             <button key={th.id} onClick={() => openThread(th.id)} className={`flex w-full items-center gap-3 border-b border-line-soft px-4 py-3 text-left transition-colors hover:bg-paper/60 ${active === th.id ? "bg-paper" : ""}`}>
               <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ink/5 text-ink-soft"><MessageCircle size={16} /></span>
               <div className="min-w-0 flex-1">
@@ -99,6 +118,14 @@ export function ChatAdmin() {
             <div className="flex items-center gap-2 border-b border-line px-4 py-3">
               <p className="font-semibold text-ink">{activeThread?.email || activeThread?.visitor_id.slice(0, 8)}</p>
               {activeThread?.email && <a href={`mailto:${activeThread.email}`} className="text-ink-soft hover:text-ink"><Mail size={15} /></a>}
+              <span className="ml-auto flex items-center gap-1.5">
+                <button onClick={() => archiveThread(active!, !(activeThread as any)?.archived)} title={(activeThread as any)?.archived ? "Obnoviť z archívu" : "Archivovať"} className="grid h-8 w-8 place-items-center rounded-lg text-ink-soft transition-colors hover:bg-paper hover:text-ink">
+                  {(activeThread as any)?.archived ? <ArchiveRestore size={15} /> : <Archive size={15} />}
+                </button>
+                <button onClick={() => deleteThread(active!)} title="Zmazať konverzáciu" className="grid h-8 w-8 place-items-center rounded-lg text-terra transition-colors hover:bg-terra/10">
+                  <Trash2 size={15} />
+                </button>
+              </span>
             </div>
             <div ref={bodyRef} className="flex-1 space-y-2.5 overflow-y-auto bg-paper/40 p-4">
               {msgs.map((m) => (

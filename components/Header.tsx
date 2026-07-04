@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ShieldCheck, ArrowRight, Phone, Menu, X } from "lucide-react";
+import { ArrowRight, Phone, Menu, X } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { GlobalSearch } from "@/components/GlobalSearch";
@@ -10,6 +10,7 @@ import { CartMenu } from "@/components/CartMenu";
 import { Logo } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { site } from "@/config/site";
+import { TimeBar } from "@/components/TimeBar";
 
 export function Header() {
   const { t, tr } = useLang();
@@ -30,10 +31,7 @@ export function Header() {
       {/* Slim trust bar */}
       <div className="secure-bg text-cream">
         <div className="container-page flex h-9 items-center justify-between text-[0.72rem]">
-          <span className="inline-flex items-center gap-1.5 text-cream/80">
-            <ShieldCheck size={13} className="text-brass-light" />
-            {tr("trust.handling")}
-          </span>
+          <TimeBar />
           <div className="hidden items-center gap-4 text-cream/65 sm:flex">
             <a href="/obchodne-podmienky" className="hover:text-cream">
               {t({ sk: "Obchodné podmienky", en: "Terms & conditions" })}
