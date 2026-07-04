@@ -66,6 +66,8 @@ function sourceLabel(v: any): string {
   } catch { return "Odkaz z inej stránky"; }
 }
 
+const isMobileUA = (ua?: string) => /Mobi|Android|iPhone|iPad/i.test(ua || "");
+
 const flagOf = (cc?: string) => cc && cc.length === 2 ? String.fromCodePoint(...cc.toUpperCase().split('').map((c) => 127397 + c.charCodeAt(0))) : "";
 
 function Stat({ label, value }: { label: string; value: string }) {
@@ -654,10 +656,11 @@ export default function AdminPage() {
         return (
           <div className="mt-8">
             <p className="mb-2 text-xs text-ink-soft">Formát čísel: <span className="font-bold text-green">ľudia</span> <span className="text-ink-soft/60">/ boti</span></p>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               <div className="rounded-xl border border-line bg-surface p-4 shadow-card"><p className="text-xs text-ink-soft">Zobrazenia stránok</p><p className="mt-1 font-display text-2xl"><HB h={tot.h} b={tot.b} /></p></div>
               <div className="rounded-xl border border-line bg-surface p-4 shadow-card"><p className="text-xs text-ink-soft">Návštevníci</p><p className="mt-1 font-display text-2xl"><HB h={sidsH.size} b={sidsB.size} /></p></div>
               <div className="rounded-xl border border-line bg-surface p-4 shadow-card"><p className="text-xs text-ink-soft">Krajiny</p><p className="mt-1 font-display text-2xl font-bold text-ink">{topC.length}</p></div>
+              <div className="rounded-xl border border-line bg-surface p-4 shadow-card"><p className="text-xs text-ink-soft">Mobil / počítač (ľudia)</p><p className="mt-1 font-display text-2xl font-bold text-ink">📱 {pvAll.filter((v: any) => !v.is_bot && isMobileUA(v.user_agent)).length} · 💻 {pvAll.filter((v: any) => !v.is_bot && !isMobileUA(v.user_agent)).length}</p></div>
             </div>
 
             <div className="mt-4 grid gap-4 lg:grid-cols-3">
@@ -692,6 +695,7 @@ export default function AdminPage() {
                           <span className="truncate font-medium text-ink">{sourceLabel(a)}</span>
                           <span className="flex items-center gap-2">
                             <span className={`rounded-md px-1.5 py-0.5 text-[0.58rem] font-bold uppercase ${a.is_bot ? "bg-line-soft text-ink-soft" : "bg-green/15 text-green"}`}>{a.is_bot ? "bot" : "človek"}</span>
+                            <span title={isMobileUA(a.user_agent) ? "mobil" : "počítač"}>{isMobileUA(a.user_agent) ? "📱" : "💻"}</span>
                             <span className="text-[0.62rem] text-ink-soft/70">{rows.length} str. <span className="inline-block transition-transform group-open:rotate-90">›</span></span>
                           </span>
                         </summary>

@@ -59,12 +59,12 @@ export function Guarantee() {
                   <span className="rounded-md bg-brass px-2 py-0.5 text-xs font-bold text-ink">+{PROTECTION.fee} €</span>
                 </div>
                 <p className="mt-1.5 max-w-lg text-paper/75">
-                  {t({ sk: "Ak úrad žiadosť zamietne napriek správne poskytnutým údajom, vrátime vám celú pôvodnú sumu. Doplnok k žiadosti za 22 € na osobu.", en: "If the authority refuses your application despite correctly provided details, we refund the full original amount. Add it to any application for €22 per traveller." })}
+                  {t({ sk: "Ak úrad žiadosť zamietne napriek správne poskytnutým údajom, vrátime vám celú pôvodnú sumu. Doplnok k žiadosti za 19 € na osobu. A nekončíme vybavením — sme s vami počas celej platnosti povolenia, na cestách aj po návrate.", en: "If the authority refuses your application despite correctly provided details, we refund the full original amount. Add it to any application for €19 per traveller. And we don't stop at delivery — we're with you for the permit's entire validity, during and after your trip." })}
                 </p>
               </div>
             </div>
-            <Link href="/destinations" className="btn-accent inline-flex shrink-0 items-center gap-2">
-              {t({ sk: "Začať žiadosť", en: "Start application" })} <ArrowRight size={16} />
+            <Link href="/ochrana-kupujuceho" className="btn-accent inline-flex shrink-0 items-center gap-2">
+              {t({ sk: "Viac informácií", en: "Learn more" })} <ArrowRight size={16} />
             </Link>
           </div>
         </div>

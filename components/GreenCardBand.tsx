@@ -53,7 +53,7 @@ export function GreenCardBand() {
 
   return (
     <section className="container-page py-12">
-      <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
+      <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-[1.5fr_1fr]">
         {/* Green Card — text + mockup */}
         <Reveal>
           <div className="secure-bg relative h-full overflow-hidden rounded-[1.4rem] border border-green-soft/50 bg-green p-8 text-cream shadow-pass ring-1 ring-brass/25 sm:p-10">

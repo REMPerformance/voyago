@@ -10,6 +10,7 @@ import { Announcements } from "@/components/Announcements";
 import { DiscountsProvider } from "@/lib/discounts";
 import { StatsProvider } from "@/lib/stats";
 import { Tracker } from "@/components/Tracker";
+import { EmailPopup } from "@/components/EmailPopup";
 import { ChatWidget } from "@/components/ChatWidget";
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -19,6 +20,7 @@ export function Providers({ children }: { children: ReactNode }) {
         <DiscountsProvider>
           <StatsProvider>
           <Tracker />
+          <EmailPopup />
         <Announcements />
         <div className="flex min-h-screen flex-col">
           <Header />

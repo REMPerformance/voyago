@@ -63,7 +63,7 @@ export default function Page() {
       <p>
         Expresné spracovanie je nepovinná platená služba za príplatok vo výške <strong>{EXPRESS_PCT_LABEL} % z Pôvodnej sumy</strong>,
         účtovaný za každú jednu žiadosť (jedného cestujúceho). Pri tejto službe poskytovateľ spracuje a podá žiadosť
-        <strong> prednostne, spravidla do 24 hodín</strong> od doplnenia všetkých potrebných údajov a podkladov zo strany zákazníka.
+        <strong> prednostne, spravidla do 12 hodín</strong> od doplnenia všetkých potrebných údajov a podkladov zo strany zákazníka.
       </p>
       <p>
         Expresné spracovanie sa týka výlučne <strong>rýchlosti práce poskytovateľa</strong>. <strong>Negarantuje</strong> rýchlejšie
@@ -87,6 +87,7 @@ export default function Page() {
       <ul>
         <li>zamietnutie je čo i len sčasti pripísateľné údajom, podkladom, opomenutiam alebo konaniu zákazníka; splnenie podmienok posúdi poskytovateľ na základe odôvodnenia úradu a údajov zo žiadosti;</li>
         <li>žiadosť bola zamietnutá pre nepravdivé, nesprávne, neúplné alebo zastarané údaje či podklady poskytnuté zákazníkom;</li>
+        <li>ide o prihlášku do programu Diversity Visa (DV lotéria) — na tú sa Ochrana kupujúceho nevzťahuje;</li>
         <li>zákazník zatajil podstatné skutočnosti (napr. predchádzajúce zamietnutie, zákaz vstupu, trestnú činnosť, predchádzajúce prekročenie povoleného pobytu);</li>
         <li>zákazník sa nedostavil na pohovor, biometriu alebo nedoručil vyžiadané podklady v stanovenom čase;</li>
         <li>zákazník žiadosť sám zrušil, stiahol alebo zmenil po jej podaní;</li>

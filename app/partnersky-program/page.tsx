@@ -31,7 +31,7 @@ const RULES_NO = [
 const FAQ = [
   { q: "Koľko reálne zarobím?", a: "12 % zo servisného poplatku každej zaplatenej objednávky. Pri typickej objednávke je to 5–8 € — cestovateľský článok s 50 objednávkami mesačne tak zarobí 250–400 €." },
   { q: "Kedy sa provízia započíta?", a: "Po zaplatení objednávky. Ak zákazník využije Ochranu kupujúceho a objednávka sa refunduje, provízia sa v danom mesiaci odpočíta." },
-  { q: "Ako dostanem peniaze?", a: "Bankovým prevodom na IBAN raz mesačne, vždy do 15. dňa za predchádzajúci mesiac, pri zostatku aspoň 50 €." },
+  { q: "Ako dostanem peniaze?", a: "Mesačný report objednávok aj výplatu na IBAN posielame vždy do 15. dňa za predchádzajúci mesiac, pri zostatku aspoň 50 €." },
   { q: "Dostanem podklady?", a: "Áno — bannery, textové odkazy a hotové popisy destinácií. Na požiadanie pripravíme aj vlastný zľavový kód pre vaše publikum." },
   { q: "Musím byť firma?", a: "Nie. Spolupracujeme s podnikateľmi (faktúra) aj jednotlivcami (príležitostný príjem / autorská zmluva podľa dohody)." },
 ];
