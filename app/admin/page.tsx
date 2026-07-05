@@ -155,10 +155,13 @@ export default function AdminPage() {
   };
   const loadDiscounts = async () => {
     if (!supabase) return;
-    const { data } = await supabase.from("discounts").select("slug, percent, active");
-    const m: Record<string, { percent: number; active: boolean }> = {};
-    (data || []).forEach((d: any) => { m[d.slug] = { percent: d.percent || 0, active: !!d.active }; });
-    setDiscMap(m);
+    try {
+      const { data, error } = await supabase.from("discounts").select("slug, percent, active");
+      if (error) { setDiscMap({}); return; }
+      const m: Record<string, { percent: number; active: boolean }> = {};
+      (data || []).forEach((d: any) => { m[d.slug] = { percent: d.percent || 0, active: !!d.active }; });
+      setDiscMap(m);
+    } catch { setDiscMap({}); }
   };
   useEffect(() => { if (session && tab === "disc") loadDiscounts(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
   const setDisc = (slug: string, patch: Partial<{ percent: number; active: boolean }>) =>
@@ -219,6 +222,33 @@ export default function AdminPage() {
   const topPages = agg(humanViews, "path");
   const topRefs = agg(humanViews.filter((v) => v.referrer), "referrer");
 
+
+
+  const loadAffs = async () => {
+    const r = await fetch("/api/admin/affiliates", { headers: { Authorization: `Bearer ${session.access_token}` } });
+    const d = await r.json(); if (d.affiliates) setAffs(d.affiliates);
+  };
+  const createAff = async () => {
+    if (!affForm.name.trim() || !affForm.code.trim()) { setAffMsg("Vyplňte meno aj kód."); return; }
+    setAffMsg("Vytváram…");
+    const r = await fetch("/api/admin/affiliates", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` }, body: JSON.stringify(affForm) });
+    const d = await r.json();
+    if (d.ok) { setAffMsg("Partner vytvorený."); setAffForm({ name: "", code: "", commission_pct: 12, discount_pct: 0, discount_mode: "extra", note: "" }); loadAffs(); }
+    else setAffMsg(d.error === "invalid" ? "Neplatné meno alebo kód." : "Kód už existuje alebo nastala chyba.");
+  };
+  const toggleAff = async (a: any) => {
+    await fetch("/api/admin/affiliates", { method: "PATCH", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` }, body: JSON.stringify({ id: a.id, active: !a.active }) });
+    loadAffs();
+  };
+  const deleteAff = async (id: string) => {
+    if (!confirm("Zmazať tohto partnera? Štatistiky ostanú v objednávkach, len sa už nezobrazí.")) return;
+    await fetch(`/api/admin/affiliates?id=${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${session.access_token}` } });
+    loadAffs();
+  };
+  const affLink = (code: string) => `https://voyago.sk/?ref=${code}`;
+
+  useEffect(() => { if (session && tab === "aff") loadAffs(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
+
   if (!ready) return <div className="container-page py-24 text-center text-ink-soft">Načítavam…</div>;
 
   if (!supabaseEnabled) {
@@ -262,32 +292,6 @@ export default function AdminPage() {
     );
   }
 
-
-
-  const loadAffs = async () => {
-    const r = await fetch("/api/admin/affiliates", { headers: { Authorization: `Bearer ${session.access_token}` } });
-    const d = await r.json(); if (d.affiliates) setAffs(d.affiliates);
-  };
-  const createAff = async () => {
-    if (!affForm.name.trim() || !affForm.code.trim()) { setAffMsg("Vyplňte meno aj kód."); return; }
-    setAffMsg("Vytváram…");
-    const r = await fetch("/api/admin/affiliates", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` }, body: JSON.stringify(affForm) });
-    const d = await r.json();
-    if (d.ok) { setAffMsg("Partner vytvorený."); setAffForm({ name: "", code: "", commission_pct: 12, discount_pct: 0, discount_mode: "extra", note: "" }); loadAffs(); }
-    else setAffMsg(d.error === "invalid" ? "Neplatné meno alebo kód." : "Kód už existuje alebo nastala chyba.");
-  };
-  const toggleAff = async (a: any) => {
-    await fetch("/api/admin/affiliates", { method: "PATCH", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` }, body: JSON.stringify({ id: a.id, active: !a.active }) });
-    loadAffs();
-  };
-  const deleteAff = async (id: string) => {
-    if (!confirm("Zmazať tohto partnera? Štatistiky ostanú v objednávkach, len sa už nezobrazí.")) return;
-    await fetch(`/api/admin/affiliates?id=${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${session.access_token}` } });
-    loadAffs();
-  };
-  const affLink = (code: string) => `https://voyago.sk/?ref=${code}`;
-
-  useEffect(() => { if (session && tab === "aff") loadAffs(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
 
   return (
     <div className="container-page py-12">
