@@ -26,21 +26,21 @@ export function ProductCard({ product }: { product: Product }) {
       <span aria-hidden className="absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 bg-brass transition-transform duration-300 group-hover:scale-x-100" />
 
       {/* Hlavička */}
-      <div className="flex items-center gap-3 p-5">
+      <div className="flex items-center gap-3 p-4 sm:p-5">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={`https://flagcdn.com/w160/${cc}.png`} alt="" className="h-9 w-[52px] shrink-0 rounded-[5px] object-cover ring-1 ring-line" />
         <div className="min-w-0 flex-1">
-          <h3 className="truncate font-display text-[1.15rem] font-bold leading-tight text-ink">{t(product.destination)}</h3>
+          <h3 className="truncate font-display text-[1.02rem] font-bold leading-tight text-ink sm:text-[1.15rem]">{t(product.destination)}</h3>
           <p className="mt-0.5 truncate text-xs text-ink-soft/80">{t(product.name)}</p>
         </div>
         <span className="shrink-0 text-[0.62rem] font-semibold uppercase tracking-wide text-brass">{typeLabel}</span>
       </div>
 
       {/* Popis */}
-      <p className="px-5 text-[0.83rem] leading-relaxed text-ink-soft line-clamp-2">{t(product.summary)}</p>
+      <p className="px-4 text-[0.8rem] leading-relaxed text-ink-soft line-clamp-2 sm:px-5 sm:text-[0.83rem]">{t(product.summary)}</p>
 
       {/* Parametre */}
-      <dl className="mt-4 space-y-2 px-5">
+      <dl className="mt-3 space-y-1.5 px-4 sm:mt-4 sm:space-y-2 sm:px-5">
         <div className="flex items-center gap-2 text-xs">
           <Clock size={14} className="shrink-0 text-brass" />
           <dt className="text-ink-soft/70">{tr("dest.processing")}:</dt>
@@ -61,7 +61,7 @@ export function ProductCard({ product }: { product: Product }) {
       </dl>
 
       {/* Päta */}
-      <div className="mt-auto flex items-end justify-between gap-3 border-t border-line-soft p-5 pt-4">
+      <div className="mt-auto flex items-end justify-between gap-3 border-t border-line-soft p-4 pt-3 sm:p-5 sm:pt-4">
         <div>
           <div className="flex items-center gap-2">
             <span className="text-[0.6rem] font-medium uppercase tracking-wide text-ink-soft/65">{tr("dest.from")}</span>
@@ -72,7 +72,7 @@ export function ProductCard({ product }: { product: Product }) {
               <span className="font-display text-[1.05rem] font-extrabold leading-none text-ink-soft">{product.slug === "eu-etias" ? "Coming soon" : t({ sk: "Pripravujeme", en: "Coming soon" })}</span>
             ) : (
               <>
-                <span className="font-display text-[1.35rem] font-extrabold leading-none text-ink">{money(price, lang)}</span>
+                <span className="whitespace-nowrap font-display text-[1.2rem] font-extrabold leading-none text-ink sm:text-[1.35rem]">{money(price, lang)}</span>
                 {pct > 0 && <span className="text-xs text-ink-soft/55 line-through">{money(base, lang)}</span>}
               </>
             )}

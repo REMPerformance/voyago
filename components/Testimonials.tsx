@@ -70,7 +70,7 @@ export function Testimonials() {
           </div>
 
           {/* Pravý zoznam recenzií */}
-          <div className="columns-2 gap-3 sm:gap-5 [&>*]:mb-3 sm:[&>*]:mb-5">
+          <div className="columns-1 gap-5 sm:columns-2 [&>*]:mb-4 sm:[&>*]:mb-5">
             {REVIEWS.map((r) => (
               <figure key={r.name} className="break-inside-avoid rounded-2xl border border-line bg-surface p-6 shadow-card">
                 <Quote size={26} className="text-brass/30" />

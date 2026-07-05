@@ -238,24 +238,12 @@
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
-/* ── Mobil (<640px): dvojstĺpcové karty namiesto dlhého stĺpca ────────
-   Každá mriežka, ktorá je od sm: dvoj/trojstĺpcová, bude na telefóne
-   dvojstĺpcová. Bočné layouty (lg:grid-cols-[..fr..]) sa nedotknú. */
+/* ── Mobil (<640px): kompaktnejšie, menšie, čitateľné ──────────────── */
 @media (max-width: 640px) {
-  .grid[class*="sm:grid-cols-2"],
-  .grid[class*="sm:grid-cols-3"],
-  .grid[class*="md:grid-cols-2"],
-  .grid[class*="md:grid-cols-3"],
-  .grid[class*="lg:grid-cols-3"],
-  .grid[class*="lg:grid-cols-4"] {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 0.7rem !important;
-  }
-  /* kompaktnejší obsah kariet na mobile */
-  .grid[class*="grid-cols-"] .shadow-card { padding: 0.85rem !important; }
-  .grid[class*="grid-cols-"] .font-display { font-size: 1rem !important; line-height: 1.2 !important; }
-  /* text v 2-stĺpcových kartách nech nepretečie */
-  .grid[class*="sm:grid-cols-"] p { font-size: 0.8rem !important; line-height: 1.4 !important; }
-  /* opt-out: prvky, ktoré majú ostať 1-stĺpcové */
-  .keep-1col { grid-template-columns: minmax(0,1fr) !important; }
+  html { font-size: 14.5px; }
+  /* jednoduché feature/krok gridy = 2 stĺpce (majú málo textu) */
+  .m2col { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 0.7rem !important; }
+  /* karty celkovo kompaktnejšie */
+  .shadow-card { padding: 0.95rem; }
+}
 }

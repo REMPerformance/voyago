@@ -38,7 +38,7 @@ export default function HomePage() {
             {tr("cta.browse")} <ArrowRight size={15} />
           </Link>
         </Reveal>
-        <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
+        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
           {featured.map((p, i) => (
             <Reveal key={p.slug} delay={(i % 3) * 80}>
               <ProductCard product={p} />

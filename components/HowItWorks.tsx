@@ -23,7 +23,7 @@ export function HowItWorks() {
       </div>
 
       {/* Kroky — horizontálny tok */}
-      <ol className="mt-10 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-5">
+      <ol className="m2col mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-5">
         {easy.map((s) => (
           <li key={s.n} className="group relative overflow-hidden rounded-2xl border border-line bg-surface p-6 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-brass/45">
             <span aria-hidden className="pointer-events-none absolute -right-3 -top-4 font-display text-[5rem] font-extrabold leading-none text-ink/[0.04] transition-colors group-hover:text-brass/10">{s.n}</span>
