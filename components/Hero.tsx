@@ -68,7 +68,7 @@ export function Hero() {
             <BoardingPass />
           </div>
           {/* desktop: plná veľkosť + 3D náklon za myšou */}
-          <div className="hidden sm:block lg:scale-[1.12] xl:scale-[1.18]">
+          <div className="hidden sm:block lg:[zoom:1.08] xl:[zoom:1.14]">
             <TiltPass />
           </div>
         </div>
@@ -83,13 +83,13 @@ function TiltPass() {
     const r = e.currentTarget.getBoundingClientRect();
     const px = (e.clientX - r.left) / r.width - 0.5;
     const py = (e.clientY - r.top) / r.height - 0.5;
-    setT(`perspective(1200px) rotateY(${px * 13}deg) rotateX(${-py * 11}deg) rotate(-4deg)`);
+    setT(`perspective(1400px) rotateY(${px * 9}deg) rotateX(${-py * 7}deg) rotate(-4deg)`);
   };
   return (
     <div
       onMouseMove={onMove}
       onMouseLeave={() => setT("rotate(-4deg)")}
-      className="transition-transform duration-200 ease-out will-change-transform [transform-style:preserve-3d]"
+      className="transition-transform duration-200 ease-out [backface-visibility:hidden] [transform:translateZ(0)]"
       style={{ transform: t }}
     >
       <BoardingPass />
@@ -182,7 +182,7 @@ function BoardingPass() {
       </div>
 
       {/* approved seal */}
-      <div className="absolute right-3 top-[9.5rem] z-30 grid rotate-[-12deg] place-items-center rounded-full border-[4px] border-double border-brass bg-paper/85 px-5 py-4 text-center backdrop-blur-[1px] sm:right-[6.5rem] sm:top-[68%]">
+      <div className="absolute right-3 top-[9.5rem] z-30 grid rotate-[-12deg] place-items-center rounded-full border-[4px] border-double border-brass bg-paper px-5 py-4 text-center sm:right-[6.5rem] sm:top-[68%]">
         <span className="font-mono text-base font-bold uppercase leading-[1.15] tracking-[0.16em] text-brass">
           Approved
           <br />

@@ -6,6 +6,7 @@ import { site } from "@/config/site";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
+  verification: { google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION },
   title: {
     default: `${site.brand} — ${site.tagline.sk}`,
     template: `%s · ${site.brand}`,

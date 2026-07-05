@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, Eye, EyeOff, LogOut, Megaphone, Save, X, Inbox, Download, ChevronDown, Mail, Send, Percent, Search, Ticket, Activity, Globe, MessageCircle, BookOpen } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, EyeOff, LogOut, Megaphone, Save, X, Inbox, Download, ChevronDown, Mail, Send, Percent, Search, Ticket, Activity, Globe, MessageCircle, BookOpen, AtSign } from "lucide-react";
 import { ChatAdmin } from "@/components/admin/ChatAdmin";
 import { supabase, supabaseEnabled } from "@/lib/supabase";
 import { fileSignedUrl } from "@/lib/applications";
@@ -84,6 +84,7 @@ const fromLocal = (v: string) => (v ? new Date(v).toISOString() : null);
 export default function AdminPage() {
   const [session, setSession] = useState<any>(null);
   const [actMins, setActMins] = useState(1440);
+  const [emailSrc, setEmailSrc] = useState("all");
 
   // ── Blog ──
   const [bPosts, setBPosts] = useState<any[]>([]);
@@ -125,7 +126,7 @@ export default function AdminPage() {
   const [list, setList] = useState<Announcement[]>([]);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [busy, setBusy] = useState(false);
-  const [tab, setTab] = useState<"ann" | "apps" | "disc" | "promo" | "traffic" | "stats" | "chat" | "blog" | "inbox">("ann");
+  const [tab, setTab] = useState<"ann" | "apps" | "disc" | "promo" | "traffic" | "stats" | "chat" | "blog" | "inbox" | "emails">("ann");
   const [apps, setApps] = useState<any[]>([]);
   const [open, setOpen] = useState<string | null>(null);
   const [emailFor, setEmailFor] = useState<any>(null);
@@ -286,7 +287,7 @@ export default function AdminPage() {
   };
   useEffect(() => { if (session && tab === "traffic") loadVisits(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
   const loadStats = async () => { setStatMap(await fetchStats()); };
-  useEffect(() => { if (session && tab === "inbox") loadInbox(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
+  useEffect(() => { if (session && (tab === "inbox" || tab === "emails")) loadInbox(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
   useEffect(() => { if (session && tab === "blog") loadBlog(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
   useEffect(() => { if (session && tab === "stats") loadStats(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
   const saveStat = async (slug: string) => { await setProcessed(slug, statMap[slug] || 0); alert("Počet uložený ✓"); };
@@ -361,6 +362,7 @@ export default function AdminPage() {
         <button onClick={() => setTab("apps")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "apps" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Inbox size={15} /> Žiadosti</button>
         <button onClick={() => setTab("blog")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "blog" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><BookOpen size={15} /> Blog</button>
         <button onClick={() => setTab("inbox")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "inbox" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Inbox size={15} /> Správy{(inbox.contact_messages.length + inbox.b2b_leads.length + inbox.affiliate_signups.length + inbox.notify_signups.length) > 0 && <span className="rounded-md bg-brass/15 px-1.5 text-[0.62rem] font-bold text-brass">{inbox.contact_messages.length + inbox.b2b_leads.length + inbox.affiliate_signups.length + inbox.notify_signups.length}</span>}</button>
+        <button onClick={() => setTab("emails")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "emails" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><AtSign size={15} /> E-maily</button>
         <button onClick={() => setTab("disc")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "disc" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Percent size={15} /> Zľavy</button>
         <button onClick={() => setTab("promo")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "promo" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Ticket size={15} /> Promo kódy</button>
         <button onClick={() => setTab("traffic")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "traffic" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Activity size={15} /> Analytika</button>
@@ -759,6 +761,48 @@ export default function AdminPage() {
           </div>
         </div>
       )}
+
+      {tab === "emails" && (() => {
+        const TOPIC_LABEL: Record<string, string> = { newsletter: "Okno na stránke (zľava)", "eu-etias": "Notifikácia ETIAS", "cn-evisa": "Notifikácia Čína" };
+        const all = [
+          ...inbox.notify_signups.map((m: any) => ({ email: m.email, src: TOPIC_LABEL[m.topic] || `Notifikácia: ${m.topic}`, at: m.created_at })),
+          ...inbox.contact_messages.map((m: any) => ({ email: m.email, src: "Kontaktný formulár", at: m.created_at })),
+          ...inbox.b2b_leads.map((m: any) => ({ email: m.email, src: "Firemný dopyt", at: m.created_at })),
+          ...inbox.affiliate_signups.map((m: any) => ({ email: m.email, src: "Partnerská prihláška", at: m.created_at })),
+        ].sort((a, b) => (a.at < b.at ? 1 : -1));
+        const sources = Array.from(new Set(all.map((r) => r.src)));
+        const rows = emailSrc === "all" ? all : all.filter((r) => r.src === emailSrc);
+        const exportCsv = () => {
+          const csv = "email,zdroj,datum\n" + rows.map((r) => `${r.email},"${r.src}",${new Date(r.at).toLocaleString("sk-SK")}`).join("\n");
+          const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+          const a = document.createElement("a"); a.href = url; a.download = "voyago-emaily.csv"; a.click(); URL.revokeObjectURL(url);
+        };
+        return (
+          <div className="mt-8 rounded-xl border border-line bg-surface shadow-card">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-3">
+              <p className="font-semibold text-ink">Všetky e-maily zo stránky <span className="text-ink-soft">({rows.length})</span></p>
+              <div className="flex items-center gap-2">
+                <select value={emailSrc} onChange={(e) => setEmailSrc(e.target.value)} className="input !mt-0 !py-1.5 text-sm">
+                  <option value="all">Všetky zdroje</option>
+                  {sources.map((sName) => <option key={sName} value={sName}>{sName}</option>)}
+                </select>
+                <button onClick={exportCsv} className="btn-ghost inline-flex items-center gap-1.5 !py-1.5 text-xs"><Download size={13} /> Export CSV</button>
+                <button onClick={loadInbox} className="btn-ghost !py-1.5 text-xs">Obnoviť</button>
+              </div>
+            </div>
+            {rows.length === 0 && <p className="px-4 py-4 text-sm text-ink-soft">Zatiaľ žiadne e-maily.</p>}
+            <div className="max-h-[34rem] overflow-y-auto">
+              {rows.map((r, i) => (
+                <div key={i} className="flex items-center gap-3 border-b border-line-soft px-4 py-2.5 text-sm last:border-b-0">
+                  <a href={`mailto:${r.email}`} className="min-w-0 flex-1 truncate font-medium text-ink hover:text-brass">{r.email}</a>
+                  <span className="shrink-0 rounded-md bg-brass/10 px-2 py-0.5 text-[0.62rem] font-semibold text-brass">{r.src}</span>
+                  <span className="hidden shrink-0 font-mono text-xs text-ink-soft sm:inline">{new Date(r.at).toLocaleDateString("sk-SK")}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
 
       {tab === "inbox" && (
         <div className="mt-8 space-y-6">
