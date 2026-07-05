@@ -44,6 +44,10 @@ const BODY: Record<EmailTemplate, string> = {
   rejected: "k vašej žiadosti máme aktualizáciu od príslušného úradu. Pre ďalší postup nás, prosím, kontaktujte.",
 };
 
+export function wrapEmail(title: string, inner: string): string {
+  return wrap(title, inner);
+}
+
 function wrap(title: string, inner: string): string {
   return `<!doctype html><html><body style="margin:0;background:#eff1f0;font-family:Arial,Helvetica,sans-serif;color:#0a1622">
   <div style="max-width:560px;margin:0 auto;padding:24px">
@@ -77,4 +81,46 @@ export function orderConfirmationHtml(o: { name?: string; orderId: string; desti
 
 export function statusUpdateHtml(o: { name?: string; orderId: string; destination: string; status: string }): string {
   return wrap("Aktualizácia stavu žiadosti", `<p style="font-size:14px;line-height:1.6">Dobrý deň${o.name ? " " + o.name : ""},</p><p style="font-size:14px;line-height:1.6">stav žiadosti o <strong>${o.destination}</strong> (objednávka ${o.orderId}):</p><p style="font-size:16px;font-weight:700;color:#c99a4e">${o.status}</p>`);
+}
+
+
+/* ============================================================
+   3) Ďalšie brandové e-maily: uvítací, newsletter, žiadosť o recenziu
+   ============================================================ */
+const BTN = (href: string, label: string) =>
+  `<a href="${href}" style="display:inline-block;background:#0a1622;color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:12px 22px;border-radius:10px">${label}</a>`;
+
+const UNSUB = (email: string) =>
+  `<p style="font-size:11px;color:#9aa4ad;margin-top:16px">Nechcete tieto e-maily? Odhláste sa <a href="${site.url}/odhlasit?email=${encodeURIComponent(email)}" style="color:#9aa4ad">tu</a>.</p>`;
+
+/** Uvítací e-mail po zadaní e-mailu do okna na stránke (so zľavovým kódom). */
+export function welcomeEmail(email: string, code = "CESTUJEME5"): { subject: string; html: string } {
+  const inner = `
+    <p style="font-size:14px;line-height:1.6">Vitajte vo Voyago! Ďakujeme, že ste sa prihlásili.</p>
+    <p style="font-size:14px;line-height:1.6">Budeme vám posielať novinky, nové destinácie a občasné zľavy — nič otravné. Ako poďakovanie máte hneď <b>5 % zľavu</b> na prvú objednávku:</p>
+    <div style="text-align:center;margin:18px 0">
+      <div style="display:inline-block;border:1.5px solid #c99a4e;background:#faf4ea;color:#a8772e;font-weight:800;font-size:20px;letter-spacing:3px;padding:12px 24px;border-radius:10px">${code}</div>
+    </div>
+    <p style="font-size:14px;line-height:1.6">Kód zadáte pri platbe. Platí na cestovné povolenia v našej ponuke.</p>
+    <div style="text-align:center;margin:20px 0">${BTN(site.url + "/destinations", "Vybrať destináciu")}</div>
+    ${UNSUB(email)}`;
+  return { subject: "Vitajte vo Voyago — máte 5 % zľavu 🎉", html: wrap("Vitajte vo Voyago", inner) };
+}
+
+/** Hromadný newsletter (predmet + telo v jednoduchom formáte). */
+export function newsletterEmail(email: string, title: string, bodyHtml: string): { subject: string; html: string } {
+  const inner = `${bodyHtml}<div style="text-align:center;margin:22px 0">${BTN(site.url, "Otvoriť Voyago")}</div>${UNSUB(email)}`;
+  return { subject: title, html: wrap(title, inner) };
+}
+
+/** Žiadosť o recenziu po vybavení objednávky. */
+export function reviewRequestEmail(email: string, name?: string, reviewUrl?: string): { subject: string; html: string } {
+  const url = reviewUrl || `${site.url}/kontakt`;
+  const inner = `
+    <p style="font-size:14px;line-height:1.6">Dobrý deň${name ? " " + name : ""},</p>
+    <p style="font-size:14px;line-height:1.6">ďakujeme, že ste svoje cestovné povolenie vybavili cez Voyago. Ako sa vám s nami spolupracovalo?</p>
+    <p style="font-size:14px;line-height:1.6">Budeme veľmi vďační za krátku recenziu — pomôže ďalším cestovateľom a nám zabrať pár minút.</p>
+    <div style="text-align:center;margin:20px 0">${BTN(url, "Napísať recenziu")}</div>
+    <p style="font-size:13px;color:#6b7280;line-height:1.6">Ak ste s niečím neboli spokojní, odpovedzte prosím priamo na tento e-mail — radi to napravíme.</p>`;
+  return { subject: "Ako sa vám páčila naša služba? — Voyago", html: wrap("Povedzte nám váš názor", inner) };
 }

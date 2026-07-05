@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, Eye, EyeOff, LogOut, Megaphone, Save, X, Inbox, Download, ChevronDown, Mail, Send, Percent, Search, Ticket, Activity, Globe, MessageCircle, BookOpen, AtSign } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, EyeOff, LogOut, Megaphone, Save, X, Inbox, Download, ChevronDown, Mail, Send, Percent, Search, Ticket, Activity, Globe, MessageCircle, BookOpen, AtSign, Star } from "lucide-react";
 import { ChatAdmin } from "@/components/admin/ChatAdmin";
 import { supabase, supabaseEnabled } from "@/lib/supabase";
 import { fileSignedUrl } from "@/lib/applications";
@@ -85,6 +85,9 @@ export default function AdminPage() {
   const [session, setSession] = useState<any>(null);
   const [actMins, setActMins] = useState(1440);
   const [emailSrc, setEmailSrc] = useState("all");
+  const [reviewSent, setReviewSent] = useState<Record<string, boolean>>({});
+  const [nlTitle, setNlTitle] = useState(""); const [nlBody, setNlBody] = useState(""); const [nlTest, setNlTest] = useState(""); const [nlMsg, setNlMsg] = useState("");
+  const [bPreview, setBPreview] = useState(false);
 
   // ── Blog ──
   const [bPosts, setBPosts] = useState<any[]>([]);
@@ -114,6 +117,24 @@ export default function AdminPage() {
     loadInbox();
   };
 
+  const sendReview = async (a: any) => {
+    if (!a.email || reviewSent[a.id]) return;
+    if (!confirm(`Odoslať žiadosť o recenziu na ${a.email}?`)) return;
+    const r = await fetch("/api/admin/review-request", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` }, body: JSON.stringify({ email: a.email, name: a.travelers?.[0]?.data?.firstName }) });
+    const d = await r.json();
+    if (d.ok) setReviewSent((p) => ({ ...p, [a.id]: true }));
+    else alert("Nepodarilo sa odoslať (skontrolujte nastavenie e-mailu).");
+  };
+  const sendNewsletter = async (test: boolean) => {
+    if (!nlTitle.trim() || !nlBody.trim()) { setNlMsg("Vyplňte predmet aj text."); return; }
+    if (!test && !confirm("Odoslať newsletter VŠETKÝM odberateľom?")) return;
+    setNlMsg(test ? "Posielam test…" : "Rozosielam…");
+    const r = await fetch("/api/admin/newsletter", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` }, body: JSON.stringify({ title: nlTitle, body: nlBody, test: test ? nlTest : "" }) });
+    const d = await r.json();
+    if (d.ok) setNlMsg(test ? `Test odoslaný na ${nlTest}.` : `Odoslané: ${d.sent} / ${d.total} odberateľom.`);
+    else setNlMsg(d.error === "email_not_configured" ? "E-mail nie je nastavený (RESEND_API_KEY / EMAIL_FROM)." : "Chyba pri odosielaní.");
+  };
+
   const deleteBlog = async (id: string) => {
     if (!confirm("Zmazať článok?")) return;
     await fetch(`/api/admin/blog?id=${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${session.access_token}` } });
@@ -126,7 +147,7 @@ export default function AdminPage() {
   const [list, setList] = useState<Announcement[]>([]);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [busy, setBusy] = useState(false);
-  const [tab, setTab] = useState<"ann" | "apps" | "disc" | "promo" | "traffic" | "stats" | "chat" | "blog" | "inbox" | "emails">("ann");
+  const [tab, setTab] = useState<"ann" | "apps" | "disc" | "promo" | "traffic" | "stats" | "chat" | "blog" | "inbox" | "emails" | "news">("ann");
   const [apps, setApps] = useState<any[]>([]);
   const [open, setOpen] = useState<string | null>(null);
   const [emailFor, setEmailFor] = useState<any>(null);
@@ -363,6 +384,7 @@ export default function AdminPage() {
         <button onClick={() => setTab("blog")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "blog" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><BookOpen size={15} /> Blog</button>
         <button onClick={() => setTab("inbox")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "inbox" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Inbox size={15} /> Správy{(inbox.contact_messages.length + inbox.b2b_leads.length + inbox.affiliate_signups.length + inbox.notify_signups.length) > 0 && <span className="rounded-md bg-brass/15 px-1.5 text-[0.62rem] font-bold text-brass">{inbox.contact_messages.length + inbox.b2b_leads.length + inbox.affiliate_signups.length + inbox.notify_signups.length}</span>}</button>
         <button onClick={() => setTab("emails")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "emails" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><AtSign size={15} /> E-maily</button>
+        <button onClick={() => setTab("news")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "news" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Megaphone size={15} /> Newsletter</button>
         <button onClick={() => setTab("disc")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "disc" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Percent size={15} /> Zľavy</button>
         <button onClick={() => setTab("promo")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "promo" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Ticket size={15} /> Promo kódy</button>
         <button onClick={() => setTab("traffic")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "traffic" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Activity size={15} /> Analytika</button>
@@ -431,6 +453,7 @@ export default function AdminPage() {
                   {ALL_STATUSES.map((st) => <option key={st} value={st}>{statusLabel(st, "sk")}</option>)}
                 </select>
                 <button onClick={() => openEmail(a)} className="btn-ghost !px-3 !py-2" title="Poslať e-mail"><Mail size={15} /></button>
+                <button onClick={() => sendReview(a)} disabled={!a.email || reviewSent[a.id]} className="btn-ghost !px-3 !py-2 disabled:opacity-45" title={reviewSent[a.id] ? "Recenzia odoslaná" : "Odoslať žiadosť o recenziu"}><Star size={15} className={reviewSent[a.id] ? "fill-brass text-brass" : ""} /></button>
                 <button onClick={() => setOpen(open === a.id ? null : a.id)} className="btn-ghost !px-3 !py-2"><ChevronDown size={15} className={open === a.id ? "rotate-180" : ""} /></button>
               </div>
               {open === a.id && (
@@ -722,7 +745,27 @@ export default function AdminPage() {
               <input value={bImage} onChange={(e) => setBImage(e.target.value)} placeholder="URL obrázka (voliteľné)" className="input w-full" />
             </div>
             <input value={bExcerpt} onChange={(e) => setBExcerpt(e.target.value)} placeholder="Krátky perex (1–2 vety)" className="input mt-2 w-full" />
-            <textarea value={bContent} onChange={(e) => setBContent(e.target.value)} rows={14} placeholder={"## Prvý nadpis\n\nText odseku…\n\n- prvá odrážka\n- druhá odrážka"} className="input mt-2 w-full font-mono text-sm" />
+            <div className="mt-2 flex gap-1">
+              <button onClick={() => setBPreview(false)} className={`rounded-md px-3 py-1.5 text-xs font-semibold ${!bPreview ? "bg-ink text-white" : "text-ink-soft hover:bg-paper"}`}>Písať</button>
+              <button onClick={() => setBPreview(true)} className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold ${bPreview ? "bg-ink text-white" : "text-ink-soft hover:bg-paper"}`}><Eye size={13} /> Náhľad</button>
+            </div>
+            {!bPreview ? (
+              <textarea value={bContent} onChange={(e) => setBContent(e.target.value)} rows={14} placeholder={"## Prvý nadpis\n\nText odseku…\n\n- prvá odrážka\n- druhá odrážka"} className="input mt-2 w-full font-mono text-sm" />
+            ) : (
+              <div className="mt-2 min-h-[16rem] rounded-xl border border-line bg-white p-5">
+                {bTag && <p className="mb-1 font-mono text-[0.62rem] font-bold uppercase tracking-wider text-brass">{bTag}</p>}
+                <h1 className="font-display text-2xl font-bold text-ink">{bTitle || "Titulok článku"}</h1>
+                {bExcerpt && <p className="mt-2 text-ink-soft">{bExcerpt}</p>}
+                <div className="mt-4 space-y-3 leading-relaxed text-ink">
+                  {(bContent || "Obsah článku…").split(/\n{2,}/).map((b, i) => {
+                    const t = b.trim();
+                    if (t.startsWith("## ")) return <h2 key={i} className="font-display text-lg font-bold text-ink">{t.slice(3)}</h2>;
+                    if (/^-\s+/m.test(t)) return <ul key={i} className="list-disc space-y-1 pl-5">{t.split("\n").filter((l) => l.startsWith("- ")).map((l, k) => <li key={k}>{l.slice(2)}</li>)}</ul>;
+                    return <p key={i}>{t}</p>;
+                  })}
+                </div>
+              </div>
+            )}
             <div className="mt-3 flex items-center gap-3">
               <button onClick={createBlog} className="btn-primary !py-2.5">Uverejniť článok</button>
               {bMsg && <span className="text-sm text-ink-soft">{bMsg}</span>}
@@ -803,6 +846,38 @@ export default function AdminPage() {
           </div>
         );
       })()}
+
+      {tab === "news" && (
+        <div className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_1fr]">
+          <div className="rounded-xl border border-line bg-surface p-5 shadow-card">
+            <p className="font-semibold text-ink">Nový newsletter</p>
+            <p className="mt-1 text-xs text-ink-soft">Odošle sa všetkým e-mailom z okna na stránke. Formát: prázdny riadok = odsek · <code className="rounded bg-paper px-1">## Nadpis</code> · <code className="rounded bg-paper px-1">- odrážka</code> · <code className="rounded bg-paper px-1">**tučné**</code>.</p>
+            <input value={nlTitle} onChange={(e) => setNlTitle(e.target.value)} placeholder="Predmet e-mailu" className="input mt-4 w-full" />
+            <textarea value={nlBody} onChange={(e) => setNlBody(e.target.value)} rows={12} placeholder={"## Nová destinácia!\n\nText správy…\n\n- výhoda 1\n- výhoda 2"} className="input mt-2 w-full font-mono text-sm" />
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <input value={nlTest} onChange={(e) => setNlTest(e.target.value)} placeholder="test@email.sk" className="input !mt-0 w-48" />
+              <button onClick={() => sendNewsletter(true)} className="btn-ghost !py-2 text-sm">Poslať test</button>
+              <button onClick={() => sendNewsletter(false)} className="btn-primary inline-flex items-center gap-2 !py-2"><Send size={14} /> Odoslať všetkým</button>
+            </div>
+            {nlMsg && <p className="mt-2 text-sm text-ink-soft">{nlMsg}</p>}
+          </div>
+          <div className="rounded-xl border border-line bg-paper/40 p-5">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-ink-soft">Živý náhľad</p>
+            <div className="rounded-xl bg-[#0a1622] px-5 py-4"><span className="text-lg font-extrabold text-white">Voyago<span className="text-brass">.</span></span></div>
+            <div className="rounded-b-xl bg-white px-5 py-5">
+              <h1 className="text-lg font-bold text-ink">{nlTitle || "Predmet e-mailu"}</h1>
+              <div className="mt-2 space-y-2 text-sm leading-relaxed text-ink-soft">
+                {(nlBody || "Text správy sa zobrazí tu…").split(/\n{2,}/).map((b, i) => {
+                  const t = b.trim();
+                  if (t.startsWith("## ")) return <p key={i} className="font-bold text-ink">{t.slice(3)}</p>;
+                  if (/^-\s+/m.test(t)) return <ul key={i} className="list-disc pl-5">{t.split("\n").filter((l) => l.startsWith("- ")).map((l, k) => <li key={k}>{l.slice(2)}</li>)}</ul>;
+                  return <p key={i} dangerouslySetInnerHTML={{ __html: t.replace(/</g, "&lt;").replace(/\*\*(.+?)\*\*/g, "<b>$1</b>") }} />;
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {tab === "inbox" && (
         <div className="mt-8 space-y-6">

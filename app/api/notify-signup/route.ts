@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
-import { sendEmail } from "@/lib/email";
+import { sendEmail, welcomeEmail } from "@/lib/email";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -18,11 +18,16 @@ export async function POST(req: NextRequest) {
   if (error) return NextResponse.json({ ok: false }, { status: 500 });
 
   if (process.env.EMAIL_FROM) {
-    sendEmail({
-      to: email,
-      subject: "Dáme vám vedieť — Voyago",
-      html: `<p>Ďakujeme! Hneď ako spustíme túto službu, ozveme sa vám na túto adresu.</p><p style="color:#888;font-size:13px">Ak ste o upozornenie nežiadali, túto správu pokojne ignorujte.</p>`,
-    }).catch(() => {});
+    if (topic === "newsletter") {
+      const w = welcomeEmail(email);
+      sendEmail({ to: email, subject: w.subject, html: w.html }).catch(() => {});
+    } else {
+      sendEmail({
+        to: email,
+        subject: "Dáme vám vedieť — Voyago",
+        html: `<p>Ďakujeme! Hneď ako spustíme túto službu, ozveme sa vám na túto adresu.</p><p style="color:#888;font-size:13px">Ak ste o upozornenie nežiadali, túto správu pokojne ignorujte.</p>`,
+      }).catch(() => {});
+    }
   }
   return NextResponse.json({ ok: true });
 }
