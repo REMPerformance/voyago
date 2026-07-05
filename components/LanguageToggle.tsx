@@ -7,9 +7,7 @@ import type { Lang } from "@/config/products";
 
 const LANGS: { code: Lang; label: string; flag: string }[] = [
   { code: "sk", label: "Slovenčina", flag: "🇸🇰" },
-  { code: "cs", label: "Čeština", flag: "🇨🇿" },
   { code: "en", label: "English", flag: "🇬🇧" },
-  { code: "hu", label: "Magyar", flag: "🇭🇺" },
   { code: "uk", label: "Українська", flag: "🇺🇦" },
 ];
 

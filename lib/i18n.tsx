@@ -232,7 +232,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const saved = window.localStorage.getItem("voyago.lang");
-    if (saved === "sk" || saved === "en" || saved === "cs" || saved === "hu" || saved === "uk") setLangState(saved);
+    if (saved === "sk" || saved === "en" || saved === "uk") setLangState(saved);
   }, []);
 
   const setLang = (l: Lang) => {

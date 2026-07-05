@@ -330,15 +330,14 @@ export function Globe() {
           </div>
         ) : (
           <div>
-            <p className="eyebrow !text-brass-light">{t({ sk: "Interaktívny glóbus", en: "Interactive globe" })}</p>
-            <h3 className="mt-2 font-display text-2xl font-bold sm:text-3xl">
-              {t({ sk: "Kliknite na krajinu", en: "Tap a country" })}
+            <p className="eyebrow !text-brass-light">{t({ sk: "Celý svet na dosah", en: "The whole world at your fingertips" })}</p>
+            <h3 className="mt-2 font-display text-3xl font-extrabold leading-[1.1] sm:text-[2.6rem]">
+              {t({ sk: "Kam to bude?", en: "Where to next?" })}
             </h3>
-            <p className="mt-3 max-w-md text-sm leading-relaxed text-cream/70">
+            <p className="mt-4 max-w-xl text-base leading-relaxed text-cream/75 sm:text-lg">
               {t({
-                sk: "Vyberte si destináciu priamo na glóbuse a hneď uvidíte typ povolenia, čas vybavenia aj cenu. Z Európy sa vykreslí trasa do vašej krajiny.",
-                en: "Pick a destination right on the globe and instantly see the permit type, processing time and price. A route is drawn from Europe to your country.",
-              })}
+                sk: "Roztočte glóbus a klepnite na ktorúkoľvek krajinu, ktorú vybavujeme. Okamžite sa dozviete, aké povolenie potrebujete, ako dlho trvá jeho vybavenie a koľko stojí — a medzi Slovenskom a vašou destináciou sa vykreslí letová trasa.",
+                en: "Spin the globe and tap any country we cover. You'll instantly see which permit you need, how long it takes and what it costs — with a flight path drawn between Slovakia and your destination.",})}
             </p>
             <p className="mt-5 inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-wider text-cream/55">
               <MousePointerClick size={14} className="text-brass-light" />

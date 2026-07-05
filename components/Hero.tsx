@@ -57,23 +57,49 @@ export function Hero() {
 
         {/* RIGHT: boarding pass */}
         <div
-          className="mx-auto w-[78%] sm:w-auto lg:scale-[1.06] xl:scale-[1.1]"
           style={{
             opacity: shown ? 1 : 0,
             transform: shown ? "translateY(0)" : "translateY(40px)",
             transition: "opacity .8s cubic-bezier(.2,.75,.25,1) .12s, transform .8s cubic-bezier(.2,.75,.25,1) .12s",
           }}
         >
-          <BoardingPass />
+          {/* mobil: menšia statická */}
+          <div className="mx-auto w-[78%] sm:hidden">
+            <BoardingPass />
+          </div>
+          {/* desktop: plná veľkosť + 3D náklon za myšou */}
+          <div className="hidden sm:block lg:scale-[1.12] xl:scale-[1.18]">
+            <TiltPass />
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
+function TiltPass() {
+  const [t, setT] = useState<string>("rotate(-4deg)");
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width - 0.5;
+    const py = (e.clientY - r.top) / r.height - 0.5;
+    setT(`perspective(1200px) rotateY(${px * 13}deg) rotateX(${-py * 11}deg) rotate(-4deg)`);
+  };
+  return (
+    <div
+      onMouseMove={onMove}
+      onMouseLeave={() => setT("rotate(-4deg)")}
+      className="transition-transform duration-200 ease-out will-change-transform [transform-style:preserve-3d]"
+      style={{ transform: t }}
+    >
+      <BoardingPass />
+    </div>
+  );
+}
+
 function BoardingPass() {
   return (
-    <div className="relative rotate-0 sm:rotate-[-4deg]">
+    <div className="relative">
       {/* torn notches on the seam (desktop) */}
       <span className="absolute z-20 hidden h-4 w-4 -translate-y-1/2 rounded-full bg-paper sm:block" style={{ right: "9.5rem", top: 0 }} />
       <span className="absolute z-20 hidden h-4 w-4 translate-y-1/2 rounded-full bg-paper sm:block" style={{ right: "9.5rem", bottom: 0 }} />

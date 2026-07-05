@@ -83,6 +83,7 @@ const fromLocal = (v: string) => (v ? new Date(v).toISOString() : null);
 
 export default function AdminPage() {
   const [session, setSession] = useState<any>(null);
+  const [actMins, setActMins] = useState(1440);
 
   // ── Blog ──
   const [bPosts, setBPosts] = useState<any[]>([]);
@@ -101,7 +102,7 @@ export default function AdminPage() {
     else setBMsg(d.error || "Chyba");
   };
   // ── Správy (kontakt / firmy / partneri) ──
-  const [inbox, setInbox] = useState<{ contact_messages: any[]; b2b_leads: any[]; affiliate_signups: any[] }>({ contact_messages: [], b2b_leads: [], affiliate_signups: [] });
+  const [inbox, setInbox] = useState<{ contact_messages: any[]; b2b_leads: any[]; affiliate_signups: any[]; notify_signups: any[] }>({ contact_messages: [], b2b_leads: [], affiliate_signups: [], notify_signups: [] });
   const loadInbox = async () => {
     const r = await fetch("/api/admin/inbox", { headers: { Authorization: `Bearer ${session.access_token}` } });
     const d = await r.json(); if (d.contact_messages) setInbox(d);
@@ -359,7 +360,7 @@ export default function AdminPage() {
         <button onClick={() => setTab("ann")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "ann" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Megaphone size={15} /> Oznamy</button>
         <button onClick={() => setTab("apps")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "apps" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Inbox size={15} /> Žiadosti</button>
         <button onClick={() => setTab("blog")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "blog" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><BookOpen size={15} /> Blog</button>
-        <button onClick={() => setTab("inbox")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "inbox" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Inbox size={15} /> Správy{(inbox.contact_messages.length + inbox.b2b_leads.length + inbox.affiliate_signups.length) > 0 && <span className="rounded-md bg-brass/15 px-1.5 text-[0.62rem] font-bold text-brass">{inbox.contact_messages.length + inbox.b2b_leads.length + inbox.affiliate_signups.length}</span>}</button>
+        <button onClick={() => setTab("inbox")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "inbox" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Inbox size={15} /> Správy{(inbox.contact_messages.length + inbox.b2b_leads.length + inbox.affiliate_signups.length + inbox.notify_signups.length) > 0 && <span className="rounded-md bg-brass/15 px-1.5 text-[0.62rem] font-bold text-brass">{inbox.contact_messages.length + inbox.b2b_leads.length + inbox.affiliate_signups.length + inbox.notify_signups.length}</span>}</button>
         <button onClick={() => setTab("disc")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "disc" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Percent size={15} /> Zľavy</button>
         <button onClick={() => setTab("promo")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "promo" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Ticket size={15} /> Promo kódy</button>
         <button onClick={() => setTab("traffic")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "traffic" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Activity size={15} /> Analytika</button>
@@ -618,6 +619,9 @@ export default function AdminPage() {
 
       {tab === "traffic" && (() => {
         const pvAll = visits.filter((v: any) => v.type === "pageview");
+        const RANGES: [string, number][] = [["10 min", 10], ["30 min", 30], ["1 h", 60], ["2 h", 120], ["5 h", 300], ["10 h", 600], ["24 h", 1440], ["2 dni", 2880], ["5 dní", 7200], ["7 dní", 10080]];
+        const cutoff = Date.now() - actMins * 60000;
+        const recent = pvAll.filter((v: any) => new Date(v.created_at).getTime() >= cutoff).slice(0, 250);
         const hb = (rows: any[]) => {
           const h = rows.filter((v) => !v.is_bot).length;
           return { h, b: rows.length - h };
@@ -677,39 +681,27 @@ export default function AdminPage() {
             </div>
 
             <div className="mt-4 rounded-xl border border-line bg-surface shadow-card">
-              <div className="flex items-center justify-between border-b border-line px-4 py-3">
-                <p className="font-semibold text-ink">Posledná aktivita — ako sa ľudia dostali na web</p>
-                <button onClick={loadVisits} className="btn-ghost !py-1.5 text-xs">Obnoviť</button>
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-3">
+                <p className="font-semibold text-ink">Posledná aktivita <span className="text-ink-soft">({recent.length})</span></p>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-ink-soft">Za posledných</span>
+                  <select value={actMins} onChange={(e) => setActMins(Number(e.target.value))} className="input !mt-0 !py-1.5 text-sm">
+                    {RANGES.map(([lbl, m]) => <option key={m} value={m}>{lbl}</option>)}
+                  </select>
+                  <button onClick={loadVisits} className="btn-ghost !py-1.5 text-xs">Obnoviť</button>
+                </div>
               </div>
-              {sessions.length === 0 && <p className="px-4 py-4 text-sm text-ink-soft">Zatiaľ žiadne dáta.</p>}
-              {Object.entries(days).map(([day, ses]) => (
-                <div key={day}>
-                  <p className="border-b border-line-soft bg-paper/60 px-4 py-1.5 text-[0.62rem] font-bold uppercase tracking-wider text-ink-soft">{day}</p>
-                  {ses.map((rows) => {
-                    const a = rows[0];
-                    return (
-                      <details key={a.id} className="group border-b border-line-soft last:border-b-0">
-                        <summary className="grid cursor-pointer list-none grid-cols-[50px_minmax(100px,0.8fr)_1.3fr_auto] items-center gap-3 px-4 py-2.5 text-sm hover:bg-paper/40">
-                          <span className="font-mono text-xs text-ink-soft">{new Date(a.created_at).toLocaleTimeString("sk-SK", { hour: "2-digit", minute: "2-digit" })}</span>
-                          <span className="truncate text-ink"><span className="mr-1.5">{flagOf(a.country) || "🌐"}</span>{a.city || a.country || "Neznáme"}</span>
-                          <span className="truncate font-medium text-ink">{sourceLabel(a)}</span>
-                          <span className="flex items-center gap-2">
-                            <span className={`rounded-md px-1.5 py-0.5 text-[0.58rem] font-bold uppercase ${a.is_bot ? "bg-line-soft text-ink-soft" : "bg-green/15 text-green"}`}>{a.is_bot ? "bot" : "človek"}</span>
-                            <span title={isMobileUA(a.user_agent) ? "mobil" : "počítač"}>{isMobileUA(a.user_agent) ? "📱" : "💻"}</span>
-                            <span className="text-[0.62rem] text-ink-soft/70">{rows.length} str. <span className="inline-block transition-transform group-open:rotate-90">›</span></span>
-                          </span>
-                        </summary>
-                        <div className="bg-paper/30 px-4 pb-2.5 pt-1">
-                          {rows.map((v: any) => (
-                            <div key={v.id} className="flex items-center gap-3 py-1 text-xs text-ink-soft">
-                              <span className="w-[50px] shrink-0 font-mono">{new Date(v.created_at).toLocaleTimeString("sk-SK", { hour: "2-digit", minute: "2-digit" })}</span>
-                              <span className="truncate">{pageName(v.path)}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </details>
-                    );
-                  })}
+              {recent.length === 0 && <p className="px-4 py-4 text-sm text-ink-soft">V zvolenom období žiadna aktivita.</p>}
+              {recent.map((v: any) => (
+                <div key={v.id} className="grid grid-cols-[62px_minmax(90px,0.8fr)_1.2fr_auto] items-center gap-3 border-b border-line-soft px-4 py-2 text-sm last:border-b-0">
+                  <span className="font-mono text-xs text-ink-soft">{new Date(v.created_at).toLocaleTimeString("sk-SK", { hour: "2-digit", minute: "2-digit" })}</span>
+                  <span className="truncate text-ink"><span className="mr-1.5">{flagOf(v.country) || "🌐"}</span>{v.city || v.country || "Neznáme"}</span>
+                  <span className="truncate font-medium text-ink">{pageName(v.path)}</span>
+                  <span className="flex items-center gap-2 justify-self-end">
+                    <span title={sourceLabel(v)} className="hidden max-w-[160px] truncate text-xs text-ink-soft sm:inline">{sourceLabel(v)}</span>
+                    <span className={`rounded-md px-1.5 py-0.5 text-[0.58rem] font-bold uppercase ${v.is_bot ? "bg-line-soft text-ink-soft" : "bg-green/15 text-green"}`}>{v.is_bot ? "bot" : "človek"}</span>
+                    <span>{isMobileUA(v.user_agent) ? "📱" : "💻"}</span>
+                  </span>
                 </div>
               ))}
             </div>
@@ -774,6 +766,7 @@ export default function AdminPage() {
             ["contact_messages", "Kontaktné správy", (m: any) => ({ head: `${m.name} · ${m.email}`, sub: m.subject || "—", body: m.message })],
             ["b2b_leads", "Firmy — dopyty na spoluprácu", (m: any) => ({ head: `${m.company}${m.ico ? ` (IČO ${m.ico})` : ""}`, sub: `${m.email}${m.phone ? ` · ${m.phone}` : ""}${m.volume ? ` · ${m.volume}` : ""}`, body: m.message })],
             ["affiliate_signups", "Partneri — prihlášky do programu", (m: any) => ({ head: `${m.name} · ${m.email}`, sub: `${m.channel || "bez kanála"}${m.audience ? ` · publikum ${m.audience}` : ""}`, body: m.note })],
+            ["notify_signups", "E-maily z okna na stránke (zľavy / novinky)", (m: any) => ({ head: m.email, sub: m.topic === "newsletter" ? "zľavový kód CESTUJEME5" : m.topic, body: "" })],
           ] as [string, string, (m: any) => { head: string; sub: string; body: string }][]).map(([table, title, fmt]) => {
             const rows = (inbox as any)[table] as any[];
             return (

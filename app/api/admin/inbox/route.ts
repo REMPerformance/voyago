@@ -3,7 +3,7 @@ import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
 export const runtime = "nodejs";
 
-const TABLES = ["contact_messages", "b2b_leads", "affiliate_signups"] as const;
+const TABLES = ["contact_messages", "b2b_leads", "affiliate_signups", "notify_signups"] as const;
 
 async function requireUser(req: NextRequest) {
   if (!supabaseAdmin) return null;
