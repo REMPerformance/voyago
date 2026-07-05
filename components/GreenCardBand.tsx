@@ -53,7 +53,7 @@ export function GreenCardBand() {
 
   return (
     <section className="container-page py-12">
-      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-[1.5fr_1fr]">
+      <div className="gc-band grid gap-6 lg:grid-cols-[1.5fr_1fr]">
         {/* Green Card — text + mockup */}
         <Reveal>
           <div className="secure-bg relative h-full overflow-hidden rounded-[1.4rem] border border-green-soft/50 bg-green p-8 text-cream shadow-pass ring-1 ring-brass/25 sm:p-10">
@@ -85,7 +85,7 @@ export function GreenCardBand() {
                   <Link href="/green-card" className="btn inline-flex !px-6 !py-3 text-sm font-bold bg-cream text-green hover:-translate-y-0.5 hover:bg-white">
                     {tr("gc.btn")} <ArrowRight size={15} />
                   </Link>
-                  <span className="inline-flex items-center gap-2 rounded-lg border border-cream/25 px-3.5 py-2 text-xs font-semibold text-cream/85">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-cream/25 px-3.5 py-2 text-xs font-semibold text-cream/85">
                     <span className="relative flex h-2 w-2">
                       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brass-light opacity-70" />
                       <span className="relative inline-flex h-2 w-2 rounded-full bg-brass-light" />
@@ -132,7 +132,7 @@ export function GreenCardBand() {
               <Link href="/apply/eu-etias" className="btn inline-flex !px-5 !py-2.5 text-sm bg-cream text-navy hover:-translate-y-0.5 hover:bg-white">
                 Learn more <ArrowRight size={14} />
               </Link>
-              <span className="inline-flex items-center gap-2 rounded-lg border border-cream/25 px-3.5 py-2 text-xs font-semibold text-cream/85">
+              <span className="inline-flex items-center gap-2 rounded-full border border-cream/25 px-3.5 py-2 text-xs font-semibold text-cream/85">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-light opacity-70" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-teal-light" />

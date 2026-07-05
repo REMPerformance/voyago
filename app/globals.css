@@ -16,27 +16,18 @@
   }
 
   .dark {
-    /* Tmavý režim — vyšší kontrast plôch, čiar aj hover stavov */
-    --paper: 10 20 30;
-    --paper-dim: 17 32 46;
-    --surface: 21 38 54;
-    --ink: 237 242 246;
-    --ink-soft: 176 193 206;
-    --line: 52 70 85;
-    --line-soft: 38 55 70;
+    /* Tmavý režim */
+    --paper: 11 23 34;
+    --paper-dim: 15 30 44;
+    --surface: 19 33 47;
+    --ink: 231 236 241;
+    --ink-soft: 158 176 190;
+    --line: 36 51 63;
+    --line-soft: 27 41 55;
   }
-  /* Dark: jemné dorovnania, aby nič nesplývalo */
-  .dark .shadow-card { box-shadow: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 8px 24px rgb(0 0 0 / 0.45); }
-  .dark .btn-ghost:hover { background: rgb(255 255 255 / 0.06); }
-  .dark ::selection { background: #C99A4E; color: #0A1622; }
 
   html {
     scroll-behavior: smooth;
-  }
-  /* Jemné doladenie mierky: na notebookoch pôsobil web priveľký.
-     rem-based Tailwind = zmena base font-size preškáluje všetko proporčne. */
-  @media (min-width: 1024px) and (max-width: 1919px) {
-    html { font-size: 15px; }
   }
 
   body {
@@ -79,7 +70,7 @@
 
   /* Buttons */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold
            transition-all duration-200;
   }
   .btn-primary {
@@ -179,84 +170,20 @@
   }
 }
 
-/* Prístupnosť: viditeľný focus pre klávesnicu */
-*:focus-visible {
-  outline: 2px solid #C99A4E;
-  outline-offset: 2px;
-  border-radius: 3px;
-}
-
-/* Právne stránky: zoznamy, odkazy, zvýraznenie */
-.legal ul { list-style: disc; padding-left: 1.25rem; }
-.legal li { margin-top: 0.35rem; }
-.legal a { color: #C99A4E; text-decoration: underline; text-underline-offset: 2px; }
-.legal strong { color: #0A1622; }
-
-/* ── Mobil: krotenie mierky ─────────────────────────────────────────
-   Na telefónoch pôsobil web obrovsky: veľké display nadpisy a vysoké
-   sekcie. Riešime globálne — menší základ písma, strop pre najväčšie
-   text utility a tesnejší vertikálny rytmus. Desktop nedotknutý. */
+/* ── Mobil (<640px): zmenšenie cez zoom — proporcie zostávajú, mení sa len veľkosť ── */
 @media (max-width: 640px) {
-  html { font-size: 15px; }
-
-  /* stropy najväčších textov (display nadpisy, veľké čísla) */
-  .text-7xl { font-size: 2.85rem !important; line-height: 1.04 !important; }
-  .text-6xl { font-size: 2.6rem !important; line-height: 1.05 !important; }
-  .text-5xl { font-size: 2.3rem !important; line-height: 1.08 !important; }
-  .text-4xl { font-size: 1.95rem !important; line-height: 1.12 !important; }
-  .text-3xl { font-size: 1.6rem !important; line-height: 1.16 !important; }
-
-  /* tesnejšie sekcie a odstupy */
-  .py-24 { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
-  .py-20 { padding-top: 3rem !important; padding-bottom: 3rem !important; }
-  .py-16 { padding-top: 2.6rem !important; padding-bottom: 2.6rem !important; }
-  .py-14 { padding-top: 2.4rem !important; padding-bottom: 2.4rem !important; }
-  .mt-20 { margin-top: 3.25rem !important; }
-  .mt-16 { margin-top: 2.75rem !important; }
-  .mt-14 { margin-top: 2.5rem !important; }
-  .mt-12 { margin-top: 2.25rem !important; }
-
-  /* karty a mriežky nech dýchajú menej */
-  .gap-12 { gap: 2rem !important; }
-  .gap-10 { gap: 1.5rem !important; }
-  .gap-8 { gap: 1.35rem !important; }
-  .gap-6 { gap: 1.1rem !important; }
-  .gap-5 { gap: 0.95rem !important; }
-
-  /* menšie vnútro kariet a stredné texty */
-  .text-2xl { font-size: 1.32rem !important; line-height: 1.2 !important; }
-  .p-8 { padding: 1.35rem !important; }
-  .p-7 { padding: 1.25rem !important; }
-  .p-6 { padding: 1.1rem !important; }
-  .mt-10 { margin-top: 1.9rem !important; }
-  .mt-8 { margin-top: 1.6rem !important; }
-  .py-12 { padding-top: 2.1rem !important; padding-bottom: 2.1rem !important; }
-  .py-10 { padding-top: 1.9rem !important; padding-bottom: 1.9rem !important; }
-}
-
-/* skryť scrollbar pri mobilných karuseloch */
-.no-scrollbar { scrollbar-width: none; }
-.no-scrollbar::-webkit-scrollbar { display: none; }
-
-/* ── Mobil (<640px): všetko výrazne menšie a kompaktnejšie ──────────── */
-@media (max-width: 640px) {
-  /* menší základ = všetky rem rozmery (fonty, medzery, paddingy) sa zmenšia naraz */
-  html { font-size: 12.5px; }
-
-  /* stropy na najväčšie nadpisy, nech nekričia */
-  h1, .font-display.text-4xl, .font-display.text-5xl,
-  .font-display.text-6xl, [class*="text-\[2."], [class*="text-\[3."], [class*="text-\[4."] {
-    font-size: 1.9rem !important;
-    line-height: 1.12 !important;
+  /* Zelená karta a ETIAS: menšie (proporcie zostávajú), pod sebou.
+     width:calc(100%/zoom) kompenzuje šírku, aby nezostalo prázdne miesto. */
+  .gc-band {
+    zoom: 0.78;
+    width: calc(100% / 0.78);
   }
-  h2, .font-display.text-3xl, .font-display.text-2xl {
-    font-size: 1.35rem !important;
-    line-height: 1.2 !important;
+
+  /* Destinácie 2 vedľa seba a zmenšené */
+  .dest-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.55rem !important;
+    zoom: 0.9;
+    width: calc(100% / 0.9);
   }
-  /* jednoduché feature/krok gridy = 2 stĺpce */
-  .m2col { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 0.6rem !important; }
-  /* karty a sekcie kompaktnejšie */
-  .shadow-card { padding: 0.85rem !important; }
-  .container-page { padding-left: 1rem !important; padding-right: 1rem !important; }
-  section { padding-top: 2.2rem !important; padding-bottom: 2.2rem !important; }
 }

@@ -6,6 +6,7 @@ import { Hero } from "@/components/Hero";
 import { Specializations } from "@/components/Specializations";
 import { HowItWorks } from "@/components/HowItWorks";
 import { GreenCardBand } from "@/components/GreenCardBand";
+import { WhyUs } from "@/components/WhyUs";
 import { About } from "@/components/About";
 import { WorldReach } from "@/components/WorldReach";
 import { Testimonials } from "@/components/Testimonials";
@@ -38,7 +39,7 @@ export default function HomePage() {
             {tr("cta.browse")} <ArrowRight size={15} />
           </Link>
         </Reveal>
-        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+        <div className="dest-grid mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {featured.map((p, i) => (
             <Reveal key={p.slug} delay={(i % 3) * 80}>
               <ProductCard product={p} />
@@ -56,6 +57,7 @@ export default function HomePage() {
       <WorldReach />
       <Specializations />
       <HowItWorks />
+      <WhyUs />
       <About />
       <Testimonials />
       <Guarantee />
