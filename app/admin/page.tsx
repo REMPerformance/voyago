@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, Eye, EyeOff, LogOut, Megaphone, Save, X, Inbox, Download, ChevronDown, Mail, Send, Percent, Search, Ticket, Activity, Globe, MessageCircle, BookOpen, AtSign, Star } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, EyeOff, LogOut, Megaphone, Save, X, Inbox, Download, ChevronDown, Mail, Send, Percent, Search, Ticket, Activity, Globe, MessageCircle, BookOpen, AtSign, Star, Archive, ArchiveRestore } from "lucide-react";
 import { ChatAdmin } from "@/components/admin/ChatAdmin";
 import { supabase, supabaseEnabled } from "@/lib/supabase";
 import { fileSignedUrl } from "@/lib/applications";
@@ -88,6 +88,7 @@ export default function AdminPage() {
   const [reviewSent, setReviewSent] = useState<Record<string, boolean>>({});
   const [nlTitle, setNlTitle] = useState(""); const [nlBody, setNlBody] = useState(""); const [nlTest, setNlTest] = useState(""); const [nlMsg, setNlMsg] = useState("");
   const [bPreview, setBPreview] = useState(false);
+  const [showArchApps, setShowArchApps] = useState(false);
 
   // ── Blog ──
   const [bPosts, setBPosts] = useState<any[]>([]);
@@ -208,6 +209,18 @@ export default function AdminPage() {
     setApps(data || []);
   };
   useEffect(() => { if (session && tab === "apps") loadApps(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
+
+  const archiveApp = async (id: string, archived: boolean) => {
+    await supabase?.from("applications").update({ archived }).eq("id", id);
+    if (open === id) setOpen(null);
+    loadApps();
+  };
+  const deleteApp = async (id: string) => {
+    if (!confirm("Natrvalo zmazať túto žiadosť? Tento krok sa nedá vrátiť.")) return;
+    await supabase?.from("applications").delete().eq("id", id);
+    if (open === id) setOpen(null);
+    loadApps();
+  };
   const openFile = async (path: string) => { const u = await fileSignedUrl(path); if (u) window.open(u, "_blank"); };
   const setAppStatus = async (id: string, status: string) => {
     const prev = apps.find((a) => a.id === id);
@@ -297,6 +310,7 @@ export default function AdminPage() {
   const paidCount = apps.filter((a) => a.paid).length;
   const revenue = apps.filter((a) => a.paid).reduce((s2, a) => s2 + (a.amount_cents || 0), 0) / 100;
   const filteredApps = apps.filter((a) => {
+    if (showArchApps ? !a.archived : a.archived) return false;
     if (statusF !== "all" && a.status !== statusF) return false;
     if (q) { const hay = `${a.email || ""} ${a.ref || ""} ${a.product_slug || ""}`.toLowerCase(); if (!hay.includes(q.toLowerCase())) return false; }
     return true;
@@ -391,7 +405,12 @@ export default function AdminPage() {
         <button onClick={() => setTab("stats")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "stats" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Globe size={15} /> Krajiny</button>
         <button onClick={() => setTab("chat")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "chat" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><MessageCircle size={15} /> Chat</button>
         {tab === "ann" && <button onClick={() => setDraft({ ...EMPTY })} className="btn-primary ml-auto !py-2"><Plus size={15} /> Nový oznam</button>}
-        {tab === "apps" && <button onClick={loadApps} className="btn-ghost ml-auto !py-2">Obnoviť</button>}
+        {tab === "apps" && (
+          <div className="ml-auto flex items-center gap-2">
+            <button onClick={() => setShowArchApps((v) => !v)} className="btn-ghost !py-2">{showArchApps ? <><ArchiveRestore size={15} /> Aktívne</> : <><Archive size={15} /> Archív</>}</button>
+            <button onClick={loadApps} className="btn-ghost !py-2">Obnoviť</button>
+          </div>
+        )}
       </div>
 
       {tab === "chat" && <ChatAdmin />}
@@ -454,6 +473,8 @@ export default function AdminPage() {
                 </select>
                 <button onClick={() => openEmail(a)} className="btn-ghost !px-3 !py-2" title="Poslať e-mail"><Mail size={15} /></button>
                 <button onClick={() => sendReview(a)} disabled={!a.email || reviewSent[a.id]} className="btn-ghost !px-3 !py-2 disabled:opacity-45" title={reviewSent[a.id] ? "Recenzia odoslaná" : "Odoslať žiadosť o recenziu"}><Star size={15} className={reviewSent[a.id] ? "fill-brass text-brass" : ""} /></button>
+                <button onClick={() => archiveApp(a.id, !a.archived)} className="btn-ghost !px-3 !py-2" title={a.archived ? "Obnoviť z archívu" : "Archivovať"}>{a.archived ? <ArchiveRestore size={15} /> : <Archive size={15} />}</button>
+                <button onClick={() => deleteApp(a.id)} className="btn-ghost !px-3 !py-2 text-terra hover:bg-terra/10" title="Zmazať žiadosť"><Trash2 size={15} /></button>
                 <button onClick={() => setOpen(open === a.id ? null : a.id)} className="btn-ghost !px-3 !py-2"><ChevronDown size={15} className={open === a.id ? "rotate-180" : ""} /></button>
               </div>
               {open === a.id && (

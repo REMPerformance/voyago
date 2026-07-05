@@ -63,9 +63,11 @@ export function Hero() {
             transition: "opacity .8s cubic-bezier(.2,.75,.25,1) .12s, transform .8s cubic-bezier(.2,.75,.25,1) .12s",
           }}
         >
-          {/* mobil: menšia statická */}
-          <div className="mx-auto w-[78%] sm:hidden">
-            <BoardingPass />
+          {/* mobil: rovnaká letenka ako na PC, len zmenšená (zoom nemení rozmery, len veľkosť) */}
+          <div className="origin-top [zoom:0.52] sm:hidden">
+            <div style={{ transform: "rotate(-4deg)" }}>
+              <BoardingPass />
+            </div>
           </div>
           {/* desktop: plná veľkosť + 3D náklon za myšou */}
           <div className="hidden sm:block lg:[zoom:1.08] xl:[zoom:1.14]">
