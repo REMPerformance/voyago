@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, Eye, EyeOff, LogOut, Megaphone, Save, X, Inbox, Download, ChevronDown, Mail, Send, Percent, Search, Ticket, Activity, Globe, MessageCircle, BookOpen, AtSign, Star, Archive, ArchiveRestore } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, EyeOff, LogOut, Megaphone, Save, X, Inbox, Download, ChevronDown, Mail, Send, Percent, Search, Ticket, Activity, Globe, MessageCircle, Users, Copy, Check, Power } from "lucide-react";
 import { ChatAdmin } from "@/components/admin/ChatAdmin";
 import { supabase, supabaseEnabled } from "@/lib/supabase";
 import { fileSignedUrl } from "@/lib/applications";
 import { ALL_STATUSES, statusLabel } from "@/config/orderStages";
 import { renderEmail, TEMPLATES, type EmailTemplate } from "@/lib/email";
 import { PRODUCTS, getProduct } from "@/config/products";
-import { POSTS } from "@/config/blog";
 import { fetchStats, setProcessed, bumpProcessed } from "@/lib/stats";
 import type { Announcement, Placement, Tone } from "@/lib/announcements";
 
@@ -21,59 +20,10 @@ const TONES: Tone[] = ["info", "warning", "success", "promo"];
 const PLACEMENTS: Placement[] = ["bar", "popup"];
 const projectHost = (process.env.NEXT_PUBLIC_SUPABASE_URL || "").replace(/^https?:\/\//, "").replace(/\/.*$/, "") || "nenastavené";
 
-const PAGE_NAMES: Record<string, string> = {
-  "/": "Domov", "/destinations": "Destinácie", "/wizard": "Sprievodca výberom", "/cart": "Košík",
-  "/checkout": "Pokladňa", "/zhrnutie": "Zhrnutie objednávky", "/stav": "Sledovanie stavu",
-  "/blog": "Blog", "/green-card": "Zelená karta", "/green-card/prihlaska": "Zelená karta — prihláška",
-  "/foto-poziadavky": "Foto na vízum", "/ochrana-kupujuceho": "Ochrana kupujúceho",
-  "/pre-firmy": "Pre firmy", "/partnersky-program": "Partnerský program",
-  "/obchodne-podmienky": "Obchodné podmienky", "/ochrana-osobnych-udajov": "Ochrana osobných údajov",
-  "/reklamacie": "Reklamácie", "/kontakt": "Kontakt", "/admin": "Admin",
-};
-function pageName(path: string): string {
-  const clean = (path || "/").split("?")[0].replace(/\/$/, "") || "/";
-  if (PAGE_NAMES[clean]) return PAGE_NAMES[clean];
-  if (clean.startsWith("/apply/")) {
-    const p = PRODUCTS.find((x) => x.slug === clean.slice(7));
-    return p ? `Žiadosť — ${p.destination.sk} (${p.type.toUpperCase()})` : "Žiadosť";
-  }
-  if (clean.startsWith("/blog/")) {
-    const b = POSTS.find((x) => x.slug === clean.slice(6));
-    return b ? `Blog — ${b.title.sk}` : `Blog — ${clean.slice(6).replace(/-/g, " ")}`;
-  }
-  return clean;
-}
-function sourceLabel(v: any): string {
-  const q = new URLSearchParams(v.query || "");
-  const src = (q.get("utm_source") || "").toLowerCase();
-  const med = (q.get("utm_medium") || "").toLowerCase();
-  if (q.get("gclid") || (src.includes("google") && /cpc|ppc|paid/.test(med))) return "Google Ads (reklama)";
-  if (q.get("fbclid") || (src.includes("facebook") && /cpc|paid|ad/.test(med))) return "Facebook reklama";
-  if (q.get("ref")) return `Partner: ${q.get("ref")}`;
-  if (src) return `Kampaň: ${src}${med ? ` (${med})` : ""}`;
-  const r = v.referrer || "";
-  if (!r) return "Priamo (napísal adresu / záložka)";
-  try {
-    const h = new URL(r).hostname.replace(/^www\./, "");
-    if (h.includes("voyago")) return "Presun v rámci webu";
-    if (h.includes("google")) return "Google vyhľadávanie";
-    if (h.includes("bing")) return "Bing vyhľadávanie";
-    if (h.includes("seznam")) return "Seznam vyhľadávanie";
-    if (h.includes("facebook") || h === "fb.com" || h === "l.facebook.com") return "Facebook";
-    if (h.includes("instagram")) return "Instagram";
-    if (h.includes("linkedin")) return "LinkedIn";
-    return `Odkaz z: ${h}`;
-  } catch { return "Odkaz z inej stránky"; }
-}
-
-const isMobileUA = (ua?: string) => /Mobi|Android|iPhone|iPad/i.test(ua || "");
-
-const flagOf = (cc?: string) => cc && cc.length === 2 ? String.fromCodePoint(...cc.toUpperCase().split('').map((c) => 127397 + c.charCodeAt(0))) : "";
-
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl border border-line bg-surface p-4 shadow-card">
-      <p className="text-[0.58rem] uppercase tracking-wider text-ink-soft">{label}</p>
+      <p className="font-mono text-[0.58rem] uppercase tracking-wider text-ink-soft">{label}</p>
       <p className="mt-1 font-display text-2xl font-extrabold text-ink">{value}</p>
     </div>
   );
@@ -83,64 +33,6 @@ const fromLocal = (v: string) => (v ? new Date(v).toISOString() : null);
 
 export default function AdminPage() {
   const [session, setSession] = useState<any>(null);
-  const [actMins, setActMins] = useState(1440);
-  const [emailSrc, setEmailSrc] = useState("all");
-  const [reviewSent, setReviewSent] = useState<Record<string, boolean>>({});
-  const [nlTitle, setNlTitle] = useState(""); const [nlBody, setNlBody] = useState(""); const [nlTest, setNlTest] = useState(""); const [nlMsg, setNlMsg] = useState("");
-  const [bPreview, setBPreview] = useState(false);
-  const [showArchApps, setShowArchApps] = useState(false);
-
-  // ── Blog ──
-  const [bPosts, setBPosts] = useState<any[]>([]);
-  const [bTitle, setBTitle] = useState(""); const [bTag, setBTag] = useState("Rady");
-  const [bExcerpt, setBExcerpt] = useState(""); const [bImage, setBImage] = useState("");
-  const [bContent, setBContent] = useState(""); const [bMsg, setBMsg] = useState("");
-  const loadBlog = async () => {
-    const r = await fetch("/api/admin/blog", { headers: { Authorization: `Bearer ${session.access_token}` } });
-    const d = await r.json(); if (d.posts) setBPosts(d.posts);
-  };
-  const createBlog = async () => {
-    setBMsg("Ukladám…");
-    const r = await fetch("/api/admin/blog", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` }, body: JSON.stringify({ title: bTitle, tag: bTag, excerpt: bExcerpt, image: bImage, content: bContent }) });
-    const d = await r.json();
-    if (d.ok) { setBMsg(`Uverejnené ✓ — /blog/${d.slug} (zobrazí sa do ~5 min)`); setBTitle(""); setBExcerpt(""); setBImage(""); setBContent(""); loadBlog(); }
-    else setBMsg(d.error || "Chyba");
-  };
-  // ── Správy (kontakt / firmy / partneri) ──
-  const [inbox, setInbox] = useState<{ contact_messages: any[]; b2b_leads: any[]; affiliate_signups: any[]; notify_signups: any[] }>({ contact_messages: [], b2b_leads: [], affiliate_signups: [], notify_signups: [] });
-  const loadInbox = async () => {
-    const r = await fetch("/api/admin/inbox", { headers: { Authorization: `Bearer ${session.access_token}` } });
-    const d = await r.json(); if (d.contact_messages) setInbox(d);
-  };
-  const deleteInbox = async (table: string, id: string) => {
-    if (!confirm("Označiť ako vybavené a zmazať?")) return;
-    await fetch(`/api/admin/inbox?table=${table}&id=${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${session.access_token}` } });
-    loadInbox();
-  };
-
-  const sendReview = async (a: any) => {
-    if (!a.email || reviewSent[a.id]) return;
-    if (!confirm(`Odoslať žiadosť o recenziu na ${a.email}?`)) return;
-    const r = await fetch("/api/admin/review-request", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` }, body: JSON.stringify({ email: a.email, name: a.travelers?.[0]?.data?.firstName }) });
-    const d = await r.json();
-    if (d.ok) setReviewSent((p) => ({ ...p, [a.id]: true }));
-    else alert("Nepodarilo sa odoslať (skontrolujte nastavenie e-mailu).");
-  };
-  const sendNewsletter = async (test: boolean) => {
-    if (!nlTitle.trim() || !nlBody.trim()) { setNlMsg("Vyplňte predmet aj text."); return; }
-    if (!test && !confirm("Odoslať newsletter VŠETKÝM odberateľom?")) return;
-    setNlMsg(test ? "Posielam test…" : "Rozosielam…");
-    const r = await fetch("/api/admin/newsletter", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` }, body: JSON.stringify({ title: nlTitle, body: nlBody, test: test ? nlTest : "" }) });
-    const d = await r.json();
-    if (d.ok) setNlMsg(test ? `Test odoslaný na ${nlTest}.` : `Odoslané: ${d.sent} / ${d.total} odberateľom.`);
-    else setNlMsg(d.error === "email_not_configured" ? "E-mail nie je nastavený (RESEND_API_KEY / EMAIL_FROM)." : "Chyba pri odosielaní.");
-  };
-
-  const deleteBlog = async (id: string) => {
-    if (!confirm("Zmazať článok?")) return;
-    await fetch(`/api/admin/blog?id=${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${session.access_token}` } });
-    loadBlog();
-  };
   const [ready, setReady] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -148,7 +40,11 @@ export default function AdminPage() {
   const [list, setList] = useState<Announcement[]>([]);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [busy, setBusy] = useState(false);
-  const [tab, setTab] = useState<"ann" | "apps" | "disc" | "promo" | "traffic" | "stats" | "chat" | "blog" | "inbox" | "emails" | "news">("ann");
+  const [affs, setAffs] = useState<any[]>([]);
+  const [affForm, setAffForm] = useState<any>({ name: "", code: "", commission_pct: 12, discount_pct: 0, discount_mode: "extra", note: "" });
+  const [affMsg, setAffMsg] = useState("");
+  const [copiedCode, setCopiedCode] = useState("");
+  const [tab, setTab] = useState<"ann" | "apps" | "disc" | "promo" | "traffic" | "stats" | "chat" | "aff">("ann");
   const [apps, setApps] = useState<any[]>([]);
   const [open, setOpen] = useState<string | null>(null);
   const [emailFor, setEmailFor] = useState<any>(null);
@@ -209,18 +105,6 @@ export default function AdminPage() {
     setApps(data || []);
   };
   useEffect(() => { if (session && tab === "apps") loadApps(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
-
-  const archiveApp = async (id: string, archived: boolean) => {
-    await supabase?.from("applications").update({ archived }).eq("id", id);
-    if (open === id) setOpen(null);
-    loadApps();
-  };
-  const deleteApp = async (id: string) => {
-    if (!confirm("Natrvalo zmazať túto žiadosť? Tento krok sa nedá vrátiť.")) return;
-    await supabase?.from("applications").delete().eq("id", id);
-    if (open === id) setOpen(null);
-    loadApps();
-  };
   const openFile = async (path: string) => { const u = await fileSignedUrl(path); if (u) window.open(u, "_blank"); };
   const setAppStatus = async (id: string, status: string) => {
     const prev = apps.find((a) => a.id === id);
@@ -267,7 +151,7 @@ export default function AdminPage() {
     });
     setSending(false);
     if (res.ok) { alert("E-mail odoslaný ✓"); setEmailFor(null); }
-    else { const e = await res.json().catch(() => ({})); alert("Nepodarilo sa odoslať (" + (e.error || "chyba") + "). Skontrolujte RESEND_API_KEY."); }
+    else { const e = await res.json().catch(() => ({})); alert("Nepodarilo sa odoslať (" + (e.error || "chyba") + "). Skontroluj RESEND_API_KEY."); }
   };
   const loadDiscounts = async () => {
     if (!supabase) return;
@@ -310,7 +194,6 @@ export default function AdminPage() {
   const paidCount = apps.filter((a) => a.paid).length;
   const revenue = apps.filter((a) => a.paid).reduce((s2, a) => s2 + (a.amount_cents || 0), 0) / 100;
   const filteredApps = apps.filter((a) => {
-    if (showArchApps ? !a.archived : a.archived) return false;
     if (statusF !== "all" && a.status !== statusF) return false;
     if (q) { const hay = `${a.email || ""} ${a.ref || ""} ${a.product_slug || ""}`.toLowerCase(); if (!hay.includes(q.toLowerCase())) return false; }
     return true;
@@ -322,8 +205,6 @@ export default function AdminPage() {
   };
   useEffect(() => { if (session && tab === "traffic") loadVisits(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
   const loadStats = async () => { setStatMap(await fetchStats()); };
-  useEffect(() => { if (session && (tab === "inbox" || tab === "emails")) loadInbox(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
-  useEffect(() => { if (session && tab === "blog") loadBlog(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
   useEffect(() => { if (session && tab === "stats") loadStats(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
   const saveStat = async (slug: string) => { await setProcessed(slug, statMap[slug] || 0); alert("Počet uložený ✓"); };
   const humanViews = visits.filter((v) => v.type === "pageview" && !v.is_bot);
@@ -381,6 +262,33 @@ export default function AdminPage() {
     );
   }
 
+
+
+  const loadAffs = async () => {
+    const r = await fetch("/api/admin/affiliates", { headers: { Authorization: `Bearer ${session.access_token}` } });
+    const d = await r.json(); if (d.affiliates) setAffs(d.affiliates);
+  };
+  const createAff = async () => {
+    if (!affForm.name.trim() || !affForm.code.trim()) { setAffMsg("Vyplňte meno aj kód."); return; }
+    setAffMsg("Vytváram…");
+    const r = await fetch("/api/admin/affiliates", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` }, body: JSON.stringify(affForm) });
+    const d = await r.json();
+    if (d.ok) { setAffMsg("Partner vytvorený."); setAffForm({ name: "", code: "", commission_pct: 12, discount_pct: 0, discount_mode: "extra", note: "" }); loadAffs(); }
+    else setAffMsg(d.error === "invalid" ? "Neplatné meno alebo kód." : "Kód už existuje alebo nastala chyba.");
+  };
+  const toggleAff = async (a: any) => {
+    await fetch("/api/admin/affiliates", { method: "PATCH", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` }, body: JSON.stringify({ id: a.id, active: !a.active }) });
+    loadAffs();
+  };
+  const deleteAff = async (id: string) => {
+    if (!confirm("Zmazať tohto partnera? Štatistiky ostanú v objednávkach, len sa už nezobrazí.")) return;
+    await fetch(`/api/admin/affiliates?id=${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${session.access_token}` } });
+    loadAffs();
+  };
+  const affLink = (code: string) => `https://voyago.sk/?ref=${code}`;
+
+  useEffect(() => { if (session && tab === "aff") loadAffs(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
+
   return (
     <div className="container-page py-12">
       <div className="flex items-center justify-between">
@@ -395,36 +303,105 @@ export default function AdminPage() {
       <div className="mt-6 flex items-center gap-2 border-b border-line">
         <button onClick={() => setTab("ann")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "ann" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Megaphone size={15} /> Oznamy</button>
         <button onClick={() => setTab("apps")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "apps" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Inbox size={15} /> Žiadosti</button>
-        <button onClick={() => setTab("blog")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "blog" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><BookOpen size={15} /> Blog</button>
-        <button onClick={() => setTab("inbox")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "inbox" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Inbox size={15} /> Správy{(inbox.contact_messages.length + inbox.b2b_leads.length + inbox.affiliate_signups.length + inbox.notify_signups.length) > 0 && <span className="rounded-md bg-brass/15 px-1.5 text-[0.62rem] font-bold text-brass">{inbox.contact_messages.length + inbox.b2b_leads.length + inbox.affiliate_signups.length + inbox.notify_signups.length}</span>}</button>
-        <button onClick={() => setTab("emails")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "emails" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><AtSign size={15} /> E-maily</button>
-        <button onClick={() => setTab("news")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "news" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Megaphone size={15} /> Newsletter</button>
         <button onClick={() => setTab("disc")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "disc" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Percent size={15} /> Zľavy</button>
         <button onClick={() => setTab("promo")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "promo" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Ticket size={15} /> Promo kódy</button>
         <button onClick={() => setTab("traffic")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "traffic" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Activity size={15} /> Analytika</button>
         <button onClick={() => setTab("stats")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "stats" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Globe size={15} /> Krajiny</button>
         <button onClick={() => setTab("chat")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "chat" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><MessageCircle size={15} /> Chat</button>
+        <button onClick={() => setTab("aff")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "aff" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Users size={15} /> Affiliate</button>
         {tab === "ann" && <button onClick={() => setDraft({ ...EMPTY })} className="btn-primary ml-auto !py-2"><Plus size={15} /> Nový oznam</button>}
-        {tab === "apps" && (
-          <div className="ml-auto flex items-center gap-2">
-            <button onClick={() => setShowArchApps((v) => !v)} className="btn-ghost !py-2">{showArchApps ? <><ArchiveRestore size={15} /> Aktívne</> : <><Archive size={15} /> Archív</>}</button>
-            <button onClick={loadApps} className="btn-ghost !py-2">Obnoviť</button>
-          </div>
-        )}
+        {tab === "apps" && <button onClick={loadApps} className="btn-ghost ml-auto !py-2">Obnoviť</button>}
       </div>
 
       {tab === "chat" && <ChatAdmin />}
+
+      {tab === "aff" && (
+        <div className="mt-8 space-y-6">
+          {/* Vytvoriť partnera */}
+          <div className="rounded-xl border border-line bg-surface p-5 shadow-card">
+            <p className="font-semibold text-ink">Nový partner (influencer / firma)</p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <div>
+                <label className="text-xs font-semibold text-ink-soft">Meno / značka partnera</label>
+                <input value={affForm.name} onChange={(e) => setAffForm({ ...affForm, name: e.target.value })} placeholder="napr. Janko Cestovateľ" className="input mt-1 w-full" />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-ink-soft">Partnerský kód (do odkazu)</label>
+                <input value={affForm.code} onChange={(e) => setAffForm({ ...affForm, code: e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g, "") })} placeholder="napr. JANKO" className="input mt-1 w-full font-mono" />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-ink-soft">Provízia % (zo servisného poplatku)</label>
+                <input type="number" value={affForm.commission_pct} onChange={(e) => setAffForm({ ...affForm, commission_pct: Number(e.target.value) })} className="input mt-1 w-full" />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-ink-soft">Zľava pre zákazníka %</label>
+                <input type="number" value={affForm.discount_pct} onChange={(e) => setAffForm({ ...affForm, discount_pct: Number(e.target.value) })} className="input mt-1 w-full" />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="text-xs font-semibold text-ink-soft">Ako sa zľava zaúčtuje</label>
+                <select value={affForm.discount_mode} onChange={(e) => setAffForm({ ...affForm, discount_mode: e.target.value })} className="input mt-1 w-full">
+                  <option value="extra">Zľava navyše — provízia partnera ostáva plná, zľavu hradíme my</option>
+                  <option value="from_commission">Zľava z provízie — zľava sa odpočíta z provízie partnera</option>
+                </select>
+              </div>
+              <div className="sm:col-span-2">
+                <label className="text-xs font-semibold text-ink-soft">Poznámka (voliteľné)</label>
+                <input value={affForm.note} onChange={(e) => setAffForm({ ...affForm, note: e.target.value })} placeholder="kontakt, dohoda…" className="input mt-1 w-full" />
+              </div>
+            </div>
+            <div className="mt-3 flex items-center gap-3">
+              <button onClick={createAff} className="btn-primary !py-2.5">Vytvoriť partnera</button>
+              {affForm.discount_pct > 0 && <span className="text-xs text-ink-soft">Automaticky sa vytvorí aj zľavový kód <b className="font-mono">{affForm.code || "KÓD"}</b> ({affForm.discount_pct} %).</span>}
+              {affMsg && <span className="text-sm text-ink-soft">{affMsg}</span>}
+            </div>
+          </div>
+
+          {/* Zoznam partnerov + štatistiky */}
+          <div className="rounded-xl border border-line bg-surface shadow-card">
+            <div className="flex items-center justify-between border-b border-line px-4 py-3">
+              <p className="font-semibold text-ink">Partneri ({affs.length})</p>
+              <button onClick={loadAffs} className="btn-ghost !py-1.5 text-xs">Obnoviť</button>
+            </div>
+            {affs.length === 0 && <p className="px-4 py-4 text-sm text-ink-soft">Zatiaľ žiadni partneri. Vytvorte prvého vyššie.</p>}
+            {affs.map((a) => (
+              <div key={a.id} className="border-b border-line-soft p-4 last:border-b-0">
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-ink">{a.name} {!a.active && <span className="ml-1 rounded bg-line-soft px-1.5 py-0.5 text-[0.6rem] font-bold uppercase text-ink-soft">neaktívny</span>}</p>
+                    <button onClick={() => { navigator.clipboard?.writeText(affLink(a.code)); setCopiedCode(a.code); setTimeout(() => setCopiedCode(""), 1500); }} className="mt-0.5 inline-flex items-center gap-1.5 font-mono text-xs text-brass hover:underline">
+                      {affLink(a.code)} {copiedCode === a.code ? <Check size={12} /> : <Copy size={12} />}
+                    </button>
+                  </div>
+                  <button onClick={() => toggleAff(a)} className="btn-ghost !px-2.5 !py-1.5" title={a.active ? "Deaktivovať" : "Aktivovať"}><Power size={14} /></button>
+                  <button onClick={() => deleteAff(a.id)} className="btn-ghost !px-2.5 !py-1.5 text-terra hover:bg-terra/10" title="Zmazať"><Trash2 size={14} /></button>
+                </div>
+                <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-5">
+                  <div className="rounded-lg bg-paper/50 px-3 py-2"><p className="text-[0.62rem] uppercase text-ink-soft">Návštevy</p><p className="font-display text-lg font-bold text-ink">{a.visits}</p></div>
+                  <div className="rounded-lg bg-paper/50 px-3 py-2"><p className="text-[0.62rem] uppercase text-ink-soft">Objednávky</p><p className="font-display text-lg font-bold text-ink">{a.orders}</p></div>
+                  <div className="rounded-lg bg-paper/50 px-3 py-2"><p className="text-[0.62rem] uppercase text-ink-soft">Zaplatené</p><p className="font-display text-lg font-bold text-green">{a.paidOrders}</p></div>
+                  <div className="rounded-lg bg-paper/50 px-3 py-2"><p className="text-[0.62rem] uppercase text-ink-soft">Obrat</p><p className="font-display text-lg font-bold text-ink">{a.revenue} €</p></div>
+                  <div className="rounded-lg bg-brass/10 px-3 py-2"><p className="text-[0.62rem] uppercase text-brass">Provízia</p><p className="font-display text-lg font-bold text-brass">{a.commission} €</p></div>
+                </div>
+                <p className="mt-2 text-xs text-ink-soft">
+                  Provízia {a.commission_pct} %{a.discount_pct > 0 ? ` · zľava pre zákazníka ${a.discount_pct} % (${a.discount_mode === "from_commission" ? "z provízie" : "navyše"})` : " · bez zľavy"}
+                  {a.note ? ` · ${a.note}` : ""}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {tab === "ann" && (
       <div className="mt-8 space-y-3">
         {list.length === 0 && <p className="text-ink-soft">Zatiaľ žiadne oznamy. Vytvor prvý cez „Nový oznam".</p>}
         {list.map((a) => (
           <div key={a.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-surface p-4 shadow-card">
-            <span className={`text-[0.6rem] font-bold uppercase tracking-wider ${a.enabled ? "text-green" : "text-ink-soft"}`}>
+            <span className={`rounded-full px-2.5 py-0.5 font-mono text-[0.6rem] font-bold uppercase tracking-wider ${a.enabled ? "bg-green/12 text-green" : "bg-line text-ink-soft"}`}>
               {a.enabled ? "Aktívny" : "Vypnutý"}
             </span>
-            <span className="bg-paper text-[0.6rem] uppercase tracking-wider text-ink-soft">{a.placement}</span>
-            <span className="bg-paper text-[0.6rem] uppercase tracking-wider text-brass">{a.tone}</span>
+            <span className="rounded-full bg-paper px-2.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-ink-soft">{a.placement}</span>
+            <span className="rounded-full bg-paper px-2.5 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-brass">{a.tone}</span>
             <div className="min-w-0 flex-1">
               <p className="truncate font-semibold text-ink">{a.title}</p>
               <p className="truncate text-xs text-ink-soft">{a.message}</p>
@@ -461,9 +438,9 @@ export default function AdminPage() {
           {filteredApps.map((a) => (
             <div key={a.id} className="rounded-xl border border-line bg-surface p-4 shadow-card">
               <div className="flex flex-wrap items-center gap-3">
-                <span className="text-[0.6rem] uppercase tracking-wider text-ink-soft">{new Date(a.created_at).toLocaleString("sk-SK")}</span>
+                <span className="font-mono text-[0.6rem] uppercase tracking-wider text-ink-soft">{new Date(a.created_at).toLocaleString("sk-SK")}</span>
                 {a.ref && <span className="font-mono text-[0.6rem] font-bold tracking-wider text-brass">{a.ref}</span>}
-                <span className={`text-[0.6rem] font-bold uppercase tracking-wider ${a.paid ? "text-green" : "text-brass"}`}>{a.paid ? "zaplatené" : "nezaplatené"}</span>
+                <span className={`rounded-full px-2.5 py-0.5 font-mono text-[0.6rem] font-bold uppercase tracking-wider ${a.paid ? "bg-green/12 text-green" : "bg-brass/15 text-brass"}`}>{a.paid ? "zaplatené" : "nezaplatené"}</span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold text-ink">{a.email || "—"}</p>
                   <p className="truncate text-xs text-ink-soft">{(a.travelers?.length || 0)} cestujúci · {a.product_slug} · {((a.amount_cents || 0) / 100).toFixed(0)} €</p>
@@ -472,16 +449,13 @@ export default function AdminPage() {
                   {ALL_STATUSES.map((st) => <option key={st} value={st}>{statusLabel(st, "sk")}</option>)}
                 </select>
                 <button onClick={() => openEmail(a)} className="btn-ghost !px-3 !py-2" title="Poslať e-mail"><Mail size={15} /></button>
-                <button onClick={() => sendReview(a)} disabled={!a.email || reviewSent[a.id]} className="btn-ghost !px-3 !py-2 disabled:opacity-45" title={reviewSent[a.id] ? "Recenzia odoslaná" : "Odoslať žiadosť o recenziu"}><Star size={15} className={reviewSent[a.id] ? "fill-brass text-brass" : ""} /></button>
-                <button onClick={() => archiveApp(a.id, !a.archived)} className="btn-ghost !px-3 !py-2" title={a.archived ? "Obnoviť z archívu" : "Archivovať"}>{a.archived ? <ArchiveRestore size={15} /> : <Archive size={15} />}</button>
-                <button onClick={() => deleteApp(a.id)} className="btn-ghost !px-3 !py-2 text-terra hover:bg-terra/10" title="Zmazať žiadosť"><Trash2 size={15} /></button>
                 <button onClick={() => setOpen(open === a.id ? null : a.id)} className="btn-ghost !px-3 !py-2"><ChevronDown size={15} className={open === a.id ? "rotate-180" : ""} /></button>
               </div>
               {open === a.id && (
                 <div className="mt-4 space-y-4 border-t border-line pt-4">
                   {(a.travelers || []).map((trav: any, idx: number) => (
                     <div key={idx} className="rounded-lg bg-paper/50 p-3">
-                      <p className="mb-2 text-[0.6rem] uppercase tracking-wider text-brass">Cestujúci {idx + 1} · {trav.slug}</p>
+                      <p className="mb-2 font-mono text-[0.6rem] uppercase tracking-wider text-brass">Cestujúci {idx + 1} · {trav.slug}</p>
                       <div className="grid gap-x-4 gap-y-1 sm:grid-cols-2">
                         {Object.entries(trav.data || {}).map(([k, v]) => (
                           <p key={k} className="text-xs"><span className="text-ink-soft">{k}:</span> <span className="text-ink">{String(v)}</span></p>
@@ -495,7 +469,7 @@ export default function AdminPage() {
                   </div>
                   {(a.files || []).length > 0 && (
                     <div>
-                      <p className="mb-2 text-[0.6rem] uppercase tracking-wider text-brass">Súbory</p>
+                      <p className="mb-2 font-mono text-[0.6rem] uppercase tracking-wider text-brass">Súbory</p>
                       <div className="flex flex-wrap gap-2">
                         {(a.files || []).map((f: string) => (
                           <button key={f} onClick={() => openFile(f)} className="btn-ghost !px-3 !py-1.5 text-xs"><Download size={13} /> {f.split("/").pop()}</button>
@@ -651,7 +625,7 @@ export default function AdminPage() {
             {promoList.map((pc) => (
               <div key={pc.code} className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-surface p-3.5 shadow-card">
                 <span className="font-mono text-base font-bold text-ink">{pc.code}</span>
-                <span className="rounded-md bg-terra/12 px-2 py-0.5 font-mono text-[0.6rem] font-bold text-terra">−{pc.percent}%</span>
+                <span className="rounded-full bg-terra/12 px-2 py-0.5 font-mono text-[0.6rem] font-bold text-terra">−{pc.percent}%</span>
                 <span className="text-xs text-ink-soft">{pc.used || 0}{pc.max_uses ? ` / ${pc.max_uses}` : ""} použití{pc.expires_at ? ` · do ${new Date(pc.expires_at).toLocaleDateString("sk-SK")}` : ""}</span>
                 <div className="ml-auto flex items-center gap-2">
                   <label className="flex items-center gap-1.5 text-xs"><input type="checkbox" checked={pc.active} onChange={(e) => togglePromo(pc.code, e.target.checked)} /> {pc.active ? "Aktívny" : "Neaktívny"}</label>
@@ -663,284 +637,47 @@ export default function AdminPage() {
         </div>
       )}
 
-      {tab === "traffic" && (() => {
-        const pvAll = visits.filter((v: any) => v.type === "pageview");
-        const RANGES: [string, number][] = [["10 min", 10], ["30 min", 30], ["1 h", 60], ["2 h", 120], ["5 h", 300], ["10 h", 600], ["24 h", 1440], ["2 dni", 2880], ["5 dní", 7200], ["7 dní", 10080]];
-        const cutoff = Date.now() - actMins * 60000;
-        const recent = pvAll.filter((v: any) => new Date(v.created_at).getTime() >= cutoff).slice(0, 250);
-        const hb = (rows: any[]) => {
-          const h = rows.filter((v) => !v.is_bot).length;
-          return { h, b: rows.length - h };
-        };
-        const HB = ({ h, b }: { h: number; b: number }) => (
-          <span className="whitespace-nowrap font-mono"><span className="font-bold text-green">{h}</span><span className="text-ink-soft/60"> / {b}</span></span>
-        );
-        const cntHB = (keyOf: (v: any) => string) => {
-          const m: Record<string, { h: number; b: number }> = {};
-          pvAll.forEach((v: any) => {
-            const k = keyOf(v); if (!k) return;
-            (m[k] ||= { h: 0, b: 0 })[v.is_bot ? "b" : "h"]++;
-          });
-          return Object.entries(m).sort((a, z) => (z[1].h * 1000 + z[1].b) - (a[1].h * 1000 + a[1].b)).slice(0, 8);
-        };
-        const topP = cntHB((v) => pageName(v.path));
-        const topC = cntHB((v) => (v.country ? `${flagOf(v.country)} ${v.country}` : ""));
-        const topM = cntHB((v) => (v.city ? `${v.city}${v.country ? ` (${v.country})` : ""}` : ""));
-
-        // Príchody: prvá stránka každej návštevy (session), rozklikávateľné na celý priebeh
-        const bySid: Record<string, any[]> = {};
-        pvAll.forEach((v: any) => { (bySid[v.sid || v.id] ||= []).push(v); });
-        const sessions = Object.values(bySid)
-          .map((rows) => rows.sort((a, z) => a.created_at.localeCompare(z.created_at)))
-          .sort((a, z) => z[0].created_at.localeCompare(a[0].created_at))
-          .slice(0, 80);
-        const days: Record<string, any[][]> = {};
-        sessions.forEach((rows) => {
-          const d = new Date(rows[0].created_at).toLocaleDateString("sk-SK", { weekday: "long", day: "numeric", month: "long" });
-          (days[d] ||= []).push(rows);
-        });
-        const tot = hb(pvAll);
-        const sidsH = new Set(pvAll.filter((v: any) => !v.is_bot).map((v: any) => v.sid));
-        const sidsB = new Set(pvAll.filter((v: any) => v.is_bot).map((v: any) => v.sid));
-
-        return (
-          <div className="mt-8">
-            <p className="mb-2 text-xs text-ink-soft">Formát čísel: <span className="font-bold text-green">ľudia</span> <span className="text-ink-soft/60">/ boti</span></p>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <div className="rounded-xl border border-line bg-surface p-4 shadow-card"><p className="text-xs text-ink-soft">Zobrazenia stránok</p><p className="mt-1 font-display text-2xl"><HB h={tot.h} b={tot.b} /></p></div>
-              <div className="rounded-xl border border-line bg-surface p-4 shadow-card"><p className="text-xs text-ink-soft">Návštevníci</p><p className="mt-1 font-display text-2xl"><HB h={sidsH.size} b={sidsB.size} /></p></div>
-              <div className="rounded-xl border border-line bg-surface p-4 shadow-card"><p className="text-xs text-ink-soft">Krajiny</p><p className="mt-1 font-display text-2xl font-bold text-ink">{topC.length}</p></div>
-              <div className="rounded-xl border border-line bg-surface p-4 shadow-card"><p className="text-xs text-ink-soft">Mobil / počítač (ľudia)</p><p className="mt-1 font-display text-2xl font-bold text-ink">📱 {pvAll.filter((v: any) => !v.is_bot && isMobileUA(v.user_agent)).length} · 💻 {pvAll.filter((v: any) => !v.is_bot && !isMobileUA(v.user_agent)).length}</p></div>
-            </div>
-
-            <div className="mt-4 grid gap-4 lg:grid-cols-3">
-              {([["Najnavštevovanejšie stránky", topP], ["Krajiny", topC], ["Mestá", topM]] as [string, [string, { h: number; b: number }][]][]).map(([title, rows]) => (
-                <div key={title} className="rounded-xl border border-line bg-surface p-4 shadow-card">
-                  <p className="mb-1 font-semibold text-ink">{title}</p>
-                  {rows.length === 0 ? <p className="text-sm text-ink-soft">Zatiaľ žiadne dáta.</p> : rows.map(([k, c]) => (
-                    <div key={k} className="flex items-center justify-between gap-3 border-t border-line-soft py-1.5 text-sm">
-                      <span className="truncate text-ink-soft">{k}</span><HB h={c.h} b={c.b} />
-                    </div>
-                  ))}
-                </div>
+      {tab === "traffic" && (
+        <div className="mt-8">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <Stat label="Zobrazenia (ľudia)" value={String(humanViews.length)} />
+            <Stat label="Návštevníci" value={String(humanSids.size)} />
+            <Stat label="Kliknutia" value={String(clicks)} />
+            <Stat label="Boti (udalosti)" value={String(botEvents)} />
+          </div>
+          <div className="mt-4 grid gap-4 md:grid-cols-2">
+            <div className="rounded-xl border border-line bg-surface p-4 shadow-card">
+              <p className="mb-1 font-semibold text-ink">Najnavštevovanejšie stránky</p>
+              {topPages.length === 0 ? <p className="text-sm text-ink-soft">—</p> : topPages.map(([k, n]) => (
+                <div key={k} className="flex justify-between gap-3 border-t border-line-soft py-1.5 text-sm"><span className="truncate text-ink-soft">{k}</span><span className="font-mono text-ink">{n}</span></div>
               ))}
             </div>
-
-            <div className="mt-4 rounded-xl border border-line bg-surface shadow-card">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-3">
-                <p className="font-semibold text-ink">Posledná aktivita <span className="text-ink-soft">({recent.length})</span></p>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-ink-soft">Za posledných</span>
-                  <select value={actMins} onChange={(e) => setActMins(Number(e.target.value))} className="input !mt-0 !py-1.5 text-sm">
-                    {RANGES.map(([lbl, m]) => <option key={m} value={m}>{lbl}</option>)}
-                  </select>
-                  <button onClick={loadVisits} className="btn-ghost !py-1.5 text-xs">Obnoviť</button>
-                </div>
-              </div>
-              {recent.length === 0 && <p className="px-4 py-4 text-sm text-ink-soft">V zvolenom období žiadna aktivita.</p>}
-              {recent.map((v: any) => (
-                <div key={v.id} className="grid grid-cols-[62px_minmax(90px,0.8fr)_1.2fr_auto] items-center gap-3 border-b border-line-soft px-4 py-2 text-sm last:border-b-0">
-                  <span className="font-mono text-xs text-ink-soft">{new Date(v.created_at).toLocaleTimeString("sk-SK", { hour: "2-digit", minute: "2-digit" })}</span>
-                  <span className="truncate text-ink"><span className="mr-1.5">{flagOf(v.country) || "🌐"}</span>{v.city || v.country || "Neznáme"}</span>
-                  <span className="truncate font-medium text-ink">{pageName(v.path)}</span>
-                  <span className="flex items-center gap-2 justify-self-end">
-                    <span title={sourceLabel(v)} className="hidden max-w-[160px] truncate text-xs text-ink-soft sm:inline">{sourceLabel(v)}</span>
-                    <span className={`rounded-md px-1.5 py-0.5 text-[0.58rem] font-bold uppercase ${v.is_bot ? "bg-line-soft text-ink-soft" : "bg-green/15 text-green"}`}>{v.is_bot ? "bot" : "človek"}</span>
-                    <span>{isMobileUA(v.user_agent) ? "📱" : "💻"}</span>
-                  </span>
+            <div className="rounded-xl border border-line bg-surface p-4 shadow-card">
+              <p className="mb-1 font-semibold text-ink">Zdroje návštev</p>
+              {topRefs.length === 0 ? <p className="text-sm text-ink-soft">Priame návštevy</p> : topRefs.map(([k, n]) => (
+                <div key={k} className="flex justify-between gap-3 border-t border-line-soft py-1.5 text-sm"><span className="truncate text-ink-soft">{k}</span><span className="font-mono text-ink">{n}</span></div>
+              ))}
+            </div>
+          </div>
+          <div className="mt-4 rounded-xl border border-line bg-surface p-4 shadow-card">
+            <div className="mb-1 flex items-center justify-between">
+              <p className="font-semibold text-ink">Posledná aktivita</p>
+              <button onClick={loadVisits} className="btn-ghost !py-1.5 text-xs">Obnoviť</button>
+            </div>
+            <div>
+              {visits.length === 0 && <p className="py-2 text-sm text-ink-soft">Zatiaľ žiadne dáta — naplní sa reálnymi návštevami (najlepšie po nasadení).</p>}
+              {visits.slice(0, 60).map((v) => (
+                <div key={v.id} className="flex flex-wrap items-center gap-2 border-t border-line-soft py-1.5 text-xs">
+                  <span className="font-mono text-ink-soft">{new Date(v.created_at).toLocaleTimeString("sk-SK")}</span>
+                  <span className={`rounded px-1.5 py-0.5 font-mono text-[0.55rem] font-bold uppercase ${v.is_bot ? "bg-terra/12 text-terra" : "bg-green/12 text-green"}`}>{v.is_bot ? "bot" : "človek"}</span>
+                  {v.country && <span className="font-mono text-ink-soft">{v.country}</span>}
+                  <span className="rounded bg-paper px-1.5 py-0.5 font-mono text-[0.55rem] text-ink-soft">{v.type}</span>
+                  <span className="min-w-0 flex-1 truncate text-ink">{v.type === "click" ? `„${v.label}" → ${v.href || v.path}` : v.path}</span>
+                  <span className="font-mono text-[0.55rem] text-ink-soft/60">{(v.sid || "").slice(0, 6)}</span>
                 </div>
               ))}
             </div>
           </div>
-        );
-      })()}
-
-      {tab === "blog" && (
-        <div className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
-          <div className="rounded-xl border border-line bg-surface p-5 shadow-card">
-            <p className="font-semibold text-ink">Nový článok</p>
-            <p className="mt-1 text-xs text-ink-soft">Formátovanie: prázdny riadok = nový odsek · <code className="rounded bg-paper px-1">## Nadpis</code> = medzinadpis · <code className="rounded bg-paper px-1">- text</code> = odrážka. Slug a čas čítania sa vytvoria automaticky.</p>
-            <input value={bTitle} onChange={(e) => setBTitle(e.target.value)} placeholder="Titulok článku" className="input mt-4 w-full" />
-            <div className="mt-2 grid grid-cols-2 gap-2">
-              <input value={bTag} onChange={(e) => setBTag(e.target.value)} placeholder="Kategória (napr. Rady)" className="input w-full" />
-              <input value={bImage} onChange={(e) => setBImage(e.target.value)} placeholder="URL obrázka (voliteľné)" className="input w-full" />
-            </div>
-            <input value={bExcerpt} onChange={(e) => setBExcerpt(e.target.value)} placeholder="Krátky perex (1–2 vety)" className="input mt-2 w-full" />
-            <div className="mt-2 flex gap-1">
-              <button onClick={() => setBPreview(false)} className={`rounded-md px-3 py-1.5 text-xs font-semibold ${!bPreview ? "bg-ink text-white" : "text-ink-soft hover:bg-paper"}`}>Písať</button>
-              <button onClick={() => setBPreview(true)} className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold ${bPreview ? "bg-ink text-white" : "text-ink-soft hover:bg-paper"}`}><Eye size={13} /> Náhľad</button>
-            </div>
-            {!bPreview ? (
-              <textarea value={bContent} onChange={(e) => setBContent(e.target.value)} rows={14} placeholder={"## Prvý nadpis\n\nText odseku…\n\n- prvá odrážka\n- druhá odrážka"} className="input mt-2 w-full font-mono text-sm" />
-            ) : (
-              <div className="mt-2 min-h-[16rem] rounded-xl border border-line bg-white p-5">
-                {bTag && <p className="mb-1 font-mono text-[0.62rem] font-bold uppercase tracking-wider text-brass">{bTag}</p>}
-                <h1 className="font-display text-2xl font-bold text-ink">{bTitle || "Titulok článku"}</h1>
-                {bExcerpt && <p className="mt-2 text-ink-soft">{bExcerpt}</p>}
-                <div className="mt-4 space-y-3 leading-relaxed text-ink">
-                  {(bContent || "Obsah článku…").split(/\n{2,}/).map((b, i) => {
-                    const t = b.trim();
-                    if (t.startsWith("## ")) return <h2 key={i} className="font-display text-lg font-bold text-ink">{t.slice(3)}</h2>;
-                    if (/^-\s+/m.test(t)) return <ul key={i} className="list-disc space-y-1 pl-5">{t.split("\n").filter((l) => l.startsWith("- ")).map((l, k) => <li key={k}>{l.slice(2)}</li>)}</ul>;
-                    return <p key={i}>{t}</p>;
-                  })}
-                </div>
-              </div>
-            )}
-            <div className="mt-3 flex items-center gap-3">
-              <button onClick={createBlog} className="btn-primary !py-2.5">Uverejniť článok</button>
-              {bMsg && <span className="text-sm text-ink-soft">{bMsg}</span>}
-            </div>
-          </div>
-          <div className="rounded-xl border border-line bg-surface p-5 shadow-card">
-            <div className="flex items-center justify-between">
-              <p className="font-semibold text-ink">Uverejnené z admina ({bPosts.length})</p>
-              <button onClick={loadBlog} className="btn-ghost !py-1.5 text-xs">Obnoviť</button>
-            </div>
-            {bPosts.length === 0 && <p className="mt-3 text-sm text-ink-soft">Z admin panelu zatiaľ nič — nový článok vytvoríte formulárom vľavo.</p>}
-            <ul className="mt-2 divide-y divide-line-soft">
-              {bPosts.map((p) => (
-                <li key={p.id} className="flex items-center gap-3 py-2.5">
-                  <div className="min-w-0 flex-1">
-                    <a href={`/blog/${p.slug}`} target="_blank" className="block truncate text-sm font-semibold text-ink hover:text-brass">{p.title}</a>
-                    <p className="text-xs text-ink-soft">{p.tag} · {new Date(p.created_at).toLocaleDateString("sk-SK")}</p>
-                  </div>
-                  <button onClick={() => deleteBlog(p.id)} className="shrink-0 rounded-md px-2 py-1 text-xs font-semibold text-terra hover:bg-terra/10">Zmazať</button>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-5 border-t border-line pt-3 font-semibold text-ink">Statické články ({POSTS.length})</p>
-            <p className="mt-1 text-xs text-ink-soft">Sú súčasťou kódu webu — na blogu sú vždy; upraviť ich viem ja úpravou kódu.</p>
-            <ul className="mt-1 divide-y divide-line-soft">
-              {POSTS.map((p) => (
-                <li key={p.slug} className="flex items-center gap-3 py-2">
-                  <div className="min-w-0 flex-1">
-                    <a href={`/blog/${p.slug}`} target="_blank" className="block truncate text-sm font-medium text-ink hover:text-brass">{p.title.sk}</a>
-                    <p className="text-xs text-ink-soft">{p.tag.sk} · {p.date}</p>
-                  </div>
-                  <span className="shrink-0 rounded-md bg-line-soft px-2 py-0.5 text-[0.58rem] font-bold uppercase text-ink-soft">v kóde</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      )}
-
-      {tab === "emails" && (() => {
-        const TOPIC_LABEL: Record<string, string> = { newsletter: "Okno na stránke (zľava)", "eu-etias": "Notifikácia ETIAS", "cn-evisa": "Notifikácia Čína" };
-        const all = [
-          ...inbox.notify_signups.map((m: any) => ({ email: m.email, src: TOPIC_LABEL[m.topic] || `Notifikácia: ${m.topic}`, at: m.created_at })),
-          ...inbox.contact_messages.map((m: any) => ({ email: m.email, src: "Kontaktný formulár", at: m.created_at })),
-          ...inbox.b2b_leads.map((m: any) => ({ email: m.email, src: "Firemný dopyt", at: m.created_at })),
-          ...inbox.affiliate_signups.map((m: any) => ({ email: m.email, src: "Partnerská prihláška", at: m.created_at })),
-        ].sort((a, b) => (a.at < b.at ? 1 : -1));
-        const sources = Array.from(new Set(all.map((r) => r.src)));
-        const rows = emailSrc === "all" ? all : all.filter((r) => r.src === emailSrc);
-        const exportCsv = () => {
-          const csv = "email,zdroj,datum\n" + rows.map((r) => `${r.email},"${r.src}",${new Date(r.at).toLocaleString("sk-SK")}`).join("\n");
-          const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
-          const a = document.createElement("a"); a.href = url; a.download = "voyago-emaily.csv"; a.click(); URL.revokeObjectURL(url);
-        };
-        return (
-          <div className="mt-8 rounded-xl border border-line bg-surface shadow-card">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-3">
-              <p className="font-semibold text-ink">Všetky e-maily zo stránky <span className="text-ink-soft">({rows.length})</span></p>
-              <div className="flex items-center gap-2">
-                <select value={emailSrc} onChange={(e) => setEmailSrc(e.target.value)} className="input !mt-0 !py-1.5 text-sm">
-                  <option value="all">Všetky zdroje</option>
-                  {sources.map((sName) => <option key={sName} value={sName}>{sName}</option>)}
-                </select>
-                <button onClick={exportCsv} className="btn-ghost inline-flex items-center gap-1.5 !py-1.5 text-xs"><Download size={13} /> Export CSV</button>
-                <button onClick={loadInbox} className="btn-ghost !py-1.5 text-xs">Obnoviť</button>
-              </div>
-            </div>
-            {rows.length === 0 && <p className="px-4 py-4 text-sm text-ink-soft">Zatiaľ žiadne e-maily.</p>}
-            <div className="max-h-[34rem] overflow-y-auto">
-              {rows.map((r, i) => (
-                <div key={i} className="flex items-center gap-3 border-b border-line-soft px-4 py-2.5 text-sm last:border-b-0">
-                  <a href={`mailto:${r.email}`} className="min-w-0 flex-1 truncate font-medium text-ink hover:text-brass">{r.email}</a>
-                  <span className="shrink-0 rounded-md bg-brass/10 px-2 py-0.5 text-[0.62rem] font-semibold text-brass">{r.src}</span>
-                  <span className="hidden shrink-0 font-mono text-xs text-ink-soft sm:inline">{new Date(r.at).toLocaleDateString("sk-SK")}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      })()}
-
-      {tab === "news" && (
-        <div className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_1fr]">
-          <div className="rounded-xl border border-line bg-surface p-5 shadow-card">
-            <p className="font-semibold text-ink">Nový newsletter</p>
-            <p className="mt-1 text-xs text-ink-soft">Odošle sa všetkým e-mailom z okna na stránke. Formát: prázdny riadok = odsek · <code className="rounded bg-paper px-1">## Nadpis</code> · <code className="rounded bg-paper px-1">- odrážka</code> · <code className="rounded bg-paper px-1">**tučné**</code>.</p>
-            <input value={nlTitle} onChange={(e) => setNlTitle(e.target.value)} placeholder="Predmet e-mailu" className="input mt-4 w-full" />
-            <textarea value={nlBody} onChange={(e) => setNlBody(e.target.value)} rows={12} placeholder={"## Nová destinácia!\n\nText správy…\n\n- výhoda 1\n- výhoda 2"} className="input mt-2 w-full font-mono text-sm" />
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <input value={nlTest} onChange={(e) => setNlTest(e.target.value)} placeholder="test@email.sk" className="input !mt-0 w-48" />
-              <button onClick={() => sendNewsletter(true)} className="btn-ghost !py-2 text-sm">Poslať test</button>
-              <button onClick={() => sendNewsletter(false)} className="btn-primary inline-flex items-center gap-2 !py-2"><Send size={14} /> Odoslať všetkým</button>
-            </div>
-            {nlMsg && <p className="mt-2 text-sm text-ink-soft">{nlMsg}</p>}
-          </div>
-          <div className="rounded-xl border border-line bg-paper/40 p-5">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-ink-soft">Živý náhľad</p>
-            <div className="rounded-xl bg-[#0a1622] px-5 py-4"><span className="text-lg font-extrabold text-white">Voyago<span className="text-brass">.</span></span></div>
-            <div className="rounded-b-xl bg-white px-5 py-5">
-              <h1 className="text-lg font-bold text-ink">{nlTitle || "Predmet e-mailu"}</h1>
-              <div className="mt-2 space-y-2 text-sm leading-relaxed text-ink-soft">
-                {(nlBody || "Text správy sa zobrazí tu…").split(/\n{2,}/).map((b, i) => {
-                  const t = b.trim();
-                  if (t.startsWith("## ")) return <p key={i} className="font-bold text-ink">{t.slice(3)}</p>;
-                  if (/^-\s+/m.test(t)) return <ul key={i} className="list-disc pl-5">{t.split("\n").filter((l) => l.startsWith("- ")).map((l, k) => <li key={k}>{l.slice(2)}</li>)}</ul>;
-                  return <p key={i} dangerouslySetInnerHTML={{ __html: t.replace(/</g, "&lt;").replace(/\*\*(.+?)\*\*/g, "<b>$1</b>") }} />;
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {tab === "inbox" && (
-        <div className="mt-8 space-y-6">
-          {([
-            ["contact_messages", "Kontaktné správy", (m: any) => ({ head: `${m.name} · ${m.email}`, sub: m.subject || "—", body: m.message })],
-            ["b2b_leads", "Firmy — dopyty na spoluprácu", (m: any) => ({ head: `${m.company}${m.ico ? ` (IČO ${m.ico})` : ""}`, sub: `${m.email}${m.phone ? ` · ${m.phone}` : ""}${m.volume ? ` · ${m.volume}` : ""}`, body: m.message })],
-            ["affiliate_signups", "Partneri — prihlášky do programu", (m: any) => ({ head: `${m.name} · ${m.email}`, sub: `${m.channel || "bez kanála"}${m.audience ? ` · publikum ${m.audience}` : ""}`, body: m.note })],
-            ["notify_signups", "E-maily z okna na stránke (zľavy / novinky)", (m: any) => ({ head: m.email, sub: m.topic === "newsletter" ? "zľavový kód CESTUJEME5" : m.topic, body: "" })],
-          ] as [string, string, (m: any) => { head: string; sub: string; body: string }][]).map(([table, title, fmt]) => {
-            const rows = (inbox as any)[table] as any[];
-            return (
-              <div key={table} className="rounded-xl border border-line bg-surface shadow-card">
-                <div className="flex items-center justify-between border-b border-line px-4 py-3">
-                  <p className="font-semibold text-ink">{title} <span className="text-ink-soft">({rows.length})</span></p>
-                  <button onClick={loadInbox} className="btn-ghost !py-1.5 text-xs">Obnoviť</button>
-                </div>
-                {rows.length === 0 && <p className="px-4 py-3 text-sm text-ink-soft">Nič nové.</p>}
-                {rows.map((m) => {
-                  const it = fmt(m);
-                  return (
-                    <details key={m.id} className="group border-b border-line-soft last:border-b-0">
-                      <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-2.5 hover:bg-paper/40">
-                        <span className="w-[92px] shrink-0 font-mono text-xs text-ink-soft">{new Date(m.created_at).toLocaleDateString("sk-SK")} {new Date(m.created_at).toLocaleTimeString("sk-SK", { hour: "2-digit", minute: "2-digit" })}</span>
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate text-sm font-semibold text-ink">{it.head}</span>
-                          <span className="block truncate text-xs text-ink-soft">{it.sub}</span>
-                        </span>
-                        <span className="text-ink-soft transition-transform group-open:rotate-90">›</span>
-                      </summary>
-                      <div className="bg-paper/30 px-4 pb-3 pt-1">
-                        <p className="whitespace-pre-wrap text-sm text-ink-soft">{it.body || "—"}</p>
-                        <div className="mt-2 flex gap-2">
-                          <a href={`mailto:${m.email}`} className="btn-ghost !py-1.5 text-xs">Odpovedať e-mailom</a>
-                          <button onClick={() => deleteInbox(table, m.id)} className="rounded-md px-2.5 py-1.5 text-xs font-semibold text-terra hover:bg-terra/10">Vybavené — zmazať</button>
-                        </div>
-                      </div>
-                    </details>
-                  );
-                })}
-              </div>
-            );
-          })}
         </div>
       )}
 
@@ -966,7 +703,7 @@ export default function AdminPage() {
               </label>
               <div>
                 <span className="label"><span>Prílohy (PDF, JPG…)</span></span>
-                <input type="file" multiple onChange={(e) => addFiles(e.target.files)} className="text-xs text-ink-soft file:mr-2 file:cursor-pointer file:rounded-lg file:border-0 file:bg-ink file:px-3 file:py-1.5 file:text-paper" />
+                <input type="file" multiple onChange={(e) => addFiles(e.target.files)} className="text-xs text-ink-soft file:mr-2 file:cursor-pointer file:rounded-full file:border-0 file:bg-ink file:px-3 file:py-1.5 file:text-paper" />
                 {emailFiles.length > 0 && (
                   <ul className="mt-2 space-y-1">
                     {emailFiles.map((f, idx) => (

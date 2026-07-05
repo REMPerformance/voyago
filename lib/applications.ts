@@ -22,7 +22,12 @@ export async function fileSignedUrl(path: string): Promise<string | null> {
   return data?.signedUrl ?? null;
 }
 
-/** Affiliate kód z localStorage (platí 30 dní od kliknutia na ?ref= odkaz). */
+export interface SubmitItem { slug: string; price: number; data: Record<string, string>; }
+
+/** Odošle žiadosť cez server (IP + súhlas + referencia + anti-spam). Vráti {id, ref} alebo null. */
+export interface SubmitOptions { consent?: boolean; honeypot?: string; turnstileToken?: string; promoCode?: string; }
+
+/** Affiliate kód z ?ref= (platí 30 dní od kliknutia). */
 function getAffiliateRef(): string | null {
   try {
     const raw = window.localStorage.getItem("voyago.ref");
@@ -32,11 +37,6 @@ function getAffiliateRef(): string | null {
     return String(c).slice(0, 40);
   } catch { return null; }
 }
-
-export interface SubmitItem { slug: string; price: number; data: Record<string, string>; express?: boolean; protection?: boolean; }
-
-/** Odošle žiadosť cez server (IP + súhlas + referencia + anti-spam). Vráti {id, ref} alebo null. */
-export interface SubmitOptions { consent?: boolean; honeypot?: string; turnstileToken?: string; promoCode?: string; }
 
 export async function submitApplication(
   items: SubmitItem[], totalEur: number, opts: SubmitOptions = {},
@@ -54,8 +54,7 @@ export async function submitApplication(
       body: JSON.stringify({
         product_slug: items[0]?.slug ?? "",
         email,
-        travelers: items.map((i) => ({ slug: i.slug, price: i.price, data: i.data, express: !!i.express, protection: !!i.protection })),
-        ref: getAffiliateRef(),
+        travelers: items.map((i) => ({ slug: i.slug, price: i.price, data: i.data })),
         files,
         amount_cents: Math.round(totalEur * 100),
         consent_vop: !!opts.consent,
@@ -63,6 +62,7 @@ export async function submitApplication(
         honeypot: opts.honeypot || "",
         turnstileToken: opts.turnstileToken || "",
         promoCode: opts.promoCode || "",
+        aff_code: getAffiliateRef(),
       }),
     });
     if (!res.ok) { console.error("submit failed", await res.text()); return null; }

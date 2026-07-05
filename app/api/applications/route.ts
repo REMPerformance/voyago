@@ -40,6 +40,7 @@ export async function POST(req: Request) {
   const ref = genRef();
   const { data, error } = await supabaseAdmin.from("applications").insert({
     ref,
+    aff_code: (body.aff_code ? String(body.aff_code).slice(0, 40) : null),
     product_slug: body.product_slug || "",
     email: body.email || null,
     travelers: body.travelers || [],

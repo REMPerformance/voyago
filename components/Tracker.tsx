@@ -3,9 +3,6 @@
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
-// Minimálna, súkromie rešpektujúca analytika: len zobrazenia stránok.
-// Žiadne sledovanie klikov ani pohybu — stačí vedieť odkiaľ a na ktorú stránku ľudia prišli.
-
 function getSid(): string {
   try {
     let s = sessionStorage.getItem("voyago.sid");
@@ -14,11 +11,13 @@ function getSid(): string {
   } catch { return "anon"; }
 }
 
-function catchAffiliateRef() {
+function send(payload: Record<string, unknown>) {
+  const body = JSON.stringify(payload);
   try {
-    const ref = new URLSearchParams(window.location.search).get("ref");
-    if (ref && /^[a-zA-Z0-9_-]{2,40}$/.test(ref)) {
-      localStorage.setItem("voyago.ref", JSON.stringify({ c: ref, t: Date.now() }));
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon("/api/track", new Blob([body], { type: "application/json" }));
+    } else {
+      fetch("/api/track", { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true });
     }
   } catch { /* ignore */ }
 }
@@ -30,13 +29,21 @@ export function Tracker() {
   useEffect(() => {
     if (last.current === pathname) return;
     last.current = pathname;
-    catchAffiliateRef();
-    const body = JSON.stringify({ sid: getSid(), type: "pageview", path: pathname, referrer: document.referrer || "", query: window.location.search.slice(0, 300) });
-    try {
-      if (navigator.sendBeacon) navigator.sendBeacon("/api/track", new Blob([body], { type: "application/json" }));
-      else fetch("/api/track", { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true });
-    } catch { /* ignore */ }
+    (() => { try { const r = new URLSearchParams(window.location.search).get("ref"); if (r && /^[a-zA-Z0-9_-]{2,40}$/.test(r)) localStorage.setItem("voyago.ref", JSON.stringify({ c: r, t: Date.now() })); } catch {} })();
+    send({ sid: getSid(), type: "pageview", path: pathname, referrer: document.referrer || "", query: (typeof window !== "undefined" ? window.location.search : "").slice(0, 300) });
   }, [pathname]);
+
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      const el = (e.target as HTMLElement)?.closest?.("a,button");
+      if (!el) return;
+      const label = (el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 80);
+      const href = el.getAttribute("href") || "";
+      send({ sid: getSid(), type: "click", path: location.pathname, label, href });
+    };
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
+  }, []);
 
   return null;
 }
