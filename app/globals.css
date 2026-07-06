@@ -172,18 +172,32 @@
 
 /* ── Mobil (<640px): zmenšenie cez zoom — proporcie zostávajú, mení sa len veľkosť ── */
 @media (max-width: 640px) {
-  /* Zelená karta a ETIAS: menšie (proporcie zostávajú), pod sebou.
-     width:calc(100%/zoom) kompenzuje šírku, aby nezostalo prázdne miesto. */
-  .gc-band {
-    zoom: 0.78;
-    width: calc(100% / 0.78);
+  /* 1) Celkové zmenšenie základu — všetky rem rozmery (fonty, medzery,
+     paddingy) sa zmenšia naraz. Proporcie zostávajú, mení sa len veľkosť. */
+  html { font-size: 12px; }
+
+  /* 2) Stropy na veľké nadpisy, aby nekričali cez celú obrazovku */
+  h1,
+  .font-display.text-4xl, .font-display.text-5xl, .font-display.text-6xl {
+    font-size: 1.75rem !important;
+    line-height: 1.12 !important;
+  }
+  h2, .font-display.text-3xl, .font-display.text-2xl {
+    font-size: 1.3rem !important;
+    line-height: 1.2 !important;
   }
 
-  /* Destinácie 2 vedľa seba a zmenšené */
+  /* 3) Zelená karta + ETIAS: výrazne menšie cez zoom (len veľkosť) */
+  .gc-band {
+    zoom: 0.62;
+    width: calc(100% / 0.62);
+  }
+
+  /* 4) Destinácie 2 vedľa seba a menšie */
   .dest-grid {
     grid-template-columns: 1fr 1fr !important;
-    gap: 0.55rem !important;
-    zoom: 0.9;
-    width: calc(100% / 0.9);
+    gap: 0.5rem !important;
+    zoom: 0.8;
+    width: calc(100% / 0.8);
   }
 }
