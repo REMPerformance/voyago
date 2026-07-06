@@ -187,17 +187,9 @@
     line-height: 1.2 !important;
   }
 
-  /* 3) Zelená karta + ETIAS: výrazne menšie cez zoom (len veľkosť) */
-  .gc-band {
-    zoom: 0.62;
-    width: calc(100% / 0.62);
-  }
-
-  /* 4) Destinácie 2 vedľa seba a menšie */
+  /* 3) Destinácie 2 vedľa seba (karty zmenšené priamo v komponente) */
   .dest-grid {
     grid-template-columns: 1fr 1fr !important;
     gap: 0.5rem !important;
-    zoom: 0.8;
-    width: calc(100% / 0.8);
   }
 }

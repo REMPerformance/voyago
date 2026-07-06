@@ -56,7 +56,7 @@ export function GreenCardBand() {
       <div className="gc-band grid gap-6 lg:grid-cols-[1.5fr_1fr]">
         {/* Green Card — text + mockup */}
         <Reveal>
-          <div className="secure-bg relative h-full overflow-hidden rounded-[1.4rem] border border-green-soft/50 bg-green p-8 text-cream shadow-pass ring-1 ring-brass/25 sm:p-10">
+          <div className="secure-bg relative h-full overflow-hidden rounded-[1.4rem] border border-green-soft/50 bg-green p-5 text-cream shadow-pass ring-1 ring-brass/25 sm:p-10">
             <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-brass/25 blur-3xl" />
             <div className="pointer-events-none absolute right-6 top-6 -rotate-6 rounded-md border border-brass-light/50 bg-brass/15 px-2.5 py-1 font-mono text-[0.55rem] font-bold uppercase tracking-[0.18em] text-brass-light">
               DV Lotéria
@@ -66,7 +66,7 @@ export function GreenCardBand() {
                 <p className="font-mono text-[0.66rem] font-bold uppercase tracking-[0.22em] text-brass-light">
                   {tr("gc.eyebrow")}
                 </p>
-                <h2 className="mt-3 font-display text-3xl font-extrabold leading-[1.04] sm:text-[2.6rem]">{tr("gc.title")}</h2>
+                <h2 className="mt-3 font-display text-2xl font-extrabold leading-[1.04] sm:text-[2.6rem]">{tr("gc.title")}</h2>
                 <p className="mt-3 max-w-md text-sm leading-relaxed text-cream/85">{tr("gc.sub")}</p>
 
                 <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-cream/80">
@@ -77,7 +77,7 @@ export function GreenCardBand() {
 
                 <div className="mt-5 flex items-end gap-2">
                   <span className="font-mono text-[0.58rem] uppercase tracking-wider text-cream/60">{tr("dest.from")}</span>
-                  <span className="font-display text-3xl font-extrabold">49 €</span>
+                  <span className="font-display text-2xl font-extrabold sm:text-3xl">49 €</span>
                   <span className="pb-1 text-xs text-cream/60">s DPH / prihláška</span>
                 </div>
 
@@ -105,7 +105,7 @@ export function GreenCardBand() {
         {/* ETIAS — English */}
         <Reveal delay={120}>
           <div
-            className="relative h-full overflow-hidden rounded-[1.4rem] border border-teal/40 bg-navy p-8 text-cream sm:p-9"
+            className="relative h-full overflow-hidden rounded-[1.4rem] border border-teal/40 bg-navy p-5 text-cream sm:p-9"
             style={{ backgroundImage: "radial-gradient(120% 120% at 85% -10%, rgba(61,122,214,0.28), transparent 55%)" }}
           >
             <div className="absolute right-7 top-7 grid h-14 w-14 place-items-center rounded-full border border-teal-light/40 text-teal-light">
@@ -114,7 +114,7 @@ export function GreenCardBand() {
             <p className="font-mono text-[0.64rem] font-medium uppercase tracking-[0.22em] text-teal-light">
               European Union · ETIAS
             </p>
-            <h2 className="mt-3 max-w-[16ch] font-display text-2xl font-extrabold leading-[1.06] sm:text-3xl">
+            <h2 className="mt-3 max-w-[16ch] font-display text-xl font-extrabold leading-[1.06] sm:text-3xl">
               ETIAS travel authorisation
             </h2>
             <p className="mt-3 max-w-md text-sm leading-relaxed text-cream/80">
