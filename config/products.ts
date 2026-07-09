@@ -6,8 +6,8 @@
 // PRIDAŤ NOVÚ KRAJINU = pridať jeden objekt do poľa PRODUCTS nižšie.
 // ─────────────────────────────────────────────────────────────────────────────
 
-export type Lang = "sk" | "en" | "cs" | "hu" | "uk";
-export type Localized = { sk: string; en: string; cs?: string; hu?: string; uk?: string };
+export type Lang = "sk" | "en" | "cs" | "uk" | "de";
+export type Localized = { sk: string; en: string; cs?: string; uk?: string; de?: string };
 
 export type FieldType =
   | "text"
@@ -1236,17 +1236,41 @@ export const productPrice = (p: Product): number => p.govFee + p.serviceFee;
 // Expresné spracovanie — platený upsell (prednostné vybavenie z našej strany).
 // Doplnkové služby (platené upselly). Účtujú sa za každú žiadosť (jedného cestujúceho).
 export const EXPRESS_PCT = 0.5; // expresné spracovanie = +50 % zo sumy
-export const PROTECTION_FEE = 22; // ochrana kupujúceho = 22 € s DPH za osobu, nevratné
+export const PROTECTION_FEE = 19; // ochrana kupujúceho = 19 € s DPH za osobu, nevratné
 
 export const expressAmount = (price: number): number => Math.round(price * EXPRESS_PCT);
 
 export const EXPRESS: { pct: number; label: Localized; desc: Localized } = {
   pct: EXPRESS_PCT,
-  label: { sk: "Expresné spracovanie", en: "Express processing" },
-  desc: { sk: "Prednostné vybavenie a podanie do 24 hodín. Príplatok je 50 % zo sumy a je nevratný.", en: "Priority handling and submission within 24 hours. A 50% surcharge applies and is non-refundable." },
+  label: {
+    sk: "Expresné spracovanie",
+    en: "Express processing",
+    cs: "Expresní zpracování",
+    uk: "Термінове опрацювання",
+    de: "Express-Bearbeitung",
+  },
+  desc: {
+    sk: "Prednostné vybavenie a podanie do 24 hodín. Príplatok je 50 % zo sumy a je nevratný.",
+    en: "Priority handling and submission within 24 hours. A 50% surcharge applies and is non-refundable.",
+    cs: "Přednostní vyřízení a podání do 24 hodin. Příplatek činí 50 % z částky a je nevratný.",
+    uk: "Пріоритетне опрацювання та подання протягом 24 годин. Доплата становить 50 % від суми та не повертається.",
+    de: "Vorrangige Bearbeitung und Einreichung innerhalb von 24 Stunden. Der Aufschlag beträgt 50 % und ist nicht erstattungsfähig.",
+  },
 };
 export const PROTECTION: { fee: number; label: Localized; desc: Localized } = {
   fee: PROTECTION_FEE,
-  label: { sk: "Ochrana kupujúceho", en: "Buyer protection" },
-  desc: { sk: "Ak úrad žiadosť zamietne napriek správne a pravdivo poskytnutým údajom, vrátime vám celú pôvodnú sumu. Poplatok 22 € je nevratný a nekryje zamietnutie pre chybné či zatajené údaje.", en: "If the authority refuses your application despite correctly and truthfully provided details, we refund the full original amount. The €22 fee is non-refundable and does not cover refusals caused by incorrect or concealed information." },
+  label: {
+    sk: "Ochrana kupujúceho",
+    en: "Buyer protection",
+    cs: "Ochrana kupujícího",
+    uk: "Захист покупця",
+    de: "Käuferschutz",
+  },
+  desc: {
+    sk: "Ak úrad žiadosť zamietne napriek správne a pravdivo poskytnutým údajom, vrátime vám celú pôvodnú sumu. Poplatok 19 € je nevratný a nekryje zamietnutie pre chybné či zatajené údaje.",
+    en: "If the authority refuses your application despite correctly and truthfully provided details, we refund the full original amount. The €19 fee is non-refundable and does not cover refusals caused by incorrect or concealed information.",
+    cs: "Pokud úřad žádost zamítne navzdory správně a pravdivě poskytnutým údajům, vrátíme vám celou původní částku. Poplatek 19 € je nevratný a nekryje zamítnutí kvůli chybným či zatajeným údajům.",
+    uk: "Якщо орган відхилить заяву попри правильно та правдиво надані дані, ми повернемо вам усю початкову суму. Збір 19 € не повертається і не покриває відмову через хибні чи приховані дані.",
+    de: "Lehnt die Behörde Ihren Antrag trotz korrekt und wahrheitsgemäß angegebener Daten ab, erstatten wir Ihnen den vollen ursprünglichen Betrag. Die Gebühr von 19 € ist nicht erstattungsfähig und deckt keine Ablehnungen aufgrund falscher oder verschwiegener Angaben.",
+  },
 };

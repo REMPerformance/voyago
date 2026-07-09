@@ -28,7 +28,7 @@ export const site = {
   },
   // Mena a formátovanie
   currency: "EUR",
-  locale: { sk: "sk-SK", en: "en-GB", cs: "cs-CZ", hu: "hu-HU", uk: "uk-UA" },
+  locale: { sk: "sk-SK", en: "en-GB", cs: "cs-CZ", uk: "uk-UA", de: "de-DE" },
   // Stripe poplatok (orientačne, pre kalkuláciu marže v admin pohľade neskôr)
   paymentFeePct: 0.015,
   paymentFeeFixed: 0.25,

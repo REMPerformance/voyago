@@ -232,7 +232,21 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const saved = window.localStorage.getItem("voyago.lang");
-    if (saved === "sk" || saved === "en" || saved === "uk") setLangState(saved);
+    if (saved === "sk" || saved === "en" || saved === "uk" || saved === "de") {
+      setLangState(saved);
+      return;
+    }
+    // Automatická detekcia podľa jazyka prehliadača (len pri prvej návšteve).
+    // Slovenčina a čeština → slovenská stránka. Nemčina → DE. Ukrajinčina/ruština → UK.
+    // Všetko ostatné → angličtina.
+    const nav = (window.navigator.languages?.[0] || window.navigator.language || "en").toLowerCase();
+    const base = nav.split("-")[0];
+    const detected: Lang =
+      base === "sk" || base === "cs" ? "sk" :
+      base === "de" ? "de" :
+      base === "uk" || base === "ru" ? "uk" :
+      "en";
+    setLangState(detected);
   }, []);
 
   const setLang = (l: Lang) => {

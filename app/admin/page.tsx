@@ -245,6 +245,15 @@ export default function AdminPage() {
     await fetch(`/api/admin/affiliates?id=${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${session.access_token}` } });
     loadAffs();
   };
+  const payoutAff = async (a: any) => {
+    const val = prompt(`Koľko € ste vyplatili partnerovi ${a.name}?\n\nNa výplatu: ${a.owed} €`, String(a.owed || 0));
+    if (!val) return;
+    const amount = Number(String(val).replace(",", "."));
+    if (!Number.isFinite(amount) || amount <= 0) { alert("Neplatná suma."); return; }
+    const r = await fetch("/api/admin/affiliates/payout", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` }, body: JSON.stringify({ affiliate_id: a.id, amount }) });
+    const d = await r.json();
+    if (d.ok) loadAffs(); else alert("Nepodarilo sa zaznamenať výplatu.");
+  };
   const affLink = (code: string) => `https://voyago.sk/?ref=${code}`;
 
   useEffect(() => { if (session && tab === "aff") loadAffs(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
@@ -379,17 +388,43 @@ export default function AdminPage() {
                   <button onClick={() => toggleAff(a)} className="btn-ghost !px-2.5 !py-1.5" title={a.active ? "Deaktivovať" : "Aktivovať"}><Power size={14} /></button>
                   <button onClick={() => deleteAff(a.id)} className="btn-ghost !px-2.5 !py-1.5 text-terra hover:bg-terra/10" title="Zmazať"><Trash2 size={14} /></button>
                 </div>
-                <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-5">
+                <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
                   <div className="rounded-lg bg-paper/50 px-3 py-2"><p className="text-[0.62rem] uppercase text-ink-soft">Návštevy</p><p className="font-display text-lg font-bold text-ink">{a.visits}</p></div>
                   <div className="rounded-lg bg-paper/50 px-3 py-2"><p className="text-[0.62rem] uppercase text-ink-soft">Objednávky</p><p className="font-display text-lg font-bold text-ink">{a.orders}</p></div>
                   <div className="rounded-lg bg-paper/50 px-3 py-2"><p className="text-[0.62rem] uppercase text-ink-soft">Zaplatené</p><p className="font-display text-lg font-bold text-green">{a.paidOrders}</p></div>
                   <div className="rounded-lg bg-paper/50 px-3 py-2"><p className="text-[0.62rem] uppercase text-ink-soft">Obrat</p><p className="font-display text-lg font-bold text-ink">{a.revenue} €</p></div>
-                  <div className="rounded-lg bg-brass/10 px-3 py-2"><p className="text-[0.62rem] uppercase text-brass">Provízia</p><p className="font-display text-lg font-bold text-brass">{a.commission} €</p></div>
                 </div>
-                <p className="mt-2 text-xs text-ink-soft">
-                  Provízia {a.commission_pct} %{a.discount_pct > 0 ? ` · zľava pre zákazníka ${a.discount_pct} % (${a.discount_mode === "from_commission" ? "z provízie" : "navyše"})` : " · bez zľavy"}
-                  {a.note ? ` · ${a.note}` : ""}
-                </p>
+
+                {/* Provízie a výplaty */}
+                <div className="mt-2 grid grid-cols-3 gap-2">
+                  <div className="rounded-lg bg-paper/50 px-3 py-2"><p className="text-[0.62rem] uppercase text-ink-soft">Zarobil celkom</p><p className="font-display text-lg font-bold text-ink">{a.commission} €</p></div>
+                  <div className="rounded-lg bg-paper/50 px-3 py-2"><p className="text-[0.62rem] uppercase text-ink-soft">Už vyplatené</p><p className="font-display text-lg font-bold text-ink-soft">{a.paidOut} €</p></div>
+                  <div className={`rounded-lg px-3 py-2 ${a.owed > 0 ? "bg-brass/12" : "bg-paper/50"}`}>
+                    <p className={`text-[0.62rem] uppercase ${a.owed > 0 ? "text-brass" : "text-ink-soft"}`}>Na výplatu</p>
+                    <p className={`font-display text-lg font-bold ${a.owed > 0 ? "text-brass" : "text-ink-soft"}`}>{a.owed} €</p>
+                  </div>
+                </div>
+
+                {/* Rozpis výpočtu */}
+                <div className="mt-2 rounded-lg border border-line-soft bg-paper/30 px-3 py-2 text-xs text-ink-soft">
+                  <p className="font-semibold text-ink">Ako sa provízia počíta</p>
+                  <p className="mt-1">
+                    Servisný poplatok zo zaplatených objednávok: <b className="text-ink">{a.serviceBase} €</b> × sadzba <b className="text-ink">{a.commission_pct} %</b> = <b className="text-ink">{Math.round(a.serviceBase * a.commission_pct) / 100} €</b>
+                    {a.discountDeducted > 0 && <> − zľava zákazníka <b className="text-ink">{a.discountDeducted} €</b> (hradí partner)</>}
+                    {" "}→ provízia <b className="text-brass">{a.commission} €</b>
+                  </p>
+                  <p className="mt-1">
+                    Zarobil {a.commission} € − vyplatené {a.paidOut} € = <b className={a.owed > 0 ? "text-brass" : "text-ink"}>na výplatu {a.owed} €</b>
+                  </p>
+                </div>
+
+                <div className="mt-2 flex flex-wrap items-center gap-3">
+                  <button onClick={() => payoutAff(a)} disabled={a.owed <= 0} className="btn-ghost !py-1.5 text-xs disabled:opacity-45">Zaznamenať výplatu</button>
+                  <p className="text-xs text-ink-soft">
+                    Provízia {a.commission_pct} %{a.discount_pct > 0 ? ` · zľava pre zákazníka ${a.discount_pct} % (${a.discount_mode === "from_commission" ? "z provízie" : "navyše"})` : " · bez zľavy"}
+                    {a.note ? ` · ${a.note}` : ""}
+                  </p>
+                </div>
               </div>
             ))}
           </div>

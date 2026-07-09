@@ -171,6 +171,13 @@
 }
 
 /* ── Mobil (<640px): zmenšenie cez zoom — proporcie zostávajú, mení sa len veľkosť ── */
+/* ── Žiadne horizontálne posúvanie stránky ────────────────────────── */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+body { position: relative; }
+
 @media (max-width: 640px) {
   /* 1) Celkové zmenšenie základu — všetky rem rozmery (fonty, medzery,
      paddingy) sa zmenšia naraz. Proporcie zostávajú, mení sa len veľkosť. */
