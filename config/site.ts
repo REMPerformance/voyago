@@ -28,8 +28,8 @@ export const site = {
   support: { days: "Po – Ne", hours: "8:00 – 21:00", opens: "08:00", closes: "21:00" },
   // Odkazy na sociálne siete (prázdne = skryté)
   social: {
-    facebook: "",
-    instagram: "",
+    facebook: "https://www.facebook.com/share/1a1AkBEx7a/",
+    instagram: "https://www.instagram.com/voyago.go/",
     linkedin: "",
     youtube: "",
   },

@@ -14,6 +14,7 @@ import { getProduct, productPrice, EXPRESS, PROTECTION, expressAmount } from "@/
 import { useFinalPrice, useDiscountPercent } from "@/lib/discounts";
 import { useProcessed } from "@/lib/stats";
 import { CountryHero } from "@/components/CountryHero";
+import { DestinationInfo } from "@/components/DestinationInfo";
 import { HERO_ATLAS } from "@/config/heroAtlas";
 import { HERO_ICON_SETS } from "@/components/heroIcons";
 import { site } from "@/config/site";
@@ -323,6 +324,9 @@ export default function ApplyPage() {
         </div>
       </div>
       {/* Fakty + FAQ */}
+      {/* Informačný text pre návštevníkov aj pre vyhľadávače */}
+      <DestinationInfo product={product} />
+
       {product.facts?.length || product.faq?.length ? (
         <div className="mt-14 grid gap-10 lg:grid-cols-[1fr_320px]">
           <div className="space-y-10">

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getProduct } from "@/config/products";
+import { getProduct, productPrice } from "@/config/products";
 import { site } from "@/config/site";
 
 export function generateMetadata({ params }: { params: { productId: string } }): Metadata {
@@ -30,7 +30,10 @@ export function generateMetadata({ params }: { params: { productId: string } }):
     title,
     description,
     keywords: [name, dest, "vízum", "cestovné povolenie", p.type.toUpperCase()],
-    alternates: { canonical: url },
+    alternates: {
+      canonical: url,
+      languages: { "sk-SK": url, "en-GB": url, "uk-UA": url, "de-DE": url, "x-default": url },
+    },
     openGraph: { title: `${title} | ${site.brand}`, description, url, type: "website" },
     twitter: { card: "summary_large_image", title: `${title} | ${site.brand}`, description },
   };
@@ -71,9 +74,36 @@ export default function ApplyLayout({ children, params }: { children: React.Reac
       }
     : null);
 
+  const serviceLd = p
+    ? {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        name: `${p.name.sk} — ${p.destination.sk}`,
+        serviceType: "Sprostredkovanie cestovného povolenia",
+        description: p.summary?.sk || `Sprostredkovanie vybavenia ${p.name.sk} pre cestu do krajiny ${p.destination.sk}.`,
+        provider: { "@id": `${site.url}/#organization` },
+        areaServed: { "@type": "Country", name: "Slovakia" },
+        url,
+        offers: {
+          "@type": "Offer",
+          price: String(productPrice(p)),
+          priceCurrency: "EUR",
+          url,
+          availability: p.available ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
+          priceSpecification: {
+            "@type": "PriceSpecification",
+            price: String(productPrice(p)),
+            priceCurrency: "EUR",
+            valueAddedTaxIncluded: true,
+          },
+        },
+      }
+    : null;
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
+      {serviceLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceLd) }} />}
       {faqLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />}
       {children}
     </>

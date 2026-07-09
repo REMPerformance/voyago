@@ -6,7 +6,7 @@ import { ArrowRight, ShieldCheck, Clock, Plane } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 
 export function Hero() {
-  const { tr } = useLang();
+  const { t, tr } = useLang();
   const [shown, setShown] = useState(false);
 
   useEffect(() => {
@@ -53,6 +53,15 @@ export function Hero() {
             </Link>
           </div>
 
+          {/* Transparentné vymedzenie: nie sme štátny orgán */}
+          <p className="mt-6 max-w-md text-xs leading-relaxed text-ink-soft/70">
+            {t({
+              sk: "Voyago je súkromná sprostredkovateľská služba, nie štátny orgán ani oficiálny vládny portál. O povolenie si môžete požiadať aj sami priamo na oficiálnej stránke príslušného úradu a zaplatiť len štátny poplatok. Náš poplatok pokrýva kontrolu údajov, podanie žiadosti a podporu.",
+              en: "Voyago is a private intermediary service, not a government authority or an official government portal. You may also apply yourself on the relevant authority's official website and pay only the government fee. Our fee covers checking your details, filing the application and support.",
+              uk: "Voyago це приватна посередницька служба, а не державний орган чи офіційний урядовий портал. Ви можете подати заяву самостійно на офіційному сайті органу, сплативши лише державне мито. Наш збір покриває перевірку даних, подання заяви та підтримку.",
+              de: "Voyago ist ein privater Vermittlungsdienst, keine Behörde und kein offizielles Regierungsportal. Sie können den Antrag auch selbst auf der offiziellen Website der zuständigen Behörde stellen und nur die Amtsgebühr zahlen. Unsere Gebühr deckt die Prüfung Ihrer Angaben, die Einreichung und den Support.",
+            })}
+          </p>
         </div>
 
         {/* RIGHT: boarding pass */}

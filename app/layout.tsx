@@ -87,6 +87,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 postalCode: site.company.addressZip,
                 addressCountry: site.company.addressCountry,
               },
+              sameAs: [site.social.facebook, site.social.instagram, site.social.linkedin, site.social.youtube].filter(Boolean),
               areaServed: { "@type": "Country", name: "Slovakia" },
               priceRange: "€€",
               description:

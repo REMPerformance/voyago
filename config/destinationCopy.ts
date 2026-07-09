@@ -1,0 +1,227 @@
+import type { Localized } from "@/config/products";
+
+/**
+ * Dlhší, informatívny text pre stránky destinácií.
+ *
+ * Prečo to takto: každá destinácia potrebuje vlastný obsah, inak ju Google
+ * vyhodnotí ako „tenkú stránku" a nezaindexuje ju. Text sa skladá zo šablóny
+ * podľa typu povolenia a doplní sa údajmi konkrétnej krajiny, takže výsledok
+ * je vecný, presný a pre každú krajinu iný.
+ *
+ * Zástupné výrazy: {country} {permit} {validity} {processing} {stay} {price} {gov} {service}
+ */
+
+export type CopyBlock = { heading: Localized; body: Localized[] };
+
+const ESTA: CopyBlock[] = [
+  {
+    heading: {
+      sk: "Čo je {permit} a kedy ju potrebujete",
+      en: "What {permit} is and when you need it",
+      uk: "Що таке {permit} і коли він потрібен",
+      de: "Was {permit} ist und wann Sie es brauchen",
+    },
+    body: [
+      {
+        sk: "{permit} je elektronická cestovná registrácia, ktorú pred cestou do krajiny {country} vyžaduje tamojší úrad od cestujúcich z krajín bezvízového styku. Nie je to vízum. Je to povolenie nastúpiť na palubu a požiadať o vstup na hranici, pričom o samotnom vstupe rozhoduje pohraničník až po prílete.",
+        en: "{permit} is an electronic travel registration required by the authorities of {country} from travellers of visa-waiver countries. It is not a visa. It is a permission to board and to request entry at the border, while the actual entry is decided by the border officer upon arrival.",
+        uk: "{permit} це електронна реєстрація, яку органи країни {country} вимагають від мандрівників із країн безвізового режиму. Це не віза. Це дозвіл на посадку в літак і на звернення про в'їзд на кордоні, а рішення про в'їзд ухвалює прикордонник після прильоту.",
+        de: "{permit} ist eine elektronische Reiseregistrierung, die die Behörden von {country} von Reisenden aus visumfreien Ländern verlangen. Es ist kein Visum. Es ist die Erlaubnis, an Bord zu gehen und an der Grenze um Einreise zu bitten. Über die Einreise entscheidet der Grenzbeamte bei der Ankunft.",
+      },
+      {
+        sk: "Držitelia slovenského pasu o ňu žiadajú pri turistike, obchodnej ceste aj pri tranzite. Bez platnej registrácie vás letecká spoločnosť spravidla nepustí na palubu, preto ju odporúčame vybaviť s predstihom aspoň niekoľkých dní.",
+        en: "Holders of a Slovak passport apply for it for tourism, business travel and transit alike. Without a valid registration the airline will usually refuse boarding, so we recommend arranging it at least several days in advance.",
+        uk: "Власники словацького паспорта оформлюють його для туризму, ділових поїздок і транзиту. Без чинної реєстрації авіакомпанія зазвичай не пустить на борт, тому радимо оформити її щонайменше за кілька днів.",
+        de: "Inhaber eines slowakischen Passes beantragen sie für Tourismus, Geschäftsreisen und Transit. Ohne gültige Registrierung verweigert die Fluggesellschaft in der Regel das Boarding, daher empfehlen wir, sie mehrere Tage im Voraus zu erledigen.",
+      },
+    ],
+  },
+  {
+    heading: {
+      sk: "Platnosť, dĺžka pobytu a cena",
+      en: "Validity, length of stay and price",
+      uk: "Термін дії, тривалість перебування та ціна",
+      de: "Gültigkeit, Aufenthaltsdauer und Preis",
+    },
+    body: [
+      {
+        sk: "Povolenie platí {validity} a umožňuje pobyt {stay}. Cena {price} zahŕňa štátny poplatok {gov}, ktorý odvádzame priamo úradu, a náš poplatok za sprostredkovanie {service} za kontrolu údajov, podanie žiadosti a komunikáciu s úradom. Nič sa nedopláca.",
+        en: "The authorization is valid {validity} and allows a stay of {stay}. The price of {price} includes the government fee of {gov}, which we pay directly to the authority, and our service fee of {service} for checking your details, filing the application and dealing with the authority. There is nothing extra to pay.",
+        uk: "Дозвіл діє {validity} і дозволяє перебування {stay}. Ціна {price} включає державне мито {gov}, яке ми сплачуємо органу, і наш сервісний збір {service} за перевірку даних, подання заяви та спілкування з органом. Жодних доплат.",
+        de: "Die Genehmigung ist {validity} gültig und erlaubt einen Aufenthalt von {stay}. Der Preis von {price} enthält die Amtsgebühr von {gov}, die wir direkt an die Behörde abführen, sowie unsere Servicegebühr von {service} für die Prüfung Ihrer Angaben, die Einreichung und die Kommunikation mit der Behörde. Es fallen keine weiteren Kosten an.",
+      },
+      {
+        sk: "Bežné spracovanie u nás trvá {processing}. Rozhodnutie však vydáva výhradne príslušný úrad a jeho lehotu nevieme ovplyvniť ani urýchliť.",
+        en: "Our standard processing takes {processing}. The decision, however, is issued solely by the relevant authority and we can neither influence nor speed up its timeline.",
+        uk: "Наше стандартне опрацювання триває {processing}. Проте рішення ухвалює виключно відповідний орган, і ми не можемо вплинути на його строки.",
+        de: "Unsere Standardbearbeitung dauert {processing}. Die Entscheidung trifft jedoch ausschließlich die zuständige Behörde, deren Fristen wir weder beeinflussen noch beschleunigen können.",
+      },
+    ],
+  },
+  {
+    heading: {
+      sk: "Čo pre vás urobíme",
+      en: "What we do for you",
+      uk: "Що ми робимо для вас",
+      de: "Was wir für Sie tun",
+    },
+    body: [
+      {
+        sk: "Vyplníte krátky formulár v slovenčine. My skontrolujeme, či údaje presne zodpovedajú cestovnému dokladu, či pas spĺňa požadovanú platnosť a či vo formulári nie sú preklepy, ktoré patria k najčastejším dôvodom zamietnutia. Žiadosť následne podáme na oficiálnom portáli úradu a výsledok vám pošleme e-mailom.",
+        en: "You fill in a short form in your language. We check that the details match your travel document exactly, that your passport meets the required validity, and that there are no typos, which are among the most common reasons for refusal. We then file the application on the authority's official portal and send you the outcome by e-mail.",
+        uk: "Ви заповнюєте коротку форму. Ми перевіряємо, чи дані точно збігаються з проїзним документом, чи паспорт відповідає вимогам щодо строку дії та чи немає помилок, які є найчастішою причиною відмови. Потім подаємо заяву на офіційному порталі органу й надсилаємо результат на пошту.",
+        de: "Sie füllen ein kurzes Formular aus. Wir prüfen, ob die Angaben exakt mit Ihrem Reisedokument übereinstimmen, ob Ihr Pass die geforderte Gültigkeit erfüllt und ob keine Tippfehler vorliegen, die zu den häufigsten Ablehnungsgründen zählen. Anschließend reichen wir den Antrag über das offizielle Portal der Behörde ein und senden Ihnen das Ergebnis per E-Mail.",
+      },
+      {
+        sk: "Voyago je súkromný sprostredkovateľ, nie štátny orgán. O žiadosť môžete požiadať aj sami priamo na oficiálnom portáli, kde zaplatíte iba štátny poplatok. Náš poplatok si účtujeme za kontrolu, podanie a asistenciu počas celej platnosti povolenia.",
+        en: "Voyago is a private intermediary, not a government authority. You may also apply yourself directly on the official portal, where you would pay only the government fee. Our fee covers the check, the filing and assistance throughout the validity of the permit.",
+        uk: "Voyago це приватний посередник, а не державний орган. Ви можете подати заяву самостійно на офіційному порталі, сплативши лише державне мито. Наш збір покриває перевірку, подання та підтримку протягом усього терміну дії дозволу.",
+        de: "Voyago ist ein privater Vermittler, keine Behörde. Sie können den Antrag auch selbst über das offizielle Portal stellen und dabei nur die Amtsgebühr zahlen. Unsere Gebühr deckt die Prüfung, die Einreichung und die Unterstützung während der gesamten Gültigkeit ab.",
+      },
+    ],
+  },
+];
+
+const ETA: CopyBlock[] = [
+  {
+    heading: {
+      sk: "Čo je {permit} do krajiny {country}",
+      en: "What {permit} for {country} is",
+      uk: "Що таке {permit} до країни {country}",
+      de: "Was {permit} für {country} ist",
+    },
+    body: [
+      {
+        sk: "{permit} je elektronické cestovné povolenie, ktoré krajina {country} vyžaduje od cestujúcich s pasom z krajín oslobodených od vízovej povinnosti. Povolenie sa viaže na konkrétny cestovný doklad a kontroluje sa elektronicky, takže si ho netreba tlačiť ani vlepovať do pasu.",
+        en: "{permit} is an electronic travel authorization required by {country} from travellers holding a passport of a visa-exempt country. The authorization is tied to a specific travel document and is checked electronically, so there is nothing to print or stick into the passport.",
+        uk: "{permit} це електронний дозвіл на подорож, який країна {country} вимагає від мандрівників із паспортом безвізової країни. Дозвіл прив'язаний до конкретного документа й перевіряється електронно, тож нічого друкувати чи вклеювати в паспорт не треба.",
+        de: "{permit} ist eine elektronische Reisegenehmigung, die {country} von Reisenden mit dem Pass eines visumbefreiten Landes verlangt. Die Genehmigung ist an ein bestimmtes Reisedokument gebunden und wird elektronisch geprüft, es muss also nichts gedruckt oder in den Pass geklebt werden.",
+      },
+      {
+        sk: "Povolenie sa vyžaduje pri turistike, návšteve rodiny, krátkej obchodnej ceste aj pri tranzite. Nenahrádza vízum, ak plánujete prácu, štúdium alebo dlhodobý pobyt.",
+        en: "It is required for tourism, family visits, short business trips and transit. It does not replace a visa if you plan to work, study or stay long term.",
+        uk: "Дозвіл потрібен для туризму, відвідин родини, коротких ділових поїздок і транзиту. Він не замінює візу, якщо ви плануєте роботу, навчання чи тривале перебування.",
+        de: "Sie ist für Tourismus, Familienbesuche, kurze Geschäftsreisen und Transit erforderlich. Sie ersetzt kein Visum, wenn Sie arbeiten, studieren oder langfristig bleiben möchten.",
+      },
+    ],
+  },
+  {
+    heading: {
+      sk: "Platnosť, dĺžka pobytu a cena",
+      en: "Validity, length of stay and price",
+      uk: "Термін дії, тривалість перебування та ціна",
+      de: "Gültigkeit, Aufenthaltsdauer und Preis",
+    },
+    body: [
+      {
+        sk: "Povolenie platí {validity} a umožňuje pobyt {stay}. Cena {price} zahŕňa štátny poplatok {gov} odvádzaný priamo úradu a náš poplatok za sprostredkovanie {service}. Cenu uvádzame vrátane DPH a nič sa k nej nedopláca.",
+        en: "The authorization is valid {validity} and allows a stay of {stay}. The price of {price} includes the government fee of {gov} paid directly to the authority and our service fee of {service}. The price is stated including VAT and nothing is added later.",
+        uk: "Дозвіл діє {validity} і дозволяє перебування {stay}. Ціна {price} включає державне мито {gov}, яке сплачується органу, та наш сервісний збір {service}. Ціна вказана з ПДВ і жодних доплат немає.",
+        de: "Die Genehmigung ist {validity} gültig und erlaubt einen Aufenthalt von {stay}. Der Preis von {price} umfasst die Amtsgebühr von {gov}, die direkt an die Behörde geht, und unsere Servicegebühr von {service}. Der Preis versteht sich inklusive MwSt., es kommt nichts hinzu.",
+      },
+      {
+        sk: "U nás sa žiadosť spracuje spravidla {processing}. Konečné rozhodnutie vydáva úrad krajiny {country} a jeho lehotu nevieme garantovať.",
+        en: "We usually process the application {processing}. The final decision is issued by the authority of {country} and we cannot guarantee its timeline.",
+        uk: "Ми зазвичай опрацьовуємо заяву {processing}. Остаточне рішення ухвалює орган країни {country}, і ми не можемо гарантувати його строки.",
+        de: "Wir bearbeiten den Antrag üblicherweise {processing}. Die endgültige Entscheidung trifft die Behörde von {country}, deren Fristen wir nicht garantieren können.",
+      },
+    ],
+  },
+  {
+    heading: {
+      sk: "Ako prebieha vybavenie",
+      en: "How the process works",
+      uk: "Як відбувається оформлення",
+      de: "So läuft die Bearbeitung ab",
+    },
+    body: [
+      {
+        sk: "Vyplníte formulár, my skontrolujeme zhodu údajov s pasom, platnosť dokladu aj prípadnú fotografiu podľa oficiálnych noriem. Žiadosť podáme na oficiálnom portáli a o výsledku vás informujeme e-mailom. Ak úrad požiada o doplnenie, ozveme sa vám.",
+        en: "You fill in the form, we verify that the details match your passport, that the document is valid and that any photograph meets official standards. We file the application on the official portal and inform you of the outcome by e-mail. If the authority asks for additional information, we will contact you.",
+        uk: "Ви заповнюєте форму, ми перевіряємо відповідність даних паспорту, чинність документа та фотографію за офіційними нормами. Подаємо заяву на офіційному порталі й повідомляємо результат поштою. Якщо орган попросить доповнення, ми зв'яжемося з вами.",
+        de: "Sie füllen das Formular aus, wir prüfen die Übereinstimmung mit Ihrem Pass, die Gültigkeit des Dokuments und gegebenenfalls das Foto nach den amtlichen Vorgaben. Wir reichen den Antrag über das offizielle Portal ein und informieren Sie per E-Mail über das Ergebnis. Fordert die Behörde Ergänzungen an, melden wir uns bei Ihnen.",
+      },
+      {
+        sk: "Voyago je súkromná sprostredkovateľská služba, nie štátny orgán. Rovnakú žiadosť si viete podať aj sami na oficiálnom portáli a zaplatiť len štátny poplatok.",
+        en: "Voyago is a private intermediary service, not a government authority. You can submit the same application yourself on the official portal and pay only the government fee.",
+        uk: "Voyago це приватна посередницька служба, а не державний орган. Ту саму заяву ви можете подати самостійно на офіційному порталі, сплативши лише державне мито.",
+        de: "Voyago ist ein privater Vermittlungsdienst, keine Behörde. Denselben Antrag können Sie selbst über das offizielle Portal stellen und nur die Amtsgebühr zahlen.",
+      },
+    ],
+  },
+];
+
+const EVISA: CopyBlock[] = [
+  {
+    heading: {
+      sk: "Elektronické vízum do krajiny {country}",
+      en: "Electronic visa for {country}",
+      uk: "Електронна віза до країни {country}",
+      de: "Elektronisches Visum für {country}",
+    },
+    body: [
+      {
+        sk: "{permit} je vízum, o ktoré sa žiada online a doručuje sa elektronicky. Na rozdiel od klasického víza nemusíte navštíviť ambasádu ani odovzdávať pas. Po schválení dostanete dokument, ktorý predložíte pri odbavení a na hranici krajiny {country}.",
+        en: "{permit} is a visa applied for online and delivered electronically. Unlike a traditional visa, you do not need to visit an embassy or hand over your passport. Once approved, you receive a document you present at check-in and at the border of {country}.",
+        uk: "{permit} це віза, яку оформлюють онлайн і надсилають електронно. На відміну від звичайної візи, не треба відвідувати посольство чи здавати паспорт. Після схвалення ви отримуєте документ, який показуєте на реєстрації та на кордоні країни {country}.",
+        de: "{permit} ist ein Visum, das online beantragt und elektronisch zugestellt wird. Anders als beim klassischen Visum müssen Sie weder eine Botschaft aufsuchen noch Ihren Pass abgeben. Nach der Genehmigung erhalten Sie ein Dokument, das Sie beim Check-in und an der Grenze von {country} vorlegen.",
+      },
+      {
+        sk: "Vízum sa spravidla vydáva na turistické účely a viaže sa na konkrétny pas. Ak počas platnosti pas vymeníte, treba požiadať o nové.",
+        en: "The visa is usually issued for tourism purposes and is tied to a specific passport. If you replace your passport during its validity, a new application is required.",
+        uk: "Віза зазвичай видається для туризму та прив'язана до конкретного паспорта. Якщо ви заміните паспорт протягом строку дії, потрібна нова заява.",
+        de: "Das Visum wird in der Regel für touristische Zwecke ausgestellt und ist an einen bestimmten Pass gebunden. Wenn Sie den Pass während der Gültigkeit wechseln, ist ein neuer Antrag nötig.",
+      },
+    ],
+  },
+  {
+    heading: {
+      sk: "Platnosť, dĺžka pobytu a cena",
+      en: "Validity, length of stay and price",
+      uk: "Термін дії, тривалість перебування та ціна",
+      de: "Gültigkeit, Aufenthaltsdauer und Preis",
+    },
+    body: [
+      {
+        sk: "Vízum platí {validity} a umožňuje pobyt {stay}. Cena {price} zahŕňa konzulárny poplatok {gov} a náš poplatok za sprostredkovanie {service}. Uvedená suma je konečná, s DPH.",
+        en: "The visa is valid {validity} and allows a stay of {stay}. The price of {price} includes the consular fee of {gov} and our service fee of {service}. The stated amount is final, including VAT.",
+        uk: "Віза діє {validity} і дозволяє перебування {stay}. Ціна {price} включає консульський збір {gov} і наш сервісний збір {service}. Вказана сума остаточна, з ПДВ.",
+        de: "Das Visum ist {validity} gültig und erlaubt einen Aufenthalt von {stay}. Der Preis von {price} enthält die Konsulargebühr von {gov} und unsere Servicegebühr von {service}. Der angegebene Betrag ist endgültig, inklusive MwSt.",
+      },
+      {
+        sk: "Bežné spracovanie trvá {processing}. Konzulárny úrad si však môže vyžiadať doplňujúce podklady, čo lehotu predĺži. O každom takom kroku vás informujeme.",
+        en: "Standard processing takes {processing}. The consular authority may, however, request additional documents, which extends the timeline. We inform you of every such step.",
+        uk: "Стандартне опрацювання триває {processing}. Проте консульський орган може запросити додаткові документи, що подовжить строк. Ми повідомляємо про кожен такий крок.",
+        de: "Die Standardbearbeitung dauert {processing}. Die Konsularbehörde kann jedoch zusätzliche Unterlagen anfordern, was die Frist verlängert. Über jeden solchen Schritt informieren wir Sie.",
+      },
+    ],
+  },
+  {
+    heading: {
+      sk: "Na čo si dať pozor",
+      en: "What to watch out for",
+      uk: "На що звернути увагу",
+      de: "Worauf Sie achten sollten",
+    },
+    body: [
+      {
+        sk: "Najčastejším dôvodom zamietnutia sú preklepy v mene alebo v čísle pasu, nevyhovujúca fotografia a nedostatočná platnosť cestovného dokladu. Práve tieto veci kontrolujeme skôr, než žiadosť odošleme.",
+        en: "The most common reasons for refusal are typos in the name or passport number, a non-compliant photograph and insufficient passport validity. These are exactly the things we check before submitting the application.",
+        uk: "Найчастіші причини відмови це помилки в імені чи номері паспорта, невідповідне фото та недостатній строк дії документа. Саме це ми перевіряємо перед поданням заяви.",
+        de: "Die häufigsten Ablehnungsgründe sind Tippfehler im Namen oder in der Passnummer, ein nicht regelkonformes Foto und eine unzureichende Passgültigkeit. Genau das prüfen wir, bevor wir den Antrag einreichen.",
+      },
+      {
+        sk: "Voyago je súkromný sprostredkovateľ, nie zastupiteľský úrad. O vízum si môžete požiadať aj sami priamo na oficiálnom portáli, kde uhradíte iba konzulárny poplatok.",
+        en: "Voyago is a private intermediary, not a diplomatic mission. You may also apply for the visa yourself on the official portal, paying only the consular fee.",
+        uk: "Voyago це приватний посередник, а не дипломатична установа. Ви можете подати заяву самостійно на офіційному порталі, сплативши лише консульський збір.",
+        de: "Voyago ist ein privater Vermittler, keine diplomatische Vertretung. Sie können das Visum auch selbst über das offizielle Portal beantragen und nur die Konsulargebühr zahlen.",
+      },
+    ],
+  },
+];
+
+export const DESTINATION_COPY: Record<string, CopyBlock[]> = {
+  esta: ESTA,
+  eta: ETA,
+  evisa: EVISA,
+};
