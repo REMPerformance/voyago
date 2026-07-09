@@ -10,15 +10,22 @@ export const site = {
   },
   email: "info@remperformance.sk",
   phone: "+421 949 253 872",
-  // ⚠️ DOPLŇ skutočné firemné údaje (povinné pre e-shop v SR)
+  // Firemné údaje prevádzkovateľa (zobrazujú sa v pätičke a v štruktúrovaných dátach)
   company: {
     legalName: "Lukáš Tonkovič – REM Performance",
     ico: "57 321 205",
-    dic: "",
-    icDph: "",
+    dic: "1128793787",
+    icDph: "SK1128793787",
     address: "Karpatské námestie 10A/7770, 831 06 Bratislava-Rača",
+    addressStreet: "Karpatské námestie 10A/7770",
+    addressCity: "Bratislava-Rača",
+    addressZip: "831 06",
+    addressCountry: "SK",
     register: "Zapísaný v živnostenskom registri Okresného úradu Piešťany, č. 230-24974",
+    vatPayer: true,
   },
+  // Otváracie hodiny podpory (pre štruktúrované dáta aj pätičku)
+  support: { days: "Po – Ne", hours: "8:00 – 21:00", opens: "08:00", closes: "21:00" },
   // Odkazy na sociálne siete (prázdne = skryté)
   social: {
     facebook: "",

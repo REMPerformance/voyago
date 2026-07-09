@@ -62,7 +62,10 @@ export function Globe() {
 
   useEffect(() => {
     let alive = true;
-    (async () => {
+    const host = canvasRef.current;
+    let io: IntersectionObserver | null = null;
+
+    const start = () => (async () => {
       try {
         await loadScript("https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js");
         await loadScript("https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js");
@@ -74,8 +77,28 @@ export function Globe() {
         /* offline / blocked — section still renders heading */
       }
     })();
+
+    // Knižnice glóbusu (d3, topojson) sťahujeme až keď sa sekcia priblíži k obrazovke.
+    // Nezdržiavajú tak prvé vykreslenie stránky.
+    if (host && typeof IntersectionObserver !== "undefined") {
+      io = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((e) => e.isIntersecting)) {
+            io?.disconnect();
+            io = null;
+            start();
+          }
+        },
+        { rootMargin: "300px" },
+      );
+      io.observe(host);
+    } else {
+      start();
+    }
+
     return () => {
       alive = false;
+      io?.disconnect();
       if (ctrlRef.current) ctrlRef.current.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

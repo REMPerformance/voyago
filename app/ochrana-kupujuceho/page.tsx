@@ -1,94 +1,89 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Umbrella, Check, X, ArrowRight, FileCheck, RefreshCw, Clock } from "lucide-react";
+import { ProtectionContent } from "@/components/ProtectionContent";
 import { PROTECTION_FEE } from "@/config/products";
 import { site } from "@/config/site";
 
 export const metadata: Metadata = {
   title: "Ochrana kupujúceho — vrátenie peňazí pri zamietnutí | Voyago",
-  description: `Doplnok za ${PROTECTION_FEE} € na osobu: ak úrad žiadosť zamietne napriek správne poskytnutým údajom, vrátime vám celú pôvodnú sumu. Ako to funguje, čo kryje a čo nie.`,
-  alternates: { canonical: `${site.url}/ochrana-kupujuceho` },
+  description: `Doplnok za ${PROTECTION_FEE} € na osobu: ak úrad žiadosť zamietne napriek správne poskytnutým údajom, vrátime vám celú pôvodnú sumu vrátane štátneho poplatku. Prečítajte si, čo ochrana kryje, na čo sa nevzťahuje a ako uplatniť nárok.`,
+  keywords: ["ochrana kupujúceho", "vrátenie peňazí", "zamietnutie víza", "ESTA zamietnutie", "garancia vrátenia peňazí"],
+  alternates: {
+    canonical: `${site.url}/ochrana-kupujuceho`,
+    languages: {
+      "sk-SK": `${site.url}/ochrana-kupujuceho`,
+      "en-GB": `${site.url}/ochrana-kupujuceho`,
+      "uk-UA": `${site.url}/ochrana-kupujuceho`,
+      "de-DE": `${site.url}/ochrana-kupujuceho`,
+      "x-default": `${site.url}/ochrana-kupujuceho`,
+    },
+  },
+  openGraph: {
+    title: "Ochrana kupujúceho | Voyago",
+    description: `Ak úrad zamietne žiadosť napriek správnym údajom, vrátime celú pôvodnú sumu. Doplnok ${PROTECTION_FEE} € na osobu.`,
+    url: `${site.url}/ochrana-kupujuceho`,
+    type: "website",
+  },
 };
 
-const COVERED = [
-  "Úrad žiadosť zamietne, hoci ste poskytli pravdivé, správne a úplné údaje aj podklady.",
-  "Zamietnutie na základe voľnej úvahy úradu pri riadne podanej žiadosti.",
-  "Vrátime celú pôvodnú sumu — štátny poplatok aj poplatok za sprostredkovanie.",
-];
-const NOT_COVERED = [
-  "Nesprávne, neúplné alebo nepravdivé údaje či podklady z vašej strany.",
-  "Zatajené skutočnosti — predchádzajúce zamietnutia, zákazy vstupu, trestná minulosť, prekročenia pobytu.",
-  "Nedostavenie sa na pohovor/biometriu, nedodanie vyžiadaných podkladov, stiahnutie žiadosti.",
-  "Neplatný alebo poškodený cestovný doklad.",
-  "Prihlášky do americkej DV lotérie (zelená karta) — na tie sa ochrana nevzťahuje.",
-  `Samotný poplatok ${PROTECTION_FEE} € a príplatok za expresné spracovanie — tie sú nevratné.`,
-];
-const STEPS = [
-  { icon: <FileCheck size={18} />, t: "Pridáte k žiadosti", d: `Pri vypĺňaní žiadosti (alebo v košíku) zapnete prepínač Ochrana kupujúceho — ${PROTECTION_FEE} € za každého cestujúceho.` },
-  { icon: <Clock size={18} />, t: "Ak príde zamietnutie", d: "Pošlete nám rozhodnutie úradu o zamietnutí e-mailom do 14 dní od doručenia. Nič iné netreba." },
-  { icon: <RefreshCw size={18} />, t: "Vrátime pôvodnú sumu", d: "Po overení podmienok vám do 14 dní vrátime celú pôvodnú sumu rovnakým spôsobom, akým ste platili." },
-];
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Service",
+      name: "Ochrana kupujúceho",
+      provider: { "@id": `${site.url}/#organization` },
+      serviceType: "Doplnková služba k sprostredkovaniu cestovného povolenia",
+      description:
+        "Doplnková služba, pri ktorej sprostredkovateľ vráti zákazníkovi celú pôvodne uhradenú sumu, ak úrad žiadosť zamietne napriek správne a pravdivo poskytnutým údajom.",
+      offers: {
+        "@type": "Offer",
+        price: String(PROTECTION_FEE),
+        priceCurrency: "EUR",
+        availability: "https://schema.org/InStock",
+      },
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "Koľko stojí Ochrana kupujúceho?",
+          acceptedAnswer: { "@type": "Answer", text: `Ochrana kupujúceho stojí ${PROTECTION_FEE} € s DPH za každého cestujúceho. Poplatok je nevratný.` },
+        },
+        {
+          "@type": "Question",
+          name: "Čo Ochrana kupujúceho kryje?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Kryje situáciu, keď úrad zamietne žiadosť napriek tomu, že ste poskytli pravdivé, správne a úplné údaje. V takom prípade vrátime celú pôvodnú sumu vrátane štátneho poplatku aj poplatku za sprostredkovanie.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Na čo sa Ochrana kupujúceho nevzťahuje?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Nevzťahuje sa na nesprávne či zatajené údaje, neplatný cestovný doklad, nedostavenie sa na pohovor alebo biometriu, stiahnutie žiadosti a na prihlášky do americkej DV lotérie. Nevratný je aj samotný poplatok za ochranu a príplatok za expresné spracovanie.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Ako uplatním nárok na vrátenie peňazí?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: `Rozhodnutie úradu o zamietnutí pošlite e-mailom na ${site.email} do 14 dní od jeho doručenia. Po overení podmienok vrátime celú pôvodnú sumu do 14 dní rovnakým spôsobom, akým ste platili.`,
+          },
+        },
+      ],
+    },
+  ],
+};
 
 export default function Page() {
   return (
-    <section className="container-page py-14">
-      <div className="max-w-3xl">
-        <span className="inline-flex items-center gap-2 rounded-lg bg-brass/12 px-3 py-1.5 text-xs font-bold text-brass"><Umbrella size={14} /> Doplnková služba · {PROTECTION_FEE} € / osoba</span>
-        <h1 className="mt-4 font-display text-4xl font-extrabold sm:text-5xl">Ochrana kupujúceho</h1>
-        <p className="mt-4 text-lg leading-relaxed text-ink-soft">
-          Zamietnutie žiadosti je zriedkavé — no keď príde, štátny poplatok úrad nevracia. S Ochranou kupujúceho vám
-          v takom prípade <strong className="text-ink">vrátime celú pôvodnú sumu</strong>, ak ste nám poskytli správne
-          a pravdivé údaje. Cestujete s istotou, riziko nesieme my.
-        </p>
-      </div>
-
-      <ol className="mt-10 grid gap-4 sm:grid-cols-3">
-        {STEPS.map((s, i) => (
-          <li key={i} className="rounded-2xl border border-line bg-surface p-6 shadow-card">
-            <div className="flex items-center justify-between">
-              <span className="grid h-10 w-10 place-items-center rounded-xl bg-brass/12 text-brass">{s.icon}</span>
-              <span className="font-display text-2xl font-extrabold text-ink/10">0{i + 1}</span>
-            </div>
-            <p className="mt-3 font-display text-base font-bold text-ink">{s.t}</p>
-            <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">{s.d}</p>
-          </li>
-        ))}
-      </ol>
-
-      <div className="mt-10 grid gap-4 lg:grid-cols-2">
-        <div className="rounded-2xl border border-green/30 bg-green/[0.05] p-6 sm:p-7">
-          <p className="font-display text-lg font-bold text-ink">Čo ochrana kryje</p>
-          <ul className="mt-4 space-y-2.5">
-            {COVERED.map((c, i) => (
-              <li key={i} className="flex items-start gap-2.5 text-sm text-ink-soft"><Check size={16} className="mt-0.5 shrink-0 text-green" /> {c}</li>
-            ))}
-          </ul>
-        </div>
-        <div className="rounded-2xl border border-terra/30 bg-terra/[0.04] p-6 sm:p-7">
-          <p className="font-display text-lg font-bold text-ink">Na čo sa nevzťahuje</p>
-          <ul className="mt-4 space-y-2.5">
-            {NOT_COVERED.map((c, i) => (
-              <li key={i} className="flex items-start gap-2.5 text-sm text-ink-soft"><X size={16} className="mt-0.5 shrink-0 text-terra" /> {c}</li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <div className="mt-8 rounded-2xl border border-line bg-paper/50 p-6 text-sm leading-relaxed text-ink-soft">
-        <strong className="text-ink">V skratke:</strong> ochrana je férová poistka proti rozhodnutiu úradu, nie proti chybám
-        v žiadosti — tie za vás ale chytáme my kontrolou pred podaním. Presné podmienky, lehoty a výluky nájdete v{" "}
-        <Link href="/obchodne-podmienky" className="font-semibold text-brass underline underline-offset-2">obchodných podmienkach (čl. 8)</Link>.
-        Nárok sa uplatňuje e-mailom na {site.email} do 14 dní od doručenia rozhodnutia; vraciame do 14 dní od overenia,
-        maximálne raz na jednu žiadosť a najviac do výšky pôvodnej sumy.
-      </div>
-
-      <div className="mt-10 flex flex-col items-start gap-4 rounded-2xl bg-navy p-8 text-cream sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="font-display text-xl font-bold">Pridajte si ochranu k najbližšej ceste</h2>
-          <p className="mt-1 text-cream/70">Prepínač nájdete priamo pri žiadosti — {PROTECTION_FEE} € s DPH za osobu.</p>
-        </div>
-        <Link href="/destinations" className="btn-accent shrink-0">Vybrať destináciu <ArrowRight size={16} /></Link>
-      </div>
-    </section>
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <ProtectionContent />
+    </>
   );
 }

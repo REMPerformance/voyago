@@ -93,6 +93,59 @@ export function Footer() {
           <p className="text-xs leading-relaxed text-cream/65">{t(disclaimer)}</p>
         </div>
 
+        {/* Identifikačné údaje prevádzkovateľa — transparentnosť a overiteľnosť */}
+        <div className="mt-4 rounded-xl border border-cream/10 bg-black/10 p-5">
+          <p className="font-mono text-[0.62rem] uppercase tracking-wider text-brass-light/70">
+            {t({ sk: "Prevádzkovateľ", en: "Operator", uk: "Оператор", de: "Betreiber" })}
+          </p>
+          <dl className="mt-2 grid gap-x-6 gap-y-1 text-[0.72rem] leading-relaxed text-cream/55 sm:grid-cols-2 lg:grid-cols-3">
+            <div>
+              <dt className="inline text-cream/40">{t({ sk: "Obchodné meno:", en: "Legal name:", uk: "Юридична назва:", de: "Firmenname:" })} </dt>
+              <dd className="inline text-cream/70">{site.company.legalName}</dd>
+            </div>
+            <div>
+              <dt className="inline text-cream/40">{t({ sk: "Sídlo:", en: "Registered address:", uk: "Адреса:", de: "Sitz:" })} </dt>
+              <dd className="inline text-cream/70">{site.company.address}</dd>
+            </div>
+            <div>
+              <dt className="inline text-cream/40">IČO: </dt>
+              <dd className="inline text-cream/70">{site.company.ico}</dd>
+            </div>
+            <div>
+              <dt className="inline text-cream/40">DIČ: </dt>
+              <dd className="inline text-cream/70">{site.company.dic}</dd>
+            </div>
+            <div>
+              <dt className="inline text-cream/40">IČ DPH: </dt>
+              <dd className="inline text-cream/70">{site.company.icDph}</dd>
+            </div>
+            <div>
+              <dt className="inline text-cream/40">{t({ sk: "E-mail:", en: "E-mail:", uk: "Ел. пошта:", de: "E-Mail:" })} </dt>
+              <dd className="inline text-cream/70">{site.email}</dd>
+            </div>
+            <div>
+              <dt className="inline text-cream/40">{t({ sk: "Telefón:", en: "Phone:", uk: "Телефон:", de: "Telefon:" })} </dt>
+              <dd className="inline text-cream/70">{site.phone}</dd>
+            </div>
+            <div>
+              <dt className="inline text-cream/40">{t({ sk: "Podpora:", en: "Support:", uk: "Підтримка:", de: "Support:" })} </dt>
+              <dd className="inline text-cream/70">{site.support.days} {site.support.hours}</dd>
+            </div>
+            <div className="sm:col-span-2 lg:col-span-3">
+              <dt className="inline text-cream/40">{t({ sk: "Registrácia:", en: "Registration:", uk: "Реєстрація:", de: "Registrierung:" })} </dt>
+              <dd className="inline text-cream/70">{site.company.register}</dd>
+            </div>
+          </dl>
+          <p className="mt-3 text-[0.68rem] leading-relaxed text-cream/40">
+            {t({
+              sk: "Prevádzkovateľ je platiteľom DPH. Údaje si môžete overiť vo verejnom živnostenskom registri Slovenskej republiky.",
+              en: "The operator is VAT registered. All details can be verified in the public trade register of the Slovak Republic.",
+              uk: "Оператор є платником ПДВ. Дані можна перевірити в публічному реєстрі Словацької Республіки.",
+              de: "Der Betreiber ist umsatzsteuerpflichtig. Die Angaben können im öffentlichen Gewerberegister der Slowakischen Republik überprüft werden.",
+            })}
+          </p>
+        </div>
+
         <div className="mt-8 border-t border-cream/10 pt-6">
           <p className="mrz !text-cream/30">
             P&lt;{site.brand.toUpperCase()}&lt;&lt;{lang === "sk" ? "SPROSTREDKOVATEL" : "INTERMEDIARY"}&lt;&lt;&lt;&lt;&lt;{year}

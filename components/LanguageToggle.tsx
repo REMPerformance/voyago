@@ -35,17 +35,20 @@ export function LanguageToggle() {
 
       {/* dropdown — vždy v DOM kvôli plynulému prechodu */}
       <ul
-        role="listbox"
+        role="menu"
+        aria-label="Výber jazyka"
         className={`absolute right-0 z-50 mt-2 w-48 origin-top-right overflow-hidden rounded-xl border border-line bg-surface py-1 shadow-lift transition-all duration-200 ${
           open ? "translate-y-0 scale-100 opacity-100" : "pointer-events-none -translate-y-1 scale-95 opacity-0"
         }`}
       >
         {LANGS.map((l) => (
-          <li key={l.code}>
+          <li key={l.code} role="none">
             <button
+              type="button"
               onClick={() => { setLang(l.code); setOpen(false); }}
-              role="option"
-              aria-selected={lang === l.code}
+              role="menuitemradio"
+              aria-checked={lang === l.code}
+              lang={l.code}
               className={`flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm transition-colors hover:bg-paper/70 ${lang === l.code ? "text-ink" : "text-ink-soft"}`}
             >
               <span className="text-base leading-none">{l.flag}</span>
