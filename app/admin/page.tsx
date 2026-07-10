@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, Eye, EyeOff, LogOut, Megaphone, Save, X, Inbox, Download, ChevronDown, Mail, Send, Percent, Search, Ticket, Activity, Globe, MessageCircle, Users, Copy, Check, Power } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, EyeOff, LogOut, Megaphone, Save, X, Inbox, Download, ChevronDown, Mail, Send, Percent, Search, Ticket, Activity, Globe, MessageCircle, Users, Copy, Check, Power, Newspaper } from "lucide-react";
 import { ChatAdmin } from "@/components/admin/ChatAdmin";
 import { supabase, supabaseEnabled } from "@/lib/supabase";
 import { fileSignedUrl } from "@/lib/applications";
@@ -15,6 +15,7 @@ type Draft = Partial<Announcement>;
 const EMPTY: Draft = {
   enabled: true, placement: "bar", tone: "promo", title: "", message: "",
   link_url: "", link_label: "", starts_at: null, ends_at: null, dismissible: true, priority: 0,
+  bg_color: null, text_color: null, font_weight: "normal", italic: false, animation: "none", anim_speed: 18, sticky: false, hover_glow: false, show_date: false, date_position: "right",
 };
 const TONES: Tone[] = ["info", "warning", "success", "promo"];
 const PLACEMENTS: Placement[] = ["bar", "popup"];
@@ -44,7 +45,11 @@ export default function AdminPage() {
   const [affForm, setAffForm] = useState<any>({ name: "", code: "", commission_pct: 12, discount_pct: 0, discount_mode: "extra", note: "" });
   const [affMsg, setAffMsg] = useState("");
   const [copiedCode, setCopiedCode] = useState("");
-  const [tab, setTab] = useState<"ann" | "apps" | "disc" | "promo" | "traffic" | "stats" | "chat" | "aff">("ann");
+  const [ups, setUps] = useState<any[]>([]);
+  const emptyUp = { id: "", title: "", slug: "", summary: "", body: "", countries: "", category: "general", severity: "info", restrictions: "", source_url: "", published: true, published_at: "" };
+  const [upForm, setUpForm] = useState<any>(emptyUp);
+  const [upMsg, setUpMsg] = useState("");
+  const [tab, setTab] = useState<"ann" | "apps" | "disc" | "promo" | "traffic" | "stats" | "chat" | "aff" | "updates">("ann");
   const [apps, setApps] = useState<any[]>([]);
   const [open, setOpen] = useState<string | null>(null);
   const [emailFor, setEmailFor] = useState<any>(null);
@@ -92,6 +97,11 @@ export default function AdminPage() {
       link_url: draft.link_url || null, link_label: draft.link_label || null,
       starts_at: draft.starts_at || null, ends_at: draft.ends_at || null,
       dismissible: draft.dismissible, priority: Number(draft.priority) || 0,
+      bg_color: draft.bg_color || null, text_color: draft.text_color || null,
+      font_weight: draft.font_weight || "normal", italic: !!draft.italic,
+      animation: draft.animation || "none", anim_speed: Number(draft.anim_speed) || 18,
+      sticky: !!draft.sticky, hover_glow: !!draft.hover_glow,
+      show_date: !!draft.show_date, date_position: draft.date_position || "right",
     };
     if (draft.id) await supabase.from("announcements").update(payload).eq("id", draft.id);
     else await supabase.from("announcements").insert(payload);
@@ -256,7 +266,28 @@ export default function AdminPage() {
   };
   const affLink = (code: string) => `https://voyago.sk/?ref=${code}`;
 
+  const loadUps = async () => {
+    const r = await fetch("/api/admin/updates", { headers: { Authorization: `Bearer ${session.access_token}` } });
+    const d = await r.json(); if (d.updates) setUps(d.updates);
+  };
+  const saveUp = async () => {
+    if (!upForm.title.trim()) { setUpMsg("Zadajte titulok."); return; }
+    setUpMsg("Ukladám…");
+    const payload = { ...upForm, countries: String(upForm.countries).split(",").map((c: string) => c.trim()).filter(Boolean) };
+    const r = await fetch("/api/admin/updates", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` }, body: JSON.stringify(payload) });
+    const d = await r.json();
+    if (d.ok) { setUpMsg("Uložené."); setUpForm(emptyUp); loadUps(); }
+    else setUpMsg("Chyba pri ukladaní.");
+  };
+  const editUp = (u: any) => { setUpForm({ ...u, countries: (u.countries || []).join(", "), published_at: u.published_at ? u.published_at.slice(0, 16) : "" }); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const deleteUp = async (id: string) => {
+    if (!confirm("Zmazať túto novinku?")) return;
+    await fetch(`/api/admin/updates?id=${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${session.access_token}` } });
+    loadUps();
+  };
+
   useEffect(() => { if (session && tab === "aff") loadAffs(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
+  useEffect(() => { if (session && tab === "updates") loadUps(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
 
   if (!ready) return <div className="container-page py-24 text-center text-ink-soft">Načítavam…</div>;
 
@@ -322,6 +353,7 @@ export default function AdminPage() {
         <button onClick={() => setTab("stats")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "stats" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Globe size={15} /> Krajiny</button>
         <button onClick={() => setTab("chat")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "chat" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><MessageCircle size={15} /> Chat</button>
         <button onClick={() => setTab("aff")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "aff" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Users size={15} /> Affiliate</button>
+        <button onClick={() => setTab("updates")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "updates" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Newspaper size={15} /> Novinky</button>
         {tab === "ann" && <button onClick={() => setDraft({ ...EMPTY })} className="btn-primary ml-auto !py-2"><Plus size={15} /> Nový oznam</button>}
         {tab === "apps" && <button onClick={loadApps} className="btn-ghost ml-auto !py-2">Obnoviť</button>}
       </div>
@@ -427,6 +459,81 @@ export default function AdminPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {tab === "updates" && (
+        <div className="mt-8 grid gap-6 lg:grid-cols-[1.15fr_1fr]">
+          {/* Editor novinky */}
+          <div className="rounded-xl border border-line bg-surface p-5 shadow-card">
+            <div className="flex items-center justify-between">
+              <p className="font-semibold text-ink">{upForm.id ? "Upraviť novinku" : "Nová novinka o vízach"}</p>
+              {upForm.id && <button onClick={() => setUpForm(emptyUp)} className="text-xs text-ink-soft hover:text-ink">+ Nová</button>}
+            </div>
+            <p className="mt-1 text-xs text-ink-soft">Text: prázdny riadok = odsek · <code className="rounded bg-paper px-1">## Nadpis</code> · <code className="rounded bg-paper px-1">- odrážka</code>.</p>
+
+            <input value={upForm.title} onChange={(e) => setUpForm({ ...upForm, title: e.target.value })} placeholder="Titulok (napr. DV-2027 registrácia odložená)" className="input mt-4 w-full" />
+            <input value={upForm.summary} onChange={(e) => setUpForm({ ...upForm, summary: e.target.value })} placeholder="Krátky perex (1–2 vety, zobrazí sa v zozname)" className="input mt-2 w-full" />
+
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-xs font-semibold text-ink-soft">Typ novinky</label>
+                <select value={upForm.category} onChange={(e) => setUpForm({ ...upForm, category: e.target.value })} className="input mt-1 w-full">
+                  <option value="general">Všeobecná novinka</option>
+                  <option value="delay">Odklad / pozastavenie</option>
+                  <option value="new_requirement">Nová požiadavka</option>
+                  <option value="price">Zmena ceny</option>
+                  <option value="closure">Uzávierka / obmedzenie</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-ink-soft">Dôležitosť (farba)</label>
+                <select value={upForm.severity} onChange={(e) => setUpForm({ ...upForm, severity: e.target.value })} className="input mt-1 w-full">
+                  <option value="info">Info (modrá)</option>
+                  <option value="warning">Upozornenie (zlatá)</option>
+                  <option value="critical">Kritické (červená)</option>
+                </select>
+              </div>
+            </div>
+
+            <input value={upForm.countries} onChange={(e) => setUpForm({ ...upForm, countries: e.target.value })} placeholder="Krajiny oddelené čiarkou (USA, Kanada, Veľká Británia)" className="input mt-2 w-full" />
+            <textarea value={upForm.body} onChange={(e) => setUpForm({ ...upForm, body: e.target.value })} rows={9} placeholder={"## O čo ide\\n\\nText novinky…\\n\\n- dôležitý bod\\n- ďalší bod"} className="input mt-2 w-full font-mono text-sm" />
+            <textarea value={upForm.restrictions} onChange={(e) => setUpForm({ ...upForm, restrictions: e.target.value })} rows={2} placeholder="Obmedzenia a dopad (koho a ako sa to týka)" className="input mt-2 w-full" />
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              <input value={upForm.source_url} onChange={(e) => setUpForm({ ...upForm, source_url: e.target.value })} placeholder="Odkaz na oficiálny zdroj (voliteľné)" className="input w-full" />
+              <input type="datetime-local" value={upForm.published_at} onChange={(e) => setUpForm({ ...upForm, published_at: e.target.value })} className="input w-full" />
+            </div>
+
+            <div className="mt-3 flex items-center gap-3">
+              <button onClick={saveUp} className="btn-primary inline-flex items-center gap-2 !py-2.5"><Save size={15} /> {upForm.id ? "Uložiť zmeny" : "Uverejniť"}</button>
+              <label className="flex items-center gap-2 text-sm text-ink-soft"><input type="checkbox" checked={upForm.published} onChange={(e) => setUpForm({ ...upForm, published: e.target.checked })} /> Zverejnené</label>
+              {upMsg && <span className="text-sm text-ink-soft">{upMsg}</span>}
+            </div>
+          </div>
+
+          {/* Zoznam noviniek */}
+          <div className="rounded-xl border border-line bg-surface shadow-card">
+            <div className="flex items-center justify-between border-b border-line px-4 py-3">
+              <p className="font-semibold text-ink">Novinky ({ups.length})</p>
+              <button onClick={loadUps} className="btn-ghost !py-1.5 text-xs">Obnoviť</button>
+            </div>
+            {ups.length === 0 && <p className="px-4 py-4 text-sm text-ink-soft">Zatiaľ žiadne. Vytvorte prvú vľavo.</p>}
+            <div className="max-h-[36rem] divide-y divide-line-soft overflow-y-auto">
+              {ups.map((u) => (
+                <div key={u.id} className="flex items-start gap-3 px-4 py-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      {!u.published && <span className="rounded bg-line-soft px-1.5 py-0.5 text-[0.58rem] font-bold uppercase text-ink-soft">skryté</span>}
+                      <a href={`/updates/${u.slug}`} target="_blank" className="truncate text-sm font-semibold text-ink hover:text-brass">{u.title}</a>
+                    </div>
+                    <p className="mt-0.5 text-xs text-ink-soft">{(u.countries || []).join(", ") || "bez krajín"} · {new Date(u.published_at).toLocaleDateString("sk-SK")}</p>
+                  </div>
+                  <button onClick={() => editUp(u)} className="shrink-0 rounded-md px-2 py-1 text-xs font-semibold text-ink-soft hover:bg-paper hover:text-ink">Upraviť</button>
+                  <button onClick={() => deleteUp(u.id)} className="shrink-0 rounded-md px-2 py-1 text-xs font-semibold text-terra hover:bg-terra/10">Zmazať</button>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -578,6 +685,85 @@ export default function AdminPage() {
                 </label>
               </div>
             </div>
+
+            {/* ── Vzhľad a efekty (len pre horný banner) ── */}
+            <div className="mt-5 rounded-xl border border-line-soft bg-paper/40 p-4">
+              <p className="text-sm font-semibold text-ink">Vzhľad a efekty</p>
+              <p className="mt-0.5 text-xs text-ink-soft">Platí pre horný banner. Ak nezadáte vlastné farby, použije sa farba podľa štýlu.</p>
+
+              <div className="mt-3 grid gap-3 sm:grid-cols-3">
+                <label className="text-sm">
+                  <span className="text-xs font-semibold text-ink-soft">Farba pozadia</span>
+                  <span className="mt-1 flex items-center gap-2">
+                    <input type="color" value={draft.bg_color || "#0A1622"} onChange={(e) => setDraft({ ...draft, bg_color: e.target.value })} className="h-9 w-12 rounded border border-line" />
+                    <button onClick={() => setDraft({ ...draft, bg_color: null })} className="text-xs text-ink-soft hover:text-ink">reset</button>
+                  </span>
+                </label>
+                <label className="text-sm">
+                  <span className="text-xs font-semibold text-ink-soft">Farba textu</span>
+                  <span className="mt-1 flex items-center gap-2">
+                    <input type="color" value={draft.text_color || "#EFF1F0"} onChange={(e) => setDraft({ ...draft, text_color: e.target.value })} className="h-9 w-12 rounded border border-line" />
+                    <button onClick={() => setDraft({ ...draft, text_color: null })} className="text-xs text-ink-soft hover:text-ink">reset</button>
+                  </span>
+                </label>
+                <label className="text-sm">
+                  <span className="text-xs font-semibold text-ink-soft">Hrúbka písma</span>
+                  <select value={draft.font_weight || "normal"} onChange={(e) => setDraft({ ...draft, font_weight: e.target.value as any })} className="input mt-1 w-full">
+                    <option value="thin">Tenké</option>
+                    <option value="normal">Normálne</option>
+                    <option value="bold">Hrubé</option>
+                  </select>
+                </label>
+              </div>
+
+              <div className="mt-3 grid gap-3 sm:grid-cols-3">
+                <label className="text-sm">
+                  <span className="text-xs font-semibold text-ink-soft">Pohyb textu</span>
+                  <select value={draft.animation || "none"} onChange={(e) => setDraft({ ...draft, animation: e.target.value as any })} className="input mt-1 w-full">
+                    <option value="none">Žiadny</option>
+                    <option value="marquee">Bežiaci text (scroll doľava)</option>
+                    <option value="pulse">Pulzovanie</option>
+                    <option value="slide">Vsunutie zhora</option>
+                  </select>
+                </label>
+                <label className="text-sm">
+                  <span className="text-xs font-semibold text-ink-soft">Rýchlosť behu (s)</span>
+                  <input type="number" min={4} max={60} value={draft.anim_speed ?? 18} onChange={(e) => setDraft({ ...draft, anim_speed: Number(e.target.value) })} className="input mt-1 w-full" />
+                </label>
+                <label className="text-sm">
+                  <span className="text-xs font-semibold text-ink-soft">Pozícia dátumu</span>
+                  <select value={draft.date_position || "right"} onChange={(e) => setDraft({ ...draft, date_position: e.target.value as any })} className="input mt-1 w-full">
+                    <option value="left">Vľavo</option>
+                    <option value="right">Vpravo</option>
+                  </select>
+                </label>
+              </div>
+
+              <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
+                <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!draft.italic} onChange={(e) => setDraft({ ...draft, italic: e.target.checked })} /> Naklonený text (kurzíva)</label>
+                <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!draft.sticky} onChange={(e) => setDraft({ ...draft, sticky: e.target.checked })} /> Prilepený navrchu (sticky)</label>
+                <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!draft.hover_glow} onChange={(e) => setDraft({ ...draft, hover_glow: e.target.checked })} /> Efekt pri prejdení myšou</label>
+                <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!draft.show_date} onChange={(e) => setDraft({ ...draft, show_date: e.target.checked })} /> Zobraziť dátum</label>
+              </div>
+
+              {/* Živý náhľad baru */}
+              <div className="mt-4">
+                <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-ink-soft">Náhľad</p>
+                <div
+                  className={`overflow-hidden rounded-lg ${draft.hover_glow ? "transition-shadow hover:shadow-[inset_0_0_40px_rgba(201,154,78,0.25)]" : ""}`}
+                  style={{ backgroundColor: draft.bg_color || "#0A1622", color: draft.text_color || "#EFF1F0" }}
+                >
+                  <div className={`flex items-center gap-2 px-4 py-2.5 text-sm ${draft.italic ? "italic" : ""} ${draft.font_weight === "bold" ? "font-bold" : draft.font_weight === "thin" ? "font-light" : ""}`}>
+                    {draft.animation === "marquee" ? (
+                      <div className="flex-1 overflow-hidden"><span className="ann-marquee inline-block whitespace-nowrap" style={{ animationDuration: `${draft.anim_speed || 18}s` }}>{draft.title || "Titulok"} {draft.message ? "· " + draft.message : ""} <span className="mx-8 opacity-40">•</span> {draft.title || "Titulok"} {draft.message ? "· " + draft.message : ""}</span></div>
+                    ) : (
+                      <span className="flex-1">{draft.title || "Titulok oznamu"}{draft.message ? " — " + draft.message : ""}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="mt-6 flex justify-end gap-2">
               <button onClick={() => setDraft(null)} className="btn-ghost">Zrušiť</button>
               <button onClick={save} disabled={busy} className="btn-primary"><Save size={15} /> Uložiť</button>

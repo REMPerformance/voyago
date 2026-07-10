@@ -18,6 +18,17 @@ export interface Announcement {
   dismissible: boolean;
   priority: number;
   created_at?: string;
+  // Rozšírené štýlovanie (všetko voliteľné, s rozumnými predvolenými hodnotami)
+  bg_color?: string | null;        // vlastná farba pozadia baru, napr. "#0A1622"
+  text_color?: string | null;      // vlastná farba textu
+  font_weight?: "thin" | "normal" | "bold" | null;
+  italic?: boolean | null;         // naklonený text
+  animation?: "none" | "marquee" | "pulse" | "slide" | null; // pohyb textu
+  anim_speed?: number | null;      // rýchlosť animácie v sekundách
+  sticky?: boolean | null;         // bar sa lepí navrchu pri scrollovaní
+  hover_glow?: boolean | null;     // efekt pri prejdení myšou
+  show_date?: boolean | null;      // zobraziť dátum
+  date_position?: "left" | "right" | null;
 }
 
 export function isActive(a: Announcement, now = Date.now()): boolean {

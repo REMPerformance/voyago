@@ -46,27 +46,60 @@ export function Announcements() {
 
   return (
     <>
-      {bar && (
-        <div className={`relative ${BAR_TONE[bar.tone]}`}>
-          <div className="container-page flex items-center gap-3 py-2.5 text-sm">
-            <Megaphone size={15} className="hidden shrink-0 opacity-80 sm:block" />
-            <p className="flex-1 leading-snug">
-              <span className="font-semibold">{bar.title}</span>
-              {bar.message ? <span className="opacity-90"> — {bar.message}</span> : null}
-              {bar.link_url && (
-                <Link href={bar.link_url} className={`ml-2 inline-flex items-center gap-1 font-semibold ${linkTone[bar.tone]}`}>
-                  {bar.link_label || "Viac"} <ArrowRight size={13} />
-                </Link>
-              )}
-            </p>
-            {bar.dismissible && (
-              <button onClick={() => dismiss(bar.id)} aria-label="Zavrieť" className="shrink-0 rounded-full p-1 opacity-70 transition-opacity hover:opacity-100">
-                <X size={15} />
-              </button>
+      {bar && (() => {
+        const custom = bar.bg_color || bar.text_color;
+        const weight = bar.font_weight === "bold" ? "font-bold" : bar.font_weight === "thin" ? "font-light" : "font-normal";
+        const anim =
+          bar.animation === "pulse" ? "animate-pulse" :
+          bar.animation === "slide" ? "animate-fade-up" : "";
+        const marquee = bar.animation === "marquee";
+        const dateStr = bar.show_date ? new Date(bar.created_at || Date.now()).toLocaleDateString("sk-SK", { day: "numeric", month: "long", year: "numeric" }) : "";
+
+        const dateEl = bar.show_date ? <time className="shrink-0 whitespace-nowrap text-xs opacity-70">{dateStr}</time> : null;
+
+        const content = (
+          <span className={`inline-flex items-center gap-2 ${marquee ? "whitespace-nowrap" : ""}`}>
+            <span className={weight}>{bar.title}</span>
+            {bar.message ? <span className="opacity-90">{marquee ? " · " : " — "}{bar.message}</span> : null}
+            {bar.link_url && (
+              <Link href={bar.link_url} className={`ml-2 inline-flex items-center gap-1 font-semibold underline-offset-2 hover:underline ${custom ? "" : linkTone[bar.tone]}`}>
+                {bar.link_label || "Viac"} <ArrowRight size={13} />
+              </Link>
             )}
+          </span>
+        );
+
+        return (
+          <div
+            className={`relative ${custom ? "" : BAR_TONE[bar.tone]} ${bar.sticky ? "sticky top-0 z-[110]" : ""} ${bar.hover_glow ? "transition-shadow hover:shadow-[inset_0_0_40px_rgba(201,154,78,0.25)]" : ""} ${anim}`}
+            style={custom ? { backgroundColor: bar.bg_color || undefined, color: bar.text_color || undefined } : undefined}
+          >
+            <div className={`container-page flex items-center gap-3 py-2.5 text-sm ${bar.italic ? "italic" : ""}`}>
+              {!marquee && <Megaphone size={15} className="hidden shrink-0 opacity-80 sm:block" />}
+              {bar.date_position === "left" && dateEl}
+
+              {marquee ? (
+                <div className="flex-1 overflow-hidden">
+                  <div className="ann-marquee inline-block" style={{ animationDuration: `${bar.anim_speed || 18}s` }}>
+                    {content}
+                    <span className="mx-8 opacity-40">•</span>
+                    {content}
+                  </div>
+                </div>
+              ) : (
+                <p className={`flex-1 leading-snug ${weight}`}>{content}</p>
+              )}
+
+              {bar.date_position !== "left" && dateEl}
+              {bar.dismissible && (
+                <button onClick={() => dismiss(bar.id)} aria-label="Zavrieť" className="shrink-0 rounded-md p-1 opacity-70 transition-opacity hover:opacity-100">
+                  <X size={15} />
+                </button>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {popup && !closedModal && (
         <div

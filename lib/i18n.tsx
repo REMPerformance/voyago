@@ -22,6 +22,7 @@ import { UI_EXTRA } from "@/config/i18nExtra";
 // Slovník UI textov. Pridať text = pridať kľúč s { sk, en }.
 const UI: Record<string, Localized> = {
   "nav.destinations": { sk: "Destinácie", en: "Destinations" },
+  "nav.updates": { sk: "Novinky", en: "Updates", uk: "Новини", de: "Neuigkeiten" },
   "nav.wizard": { sk: "Aké vízum potrebujem?", en: "Which one do I need?" },
   "nav.how": { sk: "Ako to funguje", en: "How it works" },
   "nav.cart": { sk: "Košík", en: "Cart" },

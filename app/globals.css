@@ -200,3 +200,15 @@ body { position: relative; }
     gap: 0.5rem !important;
   }
 }
+
+/* Bežiaci text v oznamovom bare */
+@keyframes ann-marquee-kf {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.ann-marquee {
+  animation-name: ann-marquee-kf;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  white-space: nowrap;
+}
