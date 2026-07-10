@@ -53,13 +53,13 @@ export function Hero() {
             </Link>
           </div>
 
-          {/* Transparentné vymedzenie: nie sme štátny orgán */}
+          {/* Krátke vecné vymedzenie. Podrobná informácia je v pätičke a v obchodných podmienkach. */}
           <p className="mt-6 max-w-md text-xs leading-relaxed text-ink-soft/70">
             {t({
-              sk: "Voyago je súkromná sprostredkovateľská služba, nie štátny orgán ani oficiálny vládny portál. O povolenie si môžete požiadať aj sami priamo na oficiálnej stránke príslušného úradu a zaplatiť len štátny poplatok. Náš poplatok pokrýva kontrolu údajov, podanie žiadosti a podporu.",
-              en: "Voyago is a private intermediary service, not a government authority or an official government portal. You may also apply yourself on the relevant authority's official website and pay only the government fee. Our fee covers checking your details, filing the application and support.",
-              uk: "Voyago це приватна посередницька служба, а не державний орган чи офіційний урядовий портал. Ви можете подати заяву самостійно на офіційному сайті органу, сплативши лише державне мито. Наш збір покриває перевірку даних, подання заяви та підтримку.",
-              de: "Voyago ist ein privater Vermittlungsdienst, keine Behörde und kein offizielles Regierungsportal. Sie können den Antrag auch selbst auf der offiziellen Website der zuständigen Behörde stellen und nur die Amtsgebühr zahlen. Unsere Gebühr deckt die Prüfung Ihrer Angaben, die Einreichung und den Support.",
+              sk: "Voyago je súkromná sprostredkovateľská služba. V cene je štátny poplatok, kontrola údajov odborníkom, podanie žiadosti a podpora až do konca platnosti povolenia.",
+              en: "Voyago is a private intermediary service. The price includes the government fee, an expert check of your details, filing of the application and support until the permit expires.",
+              uk: "Voyago це приватна посередницька служба. У ціну входить державне мито, перевірка даних фахівцем, подання заяви та підтримка до кінця дії дозволу.",
+              de: "Voyago ist ein privater Vermittlungsdienst. Im Preis enthalten sind die Amtsgebühr, eine fachliche Prüfung Ihrer Angaben, die Einreichung des Antrags und Unterstützung bis zum Ablauf der Genehmigung.",
             })}
           </p>
         </div>
