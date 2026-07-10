@@ -115,14 +115,29 @@ export function GreenCardContent() {
           <div>
             <div className="inline-flex items-center gap-3 rounded-lg border border-cream/15 bg-cream/[0.05] px-3.5 py-2">
               <CalendarDays size={16} className="text-brass-light" />
-              <span className="text-xs font-semibold text-cream/80">{t({ sk: "Oficiálne okno: október 2026 · prihlášky prijímame už teraz", en: "Official window: October 2026 · we accept entries now" })}</span>
+              <span className="text-xs font-semibold text-cream/80">{t({ sk: "DV-2027 · registrácia oficiálne odložená úradmi USA", en: "DV-2027 · registration officially delayed by U.S. authorities", uk: "DV-2027 · реєстрацію офіційно відкладено владою США", de: "DV-2027 · Registrierung offiziell von US-Behörden verschoben" })}</span>
             </div>
             <h1 className="mt-5 font-display text-5xl font-extrabold leading-[1.02] sm:text-6xl">
               {t({ sk: "Americká", en: "U.S." })} <span className="text-brass-light">{t({ sk: "zelená karta", en: "Green Card" })}</span>
             </h1>
-            <p className="mt-2 text-base font-medium text-cream/60">Diversity Visa Lottery (DV-2028)</p>
+            <p className="mt-2 text-base font-medium text-cream/60">Diversity Visa Lottery (DV-2027)</p>
+
+            {/* Aktuálny stav programu DV-2027 */}
+            <div className="mt-5 rounded-xl border border-brass/30 bg-brass/[0.08] p-4">
+              <p className="text-sm font-bold text-brass-light">
+                {t({ sk: "Dôležité: aktuálny stav registrácie", en: "Important: current registration status", uk: "Важливо: поточний статус реєстрації", de: "Wichtig: aktueller Registrierungsstatus" })}
+              </p>
+              <p className="mt-1.5 text-sm leading-relaxed text-cream/75">
+                {t({
+                  sk: "Oficiálne registračné obdobie programu Diversity Visa DV-2027 je výrazne odložené a vláda USA zatiaľ nepotvrdila žiadne dátumy otvorenia. Ministerstvo zahraničných vecí USA síce skôr avizovalo zmeny v registračnom procese, no spracovanie aj vydávanie víz sú administratívne pozastavené. Prihlášky preto zatiaľ nepodávame. Ak nám zanecháte kontakt, ozveme sa vám hneď, ako úrady okno oficiálne otvoria.",
+                  en: "The official registration period for the DV-2027 Diversity Visa program is significantly delayed, and no opening dates have been confirmed by the U.S. government. While the U.S. Department of State previously announced upcoming changes to the registration process, processing and visa issuance have been administratively paused. We therefore do not file entries yet. Leave us your contact and we will reach out the moment the authorities officially open the window.",
+                  uk: "Офіційний період реєстрації програми Diversity Visa DV-2027 суттєво відкладено, і уряд США не підтвердив жодних дат відкриття. Хоча Держдепартамент США раніше анонсував зміни в процесі реєстрації, опрацювання та видача віз адміністративно призупинені. Тому заявки поки що не подаємо. Залиште контакт, і ми зв'яжемося, щойно вікно офіційно відкриють.",
+                  de: "Der offizielle Registrierungszeitraum des Diversity-Visa-Programms DV-2027 ist erheblich verzögert, und die US-Regierung hat keine Öffnungstermine bestätigt. Das US-Außenministerium hatte zwar zuvor Änderungen am Registrierungsprozess angekündigt, doch Bearbeitung und Visumerteilung sind administrativ ausgesetzt. Wir reichen daher noch keine Anmeldungen ein. Hinterlassen Sie uns Ihren Kontakt, und wir melden uns, sobald die Behörden das Fenster offiziell öffnen.",
+                })}
+              </p>
+            </div>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-cream/80">
-              {t({ sk: "Šanca na trvalý pobyt v USA cez oficiálnu lotériu vlády USA. My skontrolujeme fotografiu podľa noriem, vyplníme údaje bez chýb a prihlášku podáme v októbrovom okne za vás.", en: "A shot at U.S. permanent residency via the official U.S. government lottery. We check your photo against the standards, complete the data error-free and file your entry in the October window for you." })}
+              {t({ sk: "Šanca na trvalý pobyt v USA cez oficiálnu lotériu vlády USA. Registráciu pripravíme, skontrolujeme fotografiu podľa noriem a prihlášku podáme za vás hneď, ako úrady oficiálne otvoria registračné okno.", en: "A shot at U.S. permanent residency via the official U.S. government lottery. We prepare the entry, check your photo against the standards and file it for you as soon as the authorities officially open the registration window.", uk: "Шанс на постійне проживання в США через офіційну лотерею уряду США. Ми підготуємо реєстрацію, перевіримо фото за нормами та подамо заявку, щойно влада офіційно відкриє вікно реєстрації.", de: "Eine Chance auf einen dauerhaften Aufenthalt in den USA über die offizielle US-Lotterie. Wir bereiten die Anmeldung vor, prüfen Ihr Foto und reichen sie ein, sobald die Behörden das Registrierungsfenster offiziell öffnen." })}
             </p>
 
             <div className="mt-7 flex flex-wrap items-end gap-2">

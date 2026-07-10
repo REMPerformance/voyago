@@ -85,12 +85,9 @@ export function GreenCardBand() {
                   <Link href="/green-card" className="btn inline-flex !px-6 !py-3 text-sm font-bold bg-cream text-green hover:-translate-y-0.5 hover:bg-white">
                     {tr("gc.btn")} <ArrowRight size={15} />
                   </Link>
-                  <span className="inline-flex items-center gap-2 rounded-full border border-cream/25 px-3.5 py-2 text-xs font-semibold text-cream/85">
-                    <span className="relative flex h-2 w-2">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brass-light opacity-70" />
-                      <span className="relative inline-flex h-2 w-2 rounded-full bg-brass-light" />
-                    </span>
-                    Otvorenie · október 2026
+                  <span className="inline-flex items-center gap-2 rounded-lg border border-cream/20 bg-black/10 px-3.5 py-2 text-xs font-medium text-cream/80">
+                    <span className="h-1.5 w-1.5 rounded-full bg-brass-light" />
+                    {t({ sk: "Registrácia DV-2027 dočasne pozastavená", en: "DV-2027 registration temporarily paused", uk: "Реєстрацію DV-2027 тимчасово призупинено", de: "DV-2027-Registrierung vorübergehend ausgesetzt" })}
                   </span>
                 </div>
               </div>
@@ -132,11 +129,8 @@ export function GreenCardBand() {
               <Link href="/apply/eu-etias" className="btn inline-flex !px-5 !py-2.5 text-sm bg-cream text-navy hover:-translate-y-0.5 hover:bg-white">
                 Learn more <ArrowRight size={14} />
               </Link>
-              <span className="inline-flex items-center gap-2 rounded-full border border-cream/25 px-3.5 py-2 text-xs font-semibold text-cream/85">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-light opacity-70" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-teal-light" />
-                </span>
+              <span className="inline-flex items-center gap-2 rounded-lg border border-cream/20 bg-black/10 px-3.5 py-2 text-xs font-medium text-cream/80">
+                <span className="h-1.5 w-1.5 rounded-full bg-teal-light" />
                 Coming soon
               </span>
             </div>

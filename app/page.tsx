@@ -12,7 +12,7 @@ import { Testimonials } from "@/components/Testimonials";
 import { Guarantee } from "@/components/Guarantee";
 import { Payments } from "@/components/Payments";
 import { Faq } from "@/components/Faq";
-import { HomeStructuredData, HomeFaqText } from "@/components/HomeStructuredData";
+import { HomeStructuredData } from "@/components/HomeStructuredData";
 import { ProductCard } from "@/components/ProductCard";
 import { Reveal } from "@/components/Reveal";
 import { useLang } from "@/lib/i18n";
@@ -66,7 +66,6 @@ export default function HomePage() {
       </section>
 
       <Faq />
-      <HomeFaqText />
       <HomeStructuredData />
     </>
   );

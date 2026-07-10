@@ -76,7 +76,7 @@ export function ProductCard({ product }: { product: Product }) {
         {soon ? (
           <span className="shrink-0 rounded-md border border-line px-3 py-1.5 text-[0.7rem] font-medium uppercase tracking-wide text-ink-soft/55">{tr("cta.soon")}</span>
         ) : (
-          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-ink px-3 py-2 text-xs font-semibold text-paper sm:px-4 sm:py-2.5 sm:text-sm transition-all group-hover:gap-2.5 group-hover:bg-navy-soft">
+          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-ink px-3 py-2 text-xs font-semibold text-paper sm:px-4 sm:py-2.5 sm:text-sm transition-all group-hover:gap-2.5 group-hover:bg-navy-soft">
             {tr("cta.apply")} <ArrowRight size={15} />
           </span>
         )}
