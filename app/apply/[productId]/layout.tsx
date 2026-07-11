@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getProduct, productPrice } from "@/config/products";
+import { DestinationPosts } from "@/components/DestinationPosts";
 import { site } from "@/config/site";
 
 export function generateMetadata({ params }: { params: { productId: string } }): Metadata {
@@ -39,7 +40,7 @@ export function generateMetadata({ params }: { params: { productId: string } }):
   };
 }
 
-export default function ApplyLayout({ children, params }: { children: React.ReactNode; params: { productId: string } }) {
+export default async function ApplyLayout({ children, params }: { children: React.ReactNode; params: { productId: string } }) {
   const p = getProduct(params.productId);
   const url = p ? `${site.url}/apply/${p.slug}` : site.url;
 
@@ -106,6 +107,7 @@ export default function ApplyLayout({ children, params }: { children: React.Reac
       {serviceLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceLd) }} />}
       {faqLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />}
       {children}
+      <DestinationPosts destinationSlug={params.productId} />
     </>
   );
 }

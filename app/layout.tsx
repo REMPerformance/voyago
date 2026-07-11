@@ -88,6 +88,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 addressCountry: site.company.addressCountry,
               },
               sameAs: [site.social.facebook, site.social.instagram, site.social.linkedin, site.social.youtube].filter(Boolean),
+              founder: { "@type": "Person", name: "Lukáš Tonkovič" },
               areaServed: { "@type": "Country", name: "Slovakia" },
               priceRange: "€€",
               description:

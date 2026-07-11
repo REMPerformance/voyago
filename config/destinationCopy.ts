@@ -8,7 +8,7 @@ import type { Localized } from "@/config/products";
  * podľa typu povolenia a doplní sa údajmi konkrétnej krajiny, takže výsledok
  * je vecný, presný a pre každú krajinu iný.
  *
- * Zástupné výrazy: {country} {permit} {validity} {processing} {stay} {price} {gov} {service}
+ * Zástupné výrazy: {country} {permit} {validity} {processing} {stay} {price}
  */
 
 export type CopyBlock = { heading: Localized; body: Localized[] };
@@ -45,10 +45,10 @@ const ESTA: CopyBlock[] = [
     },
     body: [
       {
-        sk: "Povolenie platí {validity} a umožňuje pobyt {stay}. Cena {price} zahŕňa štátny poplatok {gov}, ktorý odvádzame priamo úradu, a náš poplatok za sprostredkovanie {service} za kontrolu údajov, podanie žiadosti a komunikáciu s úradom. Nič sa nedopláca.",
-        en: "The authorization is valid {validity} and allows a stay of {stay}. The price of {price} includes the government fee of {gov}, which we pay directly to the authority, and our service fee of {service} for checking your details, filing the application and dealing with the authority. There is nothing extra to pay.",
-        uk: "Дозвіл діє {validity} і дозволяє перебування {stay}. Ціна {price} включає державне мито {gov}, яке ми сплачуємо органу, і наш сервісний збір {service} за перевірку даних, подання заяви та спілкування з органом. Жодних доплат.",
-        de: "Die Genehmigung ist {validity} gültig und erlaubt einen Aufenthalt von {stay}. Der Preis von {price} enthält die Amtsgebühr von {gov}, die wir direkt an die Behörde abführen, sowie unsere Servicegebühr von {service} für die Prüfung Ihrer Angaben, die Einreichung und die Kommunikation mit der Behörde. Es fallen keine weiteren Kosten an.",
+        sk: "Povolenie platí {validity} a umožňuje pobyt {stay}. Cena {price} je konečná a uvádzame ju vrátane DPH. Zahŕňa kompletné vybavenie: kontrolu údajov, podanie žiadosti na oficiálnom portáli aj komunikáciu s úradom. Nič sa nedopláca a sumu poznáte vopred.",
+        en: "The authorization is valid {validity} and allows a stay of {stay}. The price of {price} is final and stated including VAT. It covers the complete service: checking your details, filing on the official portal and dealing with the authority. Nothing is added later and you know the amount upfront.",
+        uk: "Дозвіл діє {validity} і дозволяє перебування {stay}. Ціна {price} остаточна, з ПДВ. Вона покриває повне оформлення: перевірку даних, подання на офіційному порталі та спілкування з органом. Жодних доплат, суму знаєте наперед.",
+        de: "Die Genehmigung ist {validity} gültig und erlaubt einen Aufenthalt von {stay}. Der Preis von {price} ist endgültig und inklusive MwSt. Er deckt die komplette Abwicklung ab: Prüfung Ihrer Angaben, Einreichung über das offizielle Portal und Kommunikation mit der Behörde. Es kommt nichts hinzu, und Sie kennen den Betrag im Voraus.",
       },
       {
         sk: "Bežné spracovanie u nás trvá {processing}. Rozhodnutie však vydáva výhradne príslušný úrad a jeho lehotu nevieme ovplyvniť ani urýchliť.",
@@ -114,10 +114,10 @@ const ETA: CopyBlock[] = [
     },
     body: [
       {
-        sk: "Povolenie platí {validity} a umožňuje pobyt {stay}. Cena {price} zahŕňa štátny poplatok {gov} odvádzaný priamo úradu a náš poplatok za sprostredkovanie {service}. Cenu uvádzame vrátane DPH a nič sa k nej nedopláca.",
-        en: "The authorization is valid {validity} and allows a stay of {stay}. The price of {price} includes the government fee of {gov} paid directly to the authority and our service fee of {service}. The price is stated including VAT and nothing is added later.",
-        uk: "Дозвіл діє {validity} і дозволяє перебування {stay}. Ціна {price} включає державне мито {gov}, яке сплачується органу, та наш сервісний збір {service}. Ціна вказана з ПДВ і жодних доплат немає.",
-        de: "Die Genehmigung ist {validity} gültig und erlaubt einen Aufenthalt von {stay}. Der Preis von {price} umfasst die Amtsgebühr von {gov}, die direkt an die Behörde geht, und unsere Servicegebühr von {service}. Der Preis versteht sich inklusive MwSt., es kommt nichts hinzu.",
+        sk: "Povolenie platí {validity} a umožňuje pobyt {stay}. Cena {price} je konečná, vrátane DPH, a pokrýva celé vybavenie žiadosti. Nič sa k nej nedopláca a poznáte ju vopred.",
+        en: "The authorization is valid {validity} and allows a stay of {stay}. The price of {price} is final, including VAT, and covers the entire handling of your application. Nothing is added later and you know it upfront.",
+        uk: "Дозвіл діє {validity} і дозволяє перебування {stay}. Ціна {price} остаточна, з ПДВ, і покриває повне оформлення заяви. Жодних доплат, знаєте її наперед.",
+        de: "Die Genehmigung ist {validity} gültig und erlaubt einen Aufenthalt von {stay}. Der Preis von {price} ist endgültig, inklusive MwSt., und deckt die gesamte Bearbeitung Ihres Antrags ab. Es kommt nichts hinzu, und Sie kennen ihn im Voraus.",
       },
       {
         sk: "U nás sa žiadosť spracuje spravidla {processing}. Konečné rozhodnutie vydáva úrad krajiny {country} a jeho lehotu nevieme garantovať.",
@@ -183,10 +183,10 @@ const EVISA: CopyBlock[] = [
     },
     body: [
       {
-        sk: "Vízum platí {validity} a umožňuje pobyt {stay}. Cena {price} zahŕňa konzulárny poplatok {gov} a náš poplatok za sprostredkovanie {service}. Uvedená suma je konečná, s DPH.",
-        en: "The visa is valid {validity} and allows a stay of {stay}. The price of {price} includes the consular fee of {gov} and our service fee of {service}. The stated amount is final, including VAT.",
-        uk: "Віза діє {validity} і дозволяє перебування {stay}. Ціна {price} включає консульський збір {gov} і наш сервісний збір {service}. Вказана сума остаточна, з ПДВ.",
-        de: "Das Visum ist {validity} gültig und erlaubt einen Aufenthalt von {stay}. Der Preis von {price} enthält die Konsulargebühr von {gov} und unsere Servicegebühr von {service}. Der angegebene Betrag ist endgültig, inklusive MwSt.",
+        sk: "Vízum platí {validity} a umožňuje pobyt {stay}. Cena {price} je konečná, vrátane DPH, a pokrýva celé vybavenie. Uvedená suma je finálna a poznáte ju vopred.",
+        en: "The visa is valid {validity} and allows a stay of {stay}. The price of {price} is final, including VAT, and covers the entire handling. The stated amount is final and known upfront.",
+        uk: "Віза діє {validity} і дозволяє перебування {stay}. Ціна {price} остаточна, з ПДВ, і покриває повне оформлення. Вказана сума фінальна і відома наперед.",
+        de: "Das Visum ist {validity} gültig und erlaubt einen Aufenthalt von {stay}. Der Preis von {price} ist endgültig, inklusive MwSt., und deckt die gesamte Abwicklung ab. Der angegebene Betrag ist final und im Voraus bekannt.",
       },
       {
         sk: "Bežné spracovanie trvá {processing}. Konzulárny úrad si však môže vyžiadať doplňujúce podklady, čo lehotu predĺži. O každom takom kroku vás informujeme.",

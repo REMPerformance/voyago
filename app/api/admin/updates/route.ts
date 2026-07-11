@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     title,
     slug,
     summary: String(b?.summary || "").slice(0, 500),
-    body: String(b?.body || "").slice(0, 12000),
+    body: String(b?.body || "").slice(0, 20000),
     countries: Array.isArray(b?.countries) ? b.countries.map((c: any) => String(c).trim()).filter(Boolean).slice(0, 30) : [],
     category: ["delay", "new_requirement", "price", "closure", "general"].includes(b?.category) ? b.category : "general",
     severity: ["info", "warning", "critical"].includes(b?.severity) ? b.severity : "info",
@@ -43,6 +43,15 @@ export async function POST(req: NextRequest) {
     source_url: String(b?.source_url || "").slice(0, 500),
     published: b?.published !== false,
     published_at: b?.published_at ? new Date(b.published_at).toISOString() : new Date().toISOString(),
+    // Zjednotenie s blogom
+    kind: b?.kind === "blog" ? "blog" : "update",
+    image: String(b?.image || "").slice(0, 600),
+    tag: String(b?.tag || "").slice(0, 80),
+    seo_title: String(b?.seo_title || "").slice(0, 200),
+    meta_description: String(b?.meta_description || "").slice(0, 400),
+    keywords: Array.isArray(b?.keywords) ? b.keywords.map((k: any) => String(k).trim()).filter(Boolean).slice(0, 20) : (b?.keywords ? String(b.keywords).split(",").map((k: string) => k.trim()).filter(Boolean).slice(0, 20) : []),
+    destination_slug: String(b?.destination_slug || "").slice(0, 80),
+    read_mins: Math.max(1, Math.min(60, Number(b?.read_mins) || 4)),
   };
 
   if (b?.id) {

@@ -44,6 +44,6 @@ export const site = {
 // Právne vyhlásenie — sprostredkovateľ víz (nie štátny orgán) + transparentnosť ceny.
 // Drž ho vo footeri kvôli dôvere aj pravidlám Google Ads.
 export const disclaimer = {
-  sk: "Voyago je súkromný sprostredkovateľ víz a cestovných povolení. Nie sme štátny orgán ani s ním nie sme prepojení. Naša cena zahŕňa štátny poplatok aj poplatok za sprostredkovanie a kontrolu žiadosti.",
-  en: "Voyago is a private visa and travel-authorization intermediary. We are not a government body and are not affiliated with one. Our price includes the government fee plus a fee for handling and checking your application.",
+  sk: "Voyago je súkromný sprostredkovateľ víz a cestovných povolení. Nie sme štátny orgán ani s ním nie sme prepojení. Uvedené ceny sú konečné, vrátane DPH, a zahŕňajú kompletné vybavenie žiadosti.",
+  en: "Voyago is a private visa and travel-authorization intermediary. We are not a government body and are not affiliated with one. All prices shown are final, including VAT, and cover the complete handling of your application.",
 } as const;

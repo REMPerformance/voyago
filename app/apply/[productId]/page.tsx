@@ -225,7 +225,7 @@ export default function ApplyPage() {
 
             {/* Rozpis ceny */}
             <div className="space-y-2 border-b border-line px-6 py-4">
-              <p className="text-xs text-ink-soft/75">{t({ sk: "Cena zahŕňa štátny poplatok.", en: "Price includes the government fee." })}</p>
+              <p className="text-xs text-ink-soft/75">{t({ sk: "Cena je konečná, vrátane DPH.", en: "Final price, including VAT.", uk: "Остаточна ціна, з ПДВ.", de: "Endpreis, inkl. MwSt." })}</p>
               {express && (
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-brass">{t(EXPRESS.label)} (+50 %)</span>

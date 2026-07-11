@@ -24,10 +24,10 @@ export function ProtectionContent() {
       de: "Eine Ablehnung nach Ermessen der Behörde trotz ordnungsgemäß eingereichtem Antrag.",
     }),
     t({
-      sk: "Vrátime celú pôvodnú sumu, teda štátny poplatok aj poplatok za sprostredkovanie.",
-      en: "We refund the full original amount, meaning both the government fee and the service fee.",
-      uk: "Ми повертаємо всю початкову суму, тобто державне мито та сервісний збір.",
-      de: "Wir erstatten den vollen ursprünglichen Betrag, also die Amtsgebühr und die Servicegebühr.",
+      sk: "Vrátime celú pôvodne uhradenú sumu v plnej výške.",
+      en: "We refund the full amount you originally paid.",
+      uk: "Ми повертаємо всю початково сплачену суму в повному обсязі.",
+      de: "Wir erstatten den vollen ursprünglich gezahlten Betrag.",
     }),
   ];
 
@@ -115,7 +115,7 @@ export function ProtectionContent() {
         </h1>
         <p className="mt-4 text-lg leading-relaxed text-ink-soft">
           {t({
-            sk: "Zamietnutie žiadosti je zriedkavé, no keď príde, štátny poplatok úrad nevracia. S Ochranou kupujúceho vám v takom prípade vrátime celú pôvodnú sumu, ak ste nám poskytli správne a pravdivé údaje.",
+            sk: "Zamietnutie žiadosti je zriedkavé, no keď príde, úrad zaplatenú sumu nevracia. S Ochranou kupujúceho vám v takom prípade vrátime celú pôvodne uhradenú sumu, ak ste nám poskytli správne a pravdivé údaje.",
             en: "Refusals are rare, but when one comes, the authority does not return the government fee. With Buyer protection we refund the full original amount, provided you gave us correct and truthful details.",
             uk: "Відмови трапляються рідко, але держмито орган не повертає. Із Захистом покупця ми повернемо всю початкову суму, якщо ви надали правильні та правдиві дані.",
             de: "Ablehnungen sind selten, doch die Amtsgebühr wird nicht erstattet. Mit dem Käuferschutz erstatten wir den vollen ursprünglichen Betrag, sofern Sie korrekte und wahrheitsgemäße Angaben gemacht haben.",

@@ -8,6 +8,7 @@ import { fileSignedUrl } from "@/lib/applications";
 import { ALL_STATUSES, statusLabel } from "@/config/orderStages";
 import { renderEmail, TEMPLATES, type EmailTemplate } from "@/lib/email";
 import { PRODUCTS, getProduct } from "@/config/products";
+import { COUNTRY_OPTIONS } from "@/lib/updates";
 import { fetchStats, setProcessed, bumpProcessed } from "@/lib/stats";
 import type { Announcement, Placement, Tone } from "@/lib/announcements";
 
@@ -46,7 +47,7 @@ export default function AdminPage() {
   const [affMsg, setAffMsg] = useState("");
   const [copiedCode, setCopiedCode] = useState("");
   const [ups, setUps] = useState<any[]>([]);
-  const emptyUp = { id: "", title: "", slug: "", summary: "", body: "", countries: "", category: "general", severity: "info", restrictions: "", source_url: "", published: true, published_at: "" };
+  const emptyUp = { id: "", kind: "update", title: "", slug: "", summary: "", body: "", countries: [] as string[], category: "general", severity: "info", restrictions: "", source_url: "", published: true, published_at: "", image: "", tag: "", seo_title: "", meta_description: "", keywords: "", destination_slug: "", read_mins: 4 };
   const [upForm, setUpForm] = useState<any>(emptyUp);
   const [upMsg, setUpMsg] = useState("");
   const [tab, setTab] = useState<"ann" | "apps" | "disc" | "promo" | "traffic" | "stats" | "chat" | "aff" | "updates">("ann");
@@ -273,13 +274,13 @@ export default function AdminPage() {
   const saveUp = async () => {
     if (!upForm.title.trim()) { setUpMsg("Zadajte titulok."); return; }
     setUpMsg("Ukladám…");
-    const payload = { ...upForm, countries: String(upForm.countries).split(",").map((c: string) => c.trim()).filter(Boolean) };
+    const payload = { ...upForm, countries: Array.isArray(upForm.countries) ? upForm.countries : String(upForm.countries).split(",").map((c: string) => c.trim()).filter(Boolean) };
     const r = await fetch("/api/admin/updates", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` }, body: JSON.stringify(payload) });
     const d = await r.json();
     if (d.ok) { setUpMsg("Uložené."); setUpForm(emptyUp); loadUps(); }
     else setUpMsg("Chyba pri ukladaní.");
   };
-  const editUp = (u: any) => { setUpForm({ ...u, countries: (u.countries || []).join(", "), published_at: u.published_at ? u.published_at.slice(0, 16) : "" }); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const editUp = (u: any) => { setUpForm({ ...u, countries: u.countries || [], keywords: (u.keywords || []).join(", "), published_at: u.published_at ? u.published_at.slice(0, 16) : "" }); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const deleteUp = async (id: string) => {
     if (!confirm("Zmazať túto novinku?")) return;
     await fetch(`/api/admin/updates?id=${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${session.access_token}` } });
@@ -353,7 +354,7 @@ export default function AdminPage() {
         <button onClick={() => setTab("stats")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "stats" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Globe size={15} /> Krajiny</button>
         <button onClick={() => setTab("chat")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "chat" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><MessageCircle size={15} /> Chat</button>
         <button onClick={() => setTab("aff")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "aff" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Users size={15} /> Affiliate</button>
-        <button onClick={() => setTab("updates")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "updates" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Newspaper size={15} /> Novinky</button>
+        <button onClick={() => setTab("updates")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "updates" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Newspaper size={15} /> Blog & Novinky</button>
         {tab === "ann" && <button onClick={() => setDraft({ ...EMPTY })} className="btn-primary ml-auto !py-2"><Plus size={15} /> Nový oznam</button>}
         {tab === "apps" && <button onClick={loadApps} className="btn-ghost ml-auto !py-2">Obnoviť</button>}
       </div>
@@ -465,22 +466,37 @@ export default function AdminPage() {
 
       {tab === "updates" && (
         <div className="mt-8 grid gap-6 lg:grid-cols-[1.15fr_1fr]">
-          {/* Editor novinky */}
+          {/* Editor príspevku */}
           <div className="rounded-xl border border-line bg-surface p-5 shadow-card">
             <div className="flex items-center justify-between">
-              <p className="font-semibold text-ink">{upForm.id ? "Upraviť novinku" : "Nová novinka o vízach"}</p>
-              {upForm.id && <button onClick={() => setUpForm(emptyUp)} className="text-xs text-ink-soft hover:text-ink">+ Nová</button>}
+              <p className="font-semibold text-ink">{upForm.id ? "Upraviť príspevok" : "Nový príspevok"}</p>
+              {upForm.id && <button onClick={() => setUpForm(emptyUp)} className="text-xs text-ink-soft hover:text-ink">+ Nový</button>}
             </div>
-            <p className="mt-1 text-xs text-ink-soft">Text: prázdny riadok = odsek · <code className="rounded bg-paper px-1">## Nadpis</code> · <code className="rounded bg-paper px-1">- odrážka</code>.</p>
 
-            <input value={upForm.title} onChange={(e) => setUpForm({ ...upForm, title: e.target.value })} placeholder="Titulok (napr. DV-2027 registrácia odložená)" className="input mt-4 w-full" />
+            {/* Prepínač blog / novinka */}
+            <div className="mt-3 inline-flex rounded-lg border border-line p-0.5">
+              <button onClick={() => setUpForm({ ...upForm, kind: "update" })} className={`rounded-md px-3 py-1.5 text-sm font-semibold transition-colors ${upForm.kind === "update" ? "bg-brass text-navy" : "text-ink-soft hover:text-ink"}`}>Novinka</button>
+              <button onClick={() => setUpForm({ ...upForm, kind: "blog" })} className={`rounded-md px-3 py-1.5 text-sm font-semibold transition-colors ${upForm.kind === "blog" ? "bg-brass text-navy" : "text-ink-soft hover:text-ink"}`}>Blog / sprievodca</button>
+            </div>
+            <p className="mt-2 text-xs text-ink-soft">Text: prázdny riadok = odsek · <code className="rounded bg-paper px-1">## Nadpis</code> · <code className="rounded bg-paper px-1">- odrážka</code>. Oboje sa zobrazuje na stránke <b>Blog</b>; novinky sa navyše ukazujú v sekcii Novinky.</p>
+
+            <input value={upForm.title} onChange={(e) => setUpForm({ ...upForm, title: e.target.value })} placeholder={upForm.kind === "blog" ? "Titulok článku" : "Titulok novinky (napr. DV-2027 registrácia odložená)"} className="input mt-4 w-full" />
             <input value={upForm.summary} onChange={(e) => setUpForm({ ...upForm, summary: e.target.value })} placeholder="Krátky perex (1–2 vety, zobrazí sa v zozname)" className="input mt-2 w-full" />
+
+            {/* Blog: obrázok, štítok, čas čítania */}
+            {upForm.kind === "blog" && (
+              <div className="mt-2 grid gap-2 sm:grid-cols-[2fr_1fr_auto]">
+                <input value={upForm.image} onChange={(e) => setUpForm({ ...upForm, image: e.target.value })} placeholder="URL úvodného obrázka" className="input w-full" />
+                <input value={upForm.tag} onChange={(e) => setUpForm({ ...upForm, tag: e.target.value })} placeholder="Štítok (USA · ESTA)" className="input w-full" />
+                <input type="number" min={1} max={60} value={upForm.read_mins} onChange={(e) => setUpForm({ ...upForm, read_mins: Number(e.target.value) })} className="input w-20" title="Min. čítania" />
+              </div>
+            )}
 
             <div className="mt-2 grid grid-cols-2 gap-2">
               <div>
-                <label className="text-xs font-semibold text-ink-soft">Typ novinky</label>
+                <label className="text-xs font-semibold text-ink-soft">{upForm.kind === "blog" ? "Kategória" : "Typ novinky"}</label>
                 <select value={upForm.category} onChange={(e) => setUpForm({ ...upForm, category: e.target.value })} className="input mt-1 w-full">
-                  <option value="general">Všeobecná novinka</option>
+                  <option value="general">Všeobecné</option>
                   <option value="delay">Odklad / pozastavenie</option>
                   <option value="new_requirement">Nová požiadavka</option>
                   <option value="price">Zmena ceny</option>
@@ -488,7 +504,7 @@ export default function AdminPage() {
                 </select>
               </div>
               <div>
-                <label className="text-xs font-semibold text-ink-soft">Dôležitosť (farba)</label>
+                <label className="text-xs font-semibold text-ink-soft">Dôležitosť (farba štítku)</label>
                 <select value={upForm.severity} onChange={(e) => setUpForm({ ...upForm, severity: e.target.value })} className="input mt-1 w-full">
                   <option value="info">Info (modrá)</option>
                   <option value="warning">Upozornenie (zlatá)</option>
@@ -497,11 +513,49 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <input value={upForm.countries} onChange={(e) => setUpForm({ ...upForm, countries: e.target.value })} placeholder="Krajiny oddelené čiarkou (USA, Kanada, Veľká Británia)" className="input mt-2 w-full" />
-            <textarea value={upForm.body} onChange={(e) => setUpForm({ ...upForm, body: e.target.value })} rows={9} placeholder={"## O čo ide\\n\\nText novinky…\\n\\n- dôležitý bod\\n- ďalší bod"} className="input mt-2 w-full font-mono text-sm" />
-            <textarea value={upForm.restrictions} onChange={(e) => setUpForm({ ...upForm, restrictions: e.target.value })} rows={2} placeholder="Obmedzenia a dopad (koho a ako sa to týka)" className="input mt-2 w-full" />
-            <div className="mt-2 grid grid-cols-2 gap-2">
-              <input value={upForm.source_url} onChange={(e) => setUpForm({ ...upForm, source_url: e.target.value })} placeholder="Odkaz na oficiálny zdroj (voliteľné)" className="input w-full" />
+            {/* Krajiny — dropdown s viacnásobným výberom (klik = pridať/odobrať) */}
+            <div className="mt-3">
+              <label className="text-xs font-semibold text-ink-soft">Ktorých krajín sa týka</label>
+              <div className="mt-1 flex flex-wrap gap-1.5 rounded-lg border border-line bg-paper/40 p-2">
+                {COUNTRY_OPTIONS.map((c) => {
+                  const on = (upForm.countries || []).includes(c.name);
+                  return (
+                    <button
+                      key={c.code}
+                      onClick={() => setUpForm({ ...upForm, countries: on ? upForm.countries.filter((x: string) => x !== c.name) : [...(upForm.countries || []), c.name] })}
+                      className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${on ? "bg-brass text-navy" : "bg-surface text-ink-soft hover:text-ink"}`}
+                    >
+                      {c.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Priradenie k destinácii */}
+            <div className="mt-3">
+              <label className="text-xs font-semibold text-ink-soft">Priradiť k destinácii (zobrazí sa na jej stránke)</label>
+              <select value={upForm.destination_slug} onChange={(e) => setUpForm({ ...upForm, destination_slug: e.target.value })} className="input mt-1 w-full">
+                <option value="">Bez priradenia</option>
+                {PRODUCTS.map((p) => <option key={p.slug} value={p.slug}>{p.destination.sk} — {p.name.sk}</option>)}
+              </select>
+            </div>
+
+            <textarea value={upForm.body} onChange={(e) => setUpForm({ ...upForm, body: e.target.value })} rows={9} placeholder={"## O čo ide\n\nText…\n\n- dôležitý bod\n- ďalší bod"} className="input mt-3 w-full font-mono text-sm" />
+            {upForm.kind === "update" && (
+              <textarea value={upForm.restrictions} onChange={(e) => setUpForm({ ...upForm, restrictions: e.target.value })} rows={2} placeholder="Obmedzenia a dopad (koho a ako sa to týka)" className="input mt-2 w-full" />
+            )}
+
+            {/* SEO meta polia */}
+            <div className="mt-3 rounded-lg border border-line-soft bg-paper/40 p-3">
+              <p className="text-xs font-semibold text-ink">SEO (voliteľné — ak nevyplníte, použije sa titulok a perex)</p>
+              <input value={upForm.seo_title} onChange={(e) => setUpForm({ ...upForm, seo_title: e.target.value })} placeholder="SEO titulok" className="input mt-2 w-full" />
+              <input value={upForm.meta_description} onChange={(e) => setUpForm({ ...upForm, meta_description: e.target.value })} placeholder="Meta popis (max ~160 znakov)" className="input mt-2 w-full" />
+              <input value={upForm.keywords} onChange={(e) => setUpForm({ ...upForm, keywords: e.target.value })} placeholder="Kľúčové slová oddelené čiarkou" className="input mt-2 w-full" />
+            </div>
+
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <input value={upForm.source_url} onChange={(e) => setUpForm({ ...upForm, source_url: e.target.value })} placeholder="Odkaz na zdroj (voliteľné)" className="input w-full" />
               <input type="datetime-local" value={upForm.published_at} onChange={(e) => setUpForm({ ...upForm, published_at: e.target.value })} className="input w-full" />
             </div>
 
@@ -512,21 +566,23 @@ export default function AdminPage() {
             </div>
           </div>
 
-          {/* Zoznam noviniek */}
+          {/* Zoznam príspevkov */}
           <div className="rounded-xl border border-line bg-surface shadow-card">
             <div className="flex items-center justify-between border-b border-line px-4 py-3">
-              <p className="font-semibold text-ink">Novinky ({ups.length})</p>
+              <p className="font-semibold text-ink">Príspevky ({ups.length})</p>
               <button onClick={loadUps} className="btn-ghost !py-1.5 text-xs">Obnoviť</button>
             </div>
-            {ups.length === 0 && <p className="px-4 py-4 text-sm text-ink-soft">Zatiaľ žiadne. Vytvorte prvú vľavo.</p>}
+            {ups.length === 0 && <p className="px-4 py-4 text-sm text-ink-soft">Zatiaľ žiadne. Vytvorte prvý vľavo.</p>}
             <div className="max-h-[36rem] divide-y divide-line-soft overflow-y-auto">
               {ups.map((u) => (
                 <div key={u.id} className="flex items-start gap-3 px-4 py-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
+                      <span className={`rounded px-1.5 py-0.5 text-[0.55rem] font-bold uppercase ${u.kind === "blog" ? "bg-teal/15 text-teal" : "bg-brass/15 text-brass"}`}>{u.kind === "blog" ? "Blog" : "Novinka"}</span>
                       {!u.published && <span className="rounded bg-line-soft px-1.5 py-0.5 text-[0.58rem] font-bold uppercase text-ink-soft">skryté</span>}
-                      <a href={`/updates/${u.slug}`} target="_blank" className="truncate text-sm font-semibold text-ink hover:text-brass">{u.title}</a>
+                      <a href={`/blog/${u.slug}`} target="_blank" className="truncate text-sm font-semibold text-ink hover:text-brass">{u.title}</a>
                     </div>
+
                     <p className="mt-0.5 text-xs text-ink-soft">{(u.countries || []).join(", ") || "bez krajín"} · {new Date(u.published_at).toLocaleDateString("sk-SK")}</p>
                   </div>
                   <button onClick={() => editUp(u)} className="shrink-0 rounded-md px-2 py-1 text-xs font-semibold text-ink-soft hover:bg-paper hover:text-ink">Upraviť</button>

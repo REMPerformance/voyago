@@ -56,10 +56,10 @@ export function Hero() {
           {/* Krátke vecné vymedzenie. Podrobná informácia je v pätičke a v obchodných podmienkach. */}
           <p className="mt-6 max-w-md text-xs leading-relaxed text-ink-soft/70">
             {t({
-              sk: "Voyago je súkromná sprostredkovateľská služba. V cene je štátny poplatok, kontrola údajov odborníkom, podanie žiadosti a podpora až do konca platnosti povolenia.",
-              en: "Voyago is a private intermediary service. The price includes the government fee, an expert check of your details, filing of the application and support until the permit expires.",
-              uk: "Voyago це приватна посередницька служба. У ціну входить державне мито, перевірка даних фахівцем, подання заяви та підтримка до кінця дії дозволу.",
-              de: "Voyago ist ein privater Vermittlungsdienst. Im Preis enthalten sind die Amtsgebühr, eine fachliche Prüfung Ihrer Angaben, die Einreichung des Antrags und Unterstützung bis zum Ablauf der Genehmigung.",
+              sk: "Voyago je súkromná sprostredkovateľská služba. Cena je konečná a zahŕňa kompletné vybavenie: kontrolu údajov odborníkom, podanie žiadosti aj podporu až do konca platnosti povolenia.",
+              en: "Voyago is a private intermediary service. The price is final and covers the complete service: an expert check of your details, filing of the application and support until the permit expires.",
+              uk: "Voyago це приватна посередницька служба. Ціна остаточна і покриває повне оформлення: перевірку даних фахівцем, подання заяви та підтримку до кінця дії дозволу.",
+              de: "Voyago ist ein privater Vermittlungsdienst. Der Preis ist endgültig und deckt die komplette Abwicklung ab: fachliche Prüfung Ihrer Angaben, Einreichung des Antrags und Unterstützung bis zum Ablauf der Genehmigung.",
             })}
           </p>
         </div>

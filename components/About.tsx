@@ -12,7 +12,7 @@ export function About() {
     t({ sk: "Skontrolujeme platnosť pasu a fotku podľa oficiálnych noriem", en: "Check passport validity and photo against official standards" }),
     t({ sk: "Vyplníme žiadosť presne a bez chýb", en: "Fill in the application accurately, without errors" }),
     t({ sk: "Podáme ju na oficiálnom štátnom portáli", en: "File it on the official government portal" }),
-    t({ sk: "Uhradíme štátny poplatok za vás", en: "Pay the government fee on your behalf" }),
+    t({ sk: "Vybavíme celú žiadosť za vás", en: "Handle the whole application for you" }),
     t({ sk: "Sledujeme stav a komunikujeme s úradmi", en: "Track the status and deal with the authorities" }),
     t({ sk: "Doručíme schválené povolenie na e-mail", en: "Deliver the approved permit to your e-mail" }),
     t({ sk: "Sme vám k dispozícii pred cestou aj počas nej", en: "We're available before and during your trip" }),

@@ -25,7 +25,7 @@ const QA: { q: string; a: string }[] = [
   },
   {
     q: "Čo je zahrnuté v cene a čo za poplatok dostanem?",
-    a: `Cena uvedená na stránke je konečná, vrátane DPH a vrátane štátneho poplatku, ktorý Voyago odvádza priamo príslušnému úradu. Poplatok za sprostredkovanie pokrýva ručnú kontrolu každého údaja oproti cestovnému dokladu, overenie požadovanej platnosti pasu, posúdenie fotografie podľa oficiálnych noriem tam, kde sa vyžaduje, vyplnenie a podanie žiadosti na oficiálnom portáli, sledovanie stavu žiadosti, komunikáciu s úradom pri prípadnom doplnení a podporu v slovenčine počas celej platnosti povolenia. Ceny začínajú na ${cheapest} € vrátane štátneho poplatku.`,
+    a: `Cena uvedená na stránke je konečná a vrátane DPH. Pokrýva kompletné vybavenie: ručnú kontrolu každého údaja oproti cestovnému dokladu, overenie platnosti pasu, posúdenie fotografie podľa noriem tam, kde sa vyžaduje, vyplnenie a podanie žiadosti na oficiálnom portáli, sledovanie stavu, komunikáciu s úradom pri prípadnom doplnení a podporu v slovenčine počas celej platnosti povolenia. Nič sa nedopláca a sumu poznáte vopred.`,
   },
   {
     q: "Prečo použiť Voyago namiesto samostatného podania?",

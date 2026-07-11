@@ -8,7 +8,7 @@ export async function GET() {
   if (!supabaseAdmin) return NextResponse.json({ updates: [] });
   const { data } = await supabaseAdmin
     .from("visa_updates")
-    .select("slug,title,summary,countries,category,severity,published_at,restrictions")
+    .select("slug,title,summary,countries,category,severity,published_at,restrictions,kind,image,tag,destination_slug,read_mins")
     .eq("published", true)
     .order("published_at", { ascending: false })
     .limit(100);

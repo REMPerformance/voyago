@@ -1,6 +1,8 @@
 export type UpdateCategory = "delay" | "new_requirement" | "price" | "closure" | "general";
 export type UpdateSeverity = "info" | "warning" | "critical";
 
+export type PostKind = "blog" | "update";
+
 export interface VisaUpdate {
   id: string;
   created_at: string;
@@ -15,7 +17,35 @@ export interface VisaUpdate {
   restrictions: string;
   source_url: string;
   published: boolean;
+  // Zjednotenie s blogom
+  kind: PostKind;
+  image: string;
+  tag: string;
+  seo_title: string;
+  meta_description: string;
+  keywords: string[];
+  destination_slug: string;
+  read_mins: number;
 }
+
+// Krajiny pre výber (dropdown). Kód + názov.
+export const COUNTRY_OPTIONS: { code: string; name: string }[] = [
+  { code: "US", name: "Spojené štáty (USA)" },
+  { code: "GB", name: "Veľká Británia" },
+  { code: "CA", name: "Kanada" },
+  { code: "AU", name: "Austrália" },
+  { code: "NZ", name: "Nový Zéland" },
+  { code: "KR", name: "Južná Kórea" },
+  { code: "IN", name: "India" },
+  { code: "VN", name: "Vietnam" },
+  { code: "EG", name: "Egypt" },
+  { code: "TR", name: "Turecko" },
+  { code: "LK", name: "Srí Lanka" },
+  { code: "ID", name: "Indonézia" },
+  { code: "TZ", name: "Tanzánia" },
+  { code: "CN", name: "Čína" },
+  { code: "EU", name: "Schengen / EÚ (ETIAS)" },
+];
 
 export const CATEGORY_LABEL: Record<UpdateCategory, { sk: string; en: string }> = {
   delay: { sk: "Odklad / pozastavenie", en: "Delay / suspension" },

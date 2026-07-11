@@ -20,7 +20,7 @@ export function Header() {
     { href: "/destinations", label: tr("nav.destinations") },
     { href: "/wizard", label: tr("nav.wizard") },
     { href: "/#how", label: tr("nav.how") },
-    { href: "/updates", label: tr("nav.updates") },
+    { href: "/o-nas", label: t({ sk: "O nás", en: "About", uk: "Про нас", de: "Über uns" }) },
     { href: "/blog", label: "Blog" },
     { href: "/foto-poziadavky", label: t({ sk: "Foto na vízum", en: "Visa photo" }) },
     { href: "/stav", label: t({ sk: "Sledovať stav", en: "Track status" }) },
