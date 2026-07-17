@@ -120,7 +120,6 @@ export default function Page() {
         <div className="rounded-2xl border border-line bg-surface p-6 shadow-card lg:sticky lg:top-24">
           <h2 className="font-display text-xl font-bold">Prihláška do programu</h2>
           <p className="mb-4 mt-1 text-sm text-ink-soft">Schvaľujeme do 48 hodín. Kód a odkaz dostanete e-mailom.</p>
-          <a href="/voyago-media-kit.pdf" download className="mb-4 inline-flex items-center gap-2 rounded-lg border border-line bg-paper/50 px-3.5 py-2 text-sm font-semibold text-ink transition-colors hover:border-brass/50">📄 Stiahnuť media kit (PDF)</a>
           <LeadForm
             endpoint="/api/affiliate"
             cta="Odoslať prihlášku"

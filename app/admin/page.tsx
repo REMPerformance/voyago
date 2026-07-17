@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, Eye, EyeOff, LogOut, Megaphone, Save, X, Inbox, Download, ChevronDown, Mail, Send, Percent, Search, Ticket, Activity, Globe, MessageCircle, Users, Copy, Check, Power, Newspaper } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, EyeOff, LogOut, Megaphone, Save, X, Inbox, Download, ChevronDown, Mail, Send, Percent, Search, Ticket, Activity, Globe, MessageCircle, Users, Copy, Check, Power, Newspaper, ClipboardList } from "lucide-react";
 import { ChatAdmin } from "@/components/admin/ChatAdmin";
+import { PermitsAdmin } from "@/components/admin/PermitsAdmin";
 import { supabase, supabaseEnabled } from "@/lib/supabase";
 import { fileSignedUrl } from "@/lib/applications";
 import { ALL_STATUSES, statusLabel } from "@/config/orderStages";
@@ -50,7 +51,7 @@ export default function AdminPage() {
   const emptyUp = { id: "", kind: "update", title: "", slug: "", summary: "", body: "", countries: [] as string[], category: "general", severity: "info", restrictions: "", source_url: "", published: true, published_at: "", image: "", tag: "", seo_title: "", meta_description: "", keywords: "", destination_slug: "", read_mins: 4 };
   const [upForm, setUpForm] = useState<any>(emptyUp);
   const [upMsg, setUpMsg] = useState("");
-  const [tab, setTab] = useState<"ann" | "apps" | "disc" | "promo" | "traffic" | "stats" | "chat" | "aff" | "updates">("ann");
+  const [tab, setTab] = useState<"ann" | "apps" | "permits" | "disc" | "promo" | "traffic" | "stats" | "chat" | "aff" | "updates">("ann");
   const [apps, setApps] = useState<any[]>([]);
   const [open, setOpen] = useState<string | null>(null);
   const [emailFor, setEmailFor] = useState<any>(null);
@@ -115,7 +116,7 @@ export default function AdminPage() {
     const { data } = await supabase.from("applications").select("*").order("created_at", { ascending: false });
     setApps(data || []);
   };
-  useEffect(() => { if (session && tab === "apps") loadApps(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
+  useEffect(() => { if (session && (tab === "apps" || tab === "permits")) loadApps(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [session, tab]);
   const openFile = async (path: string) => { const u = await fileSignedUrl(path); if (u) window.open(u, "_blank"); };
   const setAppStatus = async (id: string, status: string) => {
     const prev = apps.find((a) => a.id === id);
@@ -348,6 +349,7 @@ export default function AdminPage() {
       <div className="mt-6 flex items-center gap-2 border-b border-line">
         <button onClick={() => setTab("ann")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "ann" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Megaphone size={15} /> Oznamy</button>
         <button onClick={() => setTab("apps")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "apps" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Inbox size={15} /> Žiadosti</button>
+        <button onClick={() => setTab("permits")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "permits" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><ClipboardList size={15} /> Evidencia</button>
         <button onClick={() => setTab("disc")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "disc" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Percent size={15} /> Zľavy</button>
         <button onClick={() => setTab("promo")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "promo" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Ticket size={15} /> Promo kódy</button>
         <button onClick={() => setTab("traffic")} className={`flex items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === "traffic" ? "border-brass text-ink" : "border-transparent text-ink-soft hover:text-ink"}`}><Activity size={15} /> Analytika</button>
@@ -360,6 +362,7 @@ export default function AdminPage() {
       </div>
 
       {tab === "chat" && <ChatAdmin />}
+      {tab === "permits" && <PermitsAdmin apps={apps} />}
 
       {tab === "aff" && (
         <div className="mt-8 space-y-6">
