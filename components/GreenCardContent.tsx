@@ -111,7 +111,7 @@ export function GreenCardContent() {
           <polygon points="960,0 1200,0 1200,300" fill="none" stroke="#C99A4E" strokeOpacity="0.18" strokeWidth="1.5" />
         </svg>
 
-        <div className="container-page relative grid items-center gap-12 py-16 lg:grid-cols-[1.15fr_1fr] lg:py-20">
+        <div className="container-page relative grid items-center gap-12 py-16 grid-cols-1 lg:grid-cols-[1.15fr_1fr] lg:py-20">
           <div>
             <div className="inline-flex items-center gap-3 rounded-lg border border-cream/15 bg-cream/[0.05] px-3.5 py-2">
               <CalendarDays size={16} className="text-brass-light" />
@@ -247,7 +247,7 @@ export function GreenCardContent() {
           <h2 className="font-display text-3xl font-extrabold">{t({ sk: "Všetko o zelenej karte", en: "Everything about the Green Card" })}</h2>
           <p className="mt-2 max-w-2xl text-ink-soft">{t({ sk: "Vyberte si tému a dozviete sa detaily — oprávnenosť, fotografia, rodina, výber, poplatky aj štatistiky.", en: "Pick a topic to read the details — eligibility, photo, family, selection, fees and statistics." })}</p>
 
-          <div className="mt-8 grid gap-8 lg:grid-cols-[260px_1fr]">
+          <div className="mt-8 grid gap-8 grid-cols-1 lg:grid-cols-[260px_1fr]">
             <nav className="flex gap-2 overflow-x-auto pb-2 lg:sticky lg:top-24 lg:h-fit lg:flex-col lg:gap-1 lg:overflow-visible lg:pb-0">
               {TOPICS.map((tp) => {
                 const Icon = tp.icon;

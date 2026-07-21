@@ -162,7 +162,7 @@ export default function ApplyPage() {
         </div>
       )}
 
-      <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">
+      <div className="mt-8 grid gap-10 grid-cols-1 lg:grid-cols-[1fr_360px]">
         {/* Formulár */}
         <div className="card order-2 p-6 sm:p-8 lg:order-1">
           <div className="mb-6 space-y-3">
@@ -336,7 +336,7 @@ export default function ApplyPage() {
       <DestinationInfo product={product} />
 
       {product.facts?.length || product.faq?.length ? (
-        <div className="mt-14 grid gap-10 lg:grid-cols-[1fr_320px]">
+        <div className="mt-14 grid gap-10 grid-cols-1 lg:grid-cols-[1fr_320px]">
           <div className="space-y-10">
             {product.facts && product.facts.length > 0 && (
               <div>

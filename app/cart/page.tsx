@@ -27,7 +27,7 @@ export default function CartPage() {
     <section className="container-page py-16">
       <h1 className="text-4xl font-extrabold">{tr("cart.title")}</h1>
 
-      <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_340px]">
+      <div className="mt-10 grid gap-8 grid-cols-1 lg:grid-cols-[1fr_340px]">
         <ul className="space-y-4">
           {items.map((item) => {
             const product = getProduct(item.slug);

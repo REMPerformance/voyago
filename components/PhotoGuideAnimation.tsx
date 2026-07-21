@@ -70,7 +70,7 @@ export function PhotoGuideAnimation({ spec, defaultDv = false }: { spec?: DestSp
   const pctLabel = `${Math.round(sp.headPct[0] * 100)}–${Math.round(sp.headPct[1] * 100)}%`;
 
   return (
-    <div className="grid gap-8 rounded-2xl border border-line bg-surface p-5 shadow-card sm:p-7 lg:grid-cols-[380px_1fr] lg:gap-10">
+    <div className="grid gap-8 rounded-2xl border border-line bg-surface p-5 shadow-card sm:p-7 grid-cols-1 lg:grid-cols-[380px_1fr] lg:gap-10">
       {/* Scéna */}
       <div className="mx-auto w-full max-w-[380px]">
         <svg viewBox="0 0 300 250" className="h-auto w-full" role="img" aria-label={t(TITLES[s])}>

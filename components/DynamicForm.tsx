@@ -259,7 +259,7 @@ export function DynamicForm({ product, travelerIndex, onAdd }: Props) {
                 <span className="ml-1 h-px flex-1 bg-line-soft" />
               </legend>
 
-              <div className="grid gap-x-5 gap-y-5 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-x-5 gap-y-5 sm:grid-cols-2">
                 {fields.map((f) => (
                   <div
                     key={f.name}
@@ -578,7 +578,7 @@ function FieldControl({
           </select>
           <input
             type="tel"
-            className={`input flex-1 ${invalid ? "border-terra focus:border-terra focus:ring-terra/10" : ""}`}
+            className={`input min-w-0 flex-1 ${invalid ? "border-terra focus:border-terra focus:ring-terra/10" : ""}`}
             value={number}
             placeholder="900 123 456"
             onChange={(e) => onChange(`${dial} ${e.target.value}`)}

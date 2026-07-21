@@ -20,7 +20,7 @@ export function About() {
 
   return (
     <section className="container-page py-16 sm:py-20">
-      <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
+      <div className="grid gap-12 grid-cols-1 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
         <Reveal>
           <p className="eyebrow">{t({ sk: "O nás", en: "About us" })}</p>
           <h2 className="mt-3 font-display text-4xl font-extrabold leading-[1.04] sm:text-5xl">

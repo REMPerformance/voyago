@@ -43,7 +43,7 @@ export default function ContactPage() {
         ))}
       </div>
 
-      <div className="mt-12 grid items-start gap-10 lg:grid-cols-[1fr_1.1fr]">
+      <div className="mt-12 grid items-start gap-10 grid-cols-1 lg:grid-cols-[1fr_1.1fr]">
         <div>
           <h2 className="font-display text-2xl font-bold">{t({ sk: "Napíšte nám", en: "Write to us" })}</h2>
           <p className="mt-2 max-w-md text-ink-soft">

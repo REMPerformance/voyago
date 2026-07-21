@@ -128,7 +128,7 @@ export default function CheckoutPage() {
     <section className="container-page py-16">
       <h1 className="text-4xl font-extrabold">{tr("checkout.title")}</h1>
 
-      <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_360px]">
+      <div className="mt-10 grid gap-8 grid-cols-1 lg:grid-cols-[1fr_360px]">
         <div className="card p-6 sm:p-8">
           <p className="eyebrow">{tr("checkout.summary")}</p>
           <ul className="mt-4 divide-y divide-line">

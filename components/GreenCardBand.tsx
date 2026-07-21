@@ -53,7 +53,7 @@ export function GreenCardBand() {
 
   return (
     <section className="container-page py-12">
-      <div className="gc-band grid gap-6 lg:grid-cols-[1.5fr_1fr]">
+      <div className="gc-band grid gap-6 grid-cols-1 lg:grid-cols-[1.5fr_1fr]">
         {/* Green Card — text + mockup */}
         <Reveal>
           <div className="secure-bg relative h-full overflow-hidden rounded-[1.4rem] border border-green-soft/50 bg-green p-5 text-cream shadow-pass ring-1 ring-brass/25 sm:p-10">
@@ -61,7 +61,7 @@ export function GreenCardBand() {
             <div className="pointer-events-none absolute right-6 top-6 -rotate-6 rounded-md border border-brass-light/50 bg-brass/15 px-2.5 py-1 font-mono text-[0.55rem] font-bold uppercase tracking-[0.18em] text-brass-light">
               DV Lotéria
             </div>
-            <div className="relative grid items-center gap-7 sm:grid-cols-[1.05fr_auto]">
+            <div className="relative grid items-center gap-7 grid-cols-1 sm:grid-cols-[1.05fr_auto]">
               <div>
                 <p className="font-mono text-[0.66rem] font-bold uppercase tracking-[0.22em] text-brass-light">
                   {tr("gc.eyebrow")}

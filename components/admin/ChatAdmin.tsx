@@ -84,7 +84,7 @@ export function ChatAdmin() {
   if (!supabaseEnabled) return <p className="text-sm text-ink-soft">Supabase nie je nastavený — chat je neaktívny.</p>;
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[300px_1fr]">
+    <div className="grid gap-4 grid-cols-1 lg:grid-cols-[300px_1fr]">
       {/* Zoznam vlákien */}
       <div className="rounded-xl border border-line bg-surface">
         <div className="flex items-center justify-between border-b border-line px-4 py-3">

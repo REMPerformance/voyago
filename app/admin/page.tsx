@@ -468,7 +468,7 @@ export default function AdminPage() {
       )}
 
       {tab === "updates" && (
-        <div className="mt-8 grid gap-6 lg:grid-cols-[1.15fr_1fr]">
+        <div className="mt-8 grid gap-6 grid-cols-1 lg:grid-cols-[1.15fr_1fr]">
           {/* Editor príspevku */}
           <div className="rounded-xl border border-line bg-surface p-5 shadow-card">
             <div className="flex items-center justify-between">
@@ -488,7 +488,7 @@ export default function AdminPage() {
 
             {/* Blog: obrázok, štítok, čas čítania */}
             {upForm.kind === "blog" && (
-              <div className="mt-2 grid gap-2 sm:grid-cols-[2fr_1fr_auto]">
+              <div className="mt-2 grid gap-2 grid-cols-1 sm:grid-cols-[2fr_1fr_auto]">
                 <input value={upForm.image} onChange={(e) => setUpForm({ ...upForm, image: e.target.value })} placeholder="URL úvodného obrázka" className="input w-full" />
                 <input value={upForm.tag} onChange={(e) => setUpForm({ ...upForm, tag: e.target.value })} placeholder="Štítok (USA · ESTA)" className="input w-full" />
                 <input type="number" min={1} max={60} value={upForm.read_mins} onChange={(e) => setUpForm({ ...upForm, read_mins: Number(e.target.value) })} className="input w-20" title="Min. čítania" />

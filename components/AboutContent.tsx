@@ -76,7 +76,7 @@ export function AboutContent() {
 
       {/* Príbeh */}
       <section className="container-page py-14">
-        <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr]">
+        <div className="grid gap-10 grid-cols-1 lg:grid-cols-[1.4fr_1fr]">
           <div className="max-w-2xl">
             <h2 className="font-display text-2xl font-bold sm:text-3xl">
               {t({ sk: "Ako Voyago vzniklo", en: "How Voyago began", uk: "Як з'явилося Voyago", de: "Wie Voyago entstand" })}

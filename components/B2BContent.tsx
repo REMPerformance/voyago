@@ -72,7 +72,7 @@ export function B2BContent() {
 
   return (
     <section className="container-page py-14">
-      <div className="grid items-start gap-12 lg:grid-cols-[1.2fr_1fr]">
+      <div className="grid items-start gap-12 grid-cols-1 lg:grid-cols-[1.2fr_1fr]">
         <div>
           <p className="eyebrow">{t({ sk: "Pre firmy", en: "For companies", uk: "Для компаній", de: "Für Unternehmen" })}</p>
           <h1 className="mt-3 font-display text-4xl font-extrabold leading-tight sm:text-5xl">

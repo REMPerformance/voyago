@@ -50,7 +50,7 @@ export function PhotoChecker({ spec }: { spec: DestSpec }) {
   const eyeY = crownY + headH * 0.42;
 
   return (
-    <div className="grid gap-6 rounded-2xl border border-line bg-surface p-5 shadow-card sm:p-7 lg:grid-cols-[260px_1fr] lg:gap-9">
+    <div className="grid gap-6 rounded-2xl border border-line bg-surface p-5 shadow-card sm:p-7 grid-cols-1 lg:grid-cols-[260px_1fr] lg:gap-9">
       {/* Náhľad */}
       <div className="mx-auto w-full max-w-[260px]">
         <div

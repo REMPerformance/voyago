@@ -25,7 +25,7 @@ export function Testimonials() {
   return (
     <section className="bg-paper-dim/40">
       <div className="container-page py-16 sm:py-24">
-        <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
+        <div className="grid gap-10 grid-cols-1 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
           {/* Ľavý súhrn */}
           <div className="lg:sticky lg:top-24 lg:self-start">
             <p className="eyebrow">{t({ sk: "Referencie", en: "Reviews" })}</p>

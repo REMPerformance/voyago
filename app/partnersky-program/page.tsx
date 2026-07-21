@@ -97,7 +97,7 @@ export default function Page() {
       </Reveal>
 
       {/* FAQ + prihláška */}
-      <Reveal className="mt-16 grid items-start gap-10 lg:grid-cols-[1.2fr_1fr]">
+      <Reveal className="mt-16 grid items-start gap-10 grid-cols-1 lg:grid-cols-[1.2fr_1fr]">
         <div>
           <h2 className="font-display text-2xl font-bold">Časté otázky partnerov</h2>
           <div className="mt-5 space-y-3">

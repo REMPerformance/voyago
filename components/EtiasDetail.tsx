@@ -57,7 +57,7 @@ export function EtiasDetail() {
       <Link href="/destinations" className="inline-flex items-center gap-1.5 text-sm font-medium text-ink-soft hover:text-ink">← Back to destinations</Link>
 
       {/* HERO — obsah vľavo, mapa + search vpravo */}
-      <div className="mt-8 grid items-center gap-12 lg:grid-cols-[1fr_1.05fr]">
+      <div className="mt-8 grid items-center gap-12 grid-cols-1 lg:grid-cols-[1fr_1.05fr]">
         {/* Obsah */}
         <div>
           <div className="inline-flex items-center gap-3">

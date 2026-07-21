@@ -22,7 +22,7 @@ export function Hero() {
 
   return (
     <section className="relative overflow-hidden">
-      <div className="container-page grid items-center gap-8 py-10 sm:gap-10 sm:py-20 lg:grid-cols-[0.92fr_1.08fr] lg:gap-16 lg:py-24">
+      <div className="container-page grid items-center gap-8 py-10 sm:gap-10 sm:py-20 grid-cols-1 lg:grid-cols-[0.92fr_1.08fr] lg:gap-16 lg:py-24">
         {/* LEFT COPY */}
         <div>
           <p className="eyebrow" style={reveal(0)}>

@@ -33,7 +33,7 @@ export default function Page() {
       <h1 className="mt-1 font-display text-4xl font-extrabold">{t({ sk: "Stav vašej žiadosti", en: "Your application status" })}</h1>
       <p className="mt-3 text-ink-soft">{t({ sk: "Zadajte referenčné číslo a e-mail, ktorý ste použili pri objednávke.", en: "Enter the reference number and the email you used when ordering." })}</p>
 
-      <div className="mt-8 grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+      <div className="mt-8 grid gap-3 grid-cols-1 sm:grid-cols-[1fr_1fr_auto]">
         <input value={ref} onChange={(e) => setRef(e.target.value.toUpperCase())} onKeyDown={(e) => e.key === "Enter" && search()} placeholder="VYG-XXXXXX" className="input !mt-0 uppercase" />
         <input value={email} onChange={(e) => setEmail(e.target.value)} onKeyDown={(e) => e.key === "Enter" && search()} placeholder="e-mail" type="email" className="input !mt-0" />
         <button onClick={search} disabled={loading} className="btn-primary"><Search size={15} /> {loading ? "…" : t({ sk: "Zistiť", en: "Check" })}</button>
