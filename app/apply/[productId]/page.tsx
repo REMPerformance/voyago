@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Check, Plus, Clock, ShieldCheck, Plane, BadgeCheck, Layers, Users, MapPin } from "lucide-react";
@@ -32,6 +32,14 @@ export default function ApplyPage() {
   const [added, setAdded] = useState<string[]>([]); // mená pridaných cestujúcich
   const [express, setExpress] = useState(false);
   const [protection, setProtection] = useState(false);
+
+  // Označíme <body>, kým je na stránke spodná mobilná lišta „Objednať",
+  // aby sa plávajúci chat zdvihol nad ňu a neprekrýval CTA tlačidlo.
+  // Hook musí byť PRED podmienenými returnmi (inak React hook chyba).
+  useEffect(() => {
+    document.body.setAttribute("data-voy-orderbar", "");
+    return () => document.body.removeAttribute("data-voy-orderbar");
+  }, []);
 
   if (!product) {
     return (

@@ -69,7 +69,8 @@ export function ChatWidget() {
       <button
         onClick={() => { setOpen((o) => !o); if (!open) poll(true); }}
         aria-label={t({ sk: "Otvoriť chat", en: "Open chat" })}
-        className="fixed bottom-5 right-5 z-[60] grid h-14 w-14 place-items-center rounded-full bg-ink text-paper shadow-lift transition-transform hover:scale-105 lg:bottom-6 lg:right-6"
+        style={{ bottom: "var(--voy-chat-bottom)" }}
+        className="fixed right-5 z-[60] grid h-14 w-14 place-items-center rounded-full bg-ink text-paper shadow-lift transition-[transform,bottom] hover:scale-105 lg:right-6"
       >
         {open ? <X size={22} /> : <MessageCircle size={24} />}
         {!open && unread > 0 && (
@@ -79,7 +80,7 @@ export function ChatWidget() {
 
       {/* Panel */}
       {open && (
-        <div className="fixed bottom-24 right-5 z-[60] flex h-[28rem] w-[calc(100vw-2.5rem)] max-w-sm flex-col overflow-hidden rounded-2xl border border-line bg-surface shadow-lift lg:right-6">
+        <div style={{ bottom: "calc(var(--voy-chat-bottom) + 4.25rem)" }} className="fixed right-5 z-[60] flex h-[28rem] max-h-[70vh] w-[calc(100vw-2.5rem)] max-w-sm flex-col overflow-hidden rounded-2xl border border-line bg-surface shadow-lift lg:right-6">
           {/* hlavička */}
           <div className="flex items-center gap-3 bg-ink px-4 py-3 text-paper">
             <span className="grid h-9 w-9 place-items-center rounded-full bg-brass/20 text-brass"><MessageCircle size={18} /></span>

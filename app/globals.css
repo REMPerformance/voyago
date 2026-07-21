@@ -174,9 +174,19 @@
 /* ── Žiadne horizontálne posúvanie stránky ────────────────────────── */
 html, body {
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: hidden; /* fallback pre staršie iOS */
+  overflow-x: clip;   /* neláme position: sticky, moderné prehliadače */
 }
 body { position: relative; }
+
+/* ── Pozícia plávajúceho chat tlačidla ─────────────────────────────
+   Cez CSS premennú, aby sa dala zdvihnúť nad mobilnú lištu „Objednať". */
+:root { --voy-chat-bottom: 1.25rem; }              /* mobil: = bottom-5 */
+@media (min-width: 1024px) { :root { --voy-chat-bottom: 1.5rem; } } /* desktop: = bottom-6 */
+/* Na stránkach so spodnou lištou (formulár) zdvihneme chat nad ňu — len na mobile */
+@media (max-width: 1023.98px) {
+  body[data-voy-orderbar] { --voy-chat-bottom: 5.5rem; }
+}
 
 @media (max-width: 640px) {
   /* 1) Celkové zmenšenie základu — všetky rem rozmery (fonty, medzery,
@@ -194,9 +204,12 @@ body { position: relative; }
     line-height: 1.2 !important;
   }
 
-  /* 3) Destinácie 2 vedľa seba (karty zmenšené priamo v komponente) */
+  /* 3) Destinácie 2 vedľa seba (karty zmenšené priamo v komponente).
+     minmax(0,1fr) je kľúčové: bez neho má stĺpec minimálnu šírku = obsah
+     karty (napr. cena s whitespace-nowrap), čím grid pretečie cez pravú
+     hranu a na užších telefónoch (iPhone 13) sa obsah oreže. */
   .dest-grid {
-    grid-template-columns: 1fr 1fr !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
     gap: 0.5rem !important;
   }
 }
